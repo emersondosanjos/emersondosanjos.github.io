@@ -27,25 +27,25 @@ colors:
   h-alp-ink: "#b42323"
 typography:
   display:
-    fontFamily: "'Playpen Sans Variable', 'Comic Neue', cursive"
-    fontSize: "clamp(2.45rem, min(6.2vw, 9.5vh), 4.75rem)"
-    fontWeight: 300
-    lineHeight: 0.95
-    letterSpacing: "-0.03em"
-  headline:
-    fontFamily: "'Playpen Sans Variable', 'Comic Neue', cursive"
-    fontSize: "clamp(2.8rem, 7vw, 5.4rem)"
-    fontWeight: 400
-    lineHeight: 0.95
-    letterSpacing: "-0.025em"
-  section:
-    fontFamily: "'Playpen Sans Variable', 'Comic Neue', cursive"
-    fontSize: "clamp(2.2rem, 4.6vw, 3.6rem)"
-    fontWeight: 500
+    fontFamily: "'Inter Variable', system-ui, sans-serif"
+    fontSize: "clamp(2rem, min(4.5vw, 8.5vh), 4.1rem)"
+    fontWeight: 550
     lineHeight: 1.05
-    letterSpacing: "-0.01em"
+    letterSpacing: "-0.035em"
+  headline:
+    fontFamily: "'Inter Variable', system-ui, sans-serif"
+    fontSize: "clamp(2.25rem, 7vw, 5.4rem)"
+    fontWeight: 600
+    lineHeight: 1.05
+    letterSpacing: "-0.035em"
+  section:
+    fontFamily: "'Inter Variable', system-ui, sans-serif"
+    fontSize: "clamp(2.2rem, 4.6vw, 3.6rem)"
+    fontWeight: 600
+    lineHeight: 1.12
+    letterSpacing: "-0.02em"
   body:
-    fontFamily: "'Funnel Sans Variable', system-ui, sans-serif"
+    fontFamily: "'Inter Variable', system-ui, sans-serif"
     fontSize: "1.0625rem"
     fontWeight: 400
     lineHeight: 1.6
@@ -63,11 +63,11 @@ typography:
 
 **Creative North Star: "The Balmer Spectrum"**
 
-The site preserves the exact Balmer Spectrum aesthetic: deep blue ground (`#0d1b5e`), darker plate strips (`#06103d`), warm Signal Yellow (`#ffd23f`) primary tactile actions with hard offset shadows, cool reading paper (`#f4f6fa`) with deep blue ink (`#0d1b5e`), hand-lettered `Playpen Sans` display typography paired with `Funnel Sans` body and `Martian Mono` measurements, and tick-scale `.ticked` ruled lists.
+The site preserves the exact Balmer Spectrum aesthetic: deep blue ground (`#0d1b5e`), darker plate strips (`#06103d`), warm Signal Yellow (`#ffd23f`) primary tactile actions with hard offset shadows, cool reading paper (`#f4f6fa`) with deep blue ink (`#0d1b5e`), `Inter` typography for headings, body copy and controls, `Martian Mono` for measurements and code, and tick-scale `.ticked` ruled lists.
 
 ## Features Integrated
 - **Bilingual Navigation (`EN | PT`):** Header includes US and Brazil inline SVG flags switching seamlessly between canonical English routes (`/`) and Portuguese routes (`/pt/`).
-- **Full Name:** Wordmark and hero display **Emerson Barbosa `dos Anjos`** (`dos Anjos` in Signal Yellow).
+- **Full Name:** The wordmark and hero display **Emerson Barbosa dos Anjos** with a continuous coral highlight behind the lower part of `dos Anjos` in the light theme.
 - **Clear Section Naming & Multidisciplinary Scope:** Covers Thermal Engineering, Fluid Mechanics, Energy Engineering, Hydrogen Technologies, and Applied AI (`Research & Development Projects`, `Research Lines`, `Let's collaborate.`).
 - **Applied AI Tab (`/ai/` and `/pt/ai/`):** Native Balmer `.paper` ruled lists covering AI-accelerated scientific code, parametric 3D CAD in Blender & FreeCAD (at Inventor/SolidWorks/Revit rigor), Virtual Reality, and gamification.
 - **CV Circular Portrait:** Centered, upscaled `public/portrait.jpg` framed in a `184×184px` circle with Signal Yellow rim and Plate halo.

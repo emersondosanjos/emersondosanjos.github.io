@@ -1,0 +1,24 @@
+---
+import ZoomFigure from './ZoomFigure.astro';
+import type { GalleryImage } from '../lib/works';
+import type { Lang } from '../lib/i18n';
+
+interface Props {
+  image: GalleryImage;
+  lang: Lang;
+}
+
+const { image, lang } = Astro.props;
+const pt = lang === 'pt';
+const alt = (pt && image.alt_pt) || image.alt;
+const caption = (pt && image.caption_pt) || image.caption;
+---
+<ZoomFigure
+  src={(pt && image.src_pt) || image.src}
+  alt={alt}
+  title={caption ?? alt}
+  caption={caption}
+  legend={(pt && image.legend_pt) || image.legend}
+  hotspots={image.hotspots}
+  lang={lang}
+/>

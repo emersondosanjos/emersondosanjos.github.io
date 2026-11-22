@@ -2,6 +2,7 @@ import data from '../data/works.json';
 import type { Lang } from './i18n';
 
 export type Status = 'published' | 'under-review' | 'in-preparation';
+export type PublicStatus = Exclude<Status, 'under-review'> | 'confidential';
 export type LineId = 'reforming' | 'droplets' | 'desalination' | 'electrolysis' | 'recovery';
 export type Kind = 'journal' | 'conference' | 'chapter' | 'thesis' | 'tool';
 
@@ -10,6 +11,7 @@ export interface Work {
   line: LineId;
   type: Kind;
   status: Status;
+  confidential?: boolean;
   title: string;
   venue: string;
   authors?: string;
@@ -42,6 +44,7 @@ export interface GalleryImage {
   project?: string;
   /** bibliographic reference of the figure */
   ref?: string;
+  doi?: string;
   /** numbered callouts drawn on the image (1-based) */
   legend?: string[];
   legend_pt?: string[];
@@ -50,6 +53,7 @@ export interface GalleryImage {
 }
 
 export interface ToolEntry {
+  confidential?: boolean;
   year: number;
   line: LineId;
   name: string;
@@ -72,6 +76,8 @@ export interface ProjectEntry {
   trl_note_pt?: string;
   trl_confirmed?: boolean;
   sponsor?: string;
+  industry?: boolean;
+  confidential?: boolean;
   /** contract / grant number, only when confirmed */
   code?: string;
   image?: string;
@@ -116,15 +122,25 @@ export const reviewer = data.reviewer as string[];
 export const links = data.links;
 export const emails = (data.links.emails ?? [data.links.email]) as string[];
 
-export const STATUS_LABEL: Record<Status, string> = {
+export function workFigure(work: Work): GalleryImage | undefined {
+  if (work.status !== 'published' || !work.doi) return;
+  return lines.find((line) => line.id === work.line)?.gallery?.find((image) => image.doi === work.doi);
+}
+
+export function publicStatus(work: Work): PublicStatus {
+  if (work.status === 'published') return 'published';
+  return work.confidential || work.status === 'under-review' ? 'confidential' : 'in-preparation';
+}
+
+export const STATUS_LABEL: Record<PublicStatus, string> = {
   published: 'Published',
-  'under-review': 'Confidential',
+  confidential: 'Confidential',
   'in-preparation': 'In preparation',
 };
 
-export const STATUS_LABEL_PT: Record<Status, string> = {
+export const STATUS_LABEL_PT: Record<PublicStatus, string> = {
   published: 'Publicado',
-  'under-review': 'Em sigilo',
+  confidential: 'Em sigilo',
   'in-preparation': 'Em preparação',
 };
 
@@ -147,7 +163,7 @@ export const TYPE_LABEL_PT: Record<Kind, string> = {
 export const seriesLabel = (id: LineId, lang: Lang = 'en') =>
   lang === 'pt' ? SERIES[id].label_pt : SERIES[id].label;
 
-export const statusLabel = (status: Status, lang: Lang = 'en') =>
+export const statusLabel = (status: PublicStatus, lang: Lang = 'en') =>
   lang === 'pt' ? STATUS_LABEL_PT[status] : STATUS_LABEL[status];
 
 export const typeLabel = (kind: Kind, lang: Lang = 'en') =>
@@ -190,13 +206,13 @@ export function yearToPctW(t: number) {
 export function placedWorks(lang: Lang = 'en'): Placed[] {
   const all: Work[] = [
     ...works,
-    ...tools.map((t) => ({
+    ...tools.map<Work>((t) => ({
       year: t.year,
       line: t.line,
       type: 'tool' as Kind,
-      status: 'published' as Status,
+      status: t.confidential ? 'under-review' : 'published',
       title: lang === 'pt' && t.name_pt ? t.name_pt : t.name,
-      venue: lang === 'pt' && t.note_pt ? t.note_pt : t.note,
+      venue: t.confidential ? statusLabel('confidential', lang) : lang === 'pt' && t.note_pt ? t.note_pt : t.note,
     })),
   ];
   const byYear = new Map<number, Work[]>();

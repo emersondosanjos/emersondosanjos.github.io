@@ -1,9 +1,10 @@
 ---
 import Base from '../layouts/Base.astro';
+import ArticleFigure from '../components/ArticleFigure.astro';
 import PageHead from '../components/PageHead.astro';
 import DoiLogo from '../components/DoiLogo.astro';
 import Icon from '../components/Icon.astro';
-import { lines, works, statusLabel, doiUrl, links } from '../lib/works';
+import { lines, works, statusLabel, publicStatus, typeLabel, workFigure, doiUrl } from '../lib/works';
 import { UI, localePath, type Lang } from '../lib/i18n';
 
 interface Props {
@@ -12,7 +13,6 @@ interface Props {
 const { lang = 'en' } = Astro.props;
 const t = UI[lang].electrolyzers;
 const home = UI[lang].home;
-const records = UI[lang].openScience.records;
 
 const series = works.filter((w) => w.series).sort((a, b) => (a.series! < b.series! ? -1 : 1));
 const paper01 = series.find((w) => w.series === '01');
@@ -21,52 +21,52 @@ const gallery = lines.find((l) => l.id === 'electrolysis')?.gallery ?? [];
 <Base title={t.title} description={t.lede} current="/electrolyzers/" lang={lang}>
   <PageHead title={t.title} lede={t.lede}>
     <p class="ph-acts">
-      {paper01?.doi && <a class="act solid" href={doiUrl(paper01.doi)}><DoiLogo size={20} /> Paper 01 · IJHE 2025</a>}
-      {paper01?.github && <a class="act ghost" href={paper01.github}><Icon name="github" /> {home.mleFigureLink}</a>}
+      {paper01?.doi && <a class="act solid" href={doiUrl(paper01.doi)}><DoiLogo /> Paper 01 · IJHE 2025</a>}
     </p>
   </PageHead>
 
-  <!-- 1 · the paper series: ruled rows as before; a sticker opens each paper's painted card -->
   <section class="paper papers" aria-labelledby="papers-title" data-line="electrolysis">
     <div class="wrap">
       <h2 id="papers-title" class="section-title">{t.seriesTitle}</h2>
       <p class="section-lede">{t.seriesLede}</p>
       <ol class="mle ticked">
-        {series.map((w, i) => {
-          const rec = records.find((r) => r.no === w.series);
+        {series.map((w) => {
           const cid = `paper-${w.series}`;
+          const figure = workFigure(w);
+          const status = publicStatus(w);
           return (
             <li>
               <div class="row">
                 <span class="mle-no mono">{w.series}</span>
-                <span class="mle-title">{w.title}</span>
-                <span class="mle-venue">{w.status === 'published' ? w.venue : ''}</span>
-                <span class="stage" data-status={w.status} title={w.status === 'under-review' ? (lang === 'pt' ? 'Em sigilo até a publicação' : 'Confidential until publication') : undefined}>{statusLabel(w.status, lang)}</span>
-                <span class="mle-links">
-                  {w.doi && <a class="doi-link" href={doiUrl(w.doi)} aria-label="DOI"><DoiLogo size={22} /></a>}
-                  {w.github && <a href={w.github}>GitHub</a>}
-                  <button type="button" class="peel" aria-expanded="false" aria-controls={cid} style={`--tilt:${i % 2 ? '2deg' : '-2.5deg'}`}>
+                <div class="mle-meta">
+                  <div class="mle-tags">
+                    <span class="publication-type" data-type={w.type}>{typeLabel(w.type, lang)}</span>
+                    <span class="stage" data-status={status}>{statusLabel(status, lang)}</span>
+                  </div>
+                  <h3 class="mle-title">{w.title}</h3>
+                  {status === 'published' && <p class="mle-venue">{w.venue}</p>}
+                </div>
+                <div class="mle-links">
+                  {w.doi && <a class="article-link primary" href={doiUrl(w.doi)} title={w.doi}><DoiLogo /> DOI</a>}
+                  <button type="button" class="article-link peel" aria-expanded="false" aria-controls={cid}>
                     <span class="peel-open">{t.peelLabel}</span><span class="peel-close">{t.closeLabel}</span>
                   </button>
-                </span>
+                </div>
               </div>
-              <div class:list={['paper-card brush', { alt: i % 2 === 1 }]} id={cid} hidden>
-                <p class="pc-k mono">{t.summaryLabel}</p>
-                <p class="pc-sum">{t.summaries[w.series!]}</p>
-                {rec && (
-                  <>
-                    <p class="pc-k mono">{t.openLabel}</p>
-                    <p class="pc-what">{rec.what}</p>
-                  </>
-                )}
-                <p class="pc-foot">{w.status === 'published' ? w.venue : t.embargo}{!w.doi && <span class="pending"> · {home.mlePending}</span>}</p>
+              <div class:list={['paper-card', { 'has-figure': figure }]} id={cid} hidden>
+                <div>
+                  <p class="pc-k">{t.summaryLabel}</p>
+                  <p class="pc-sum">{t.summaries[w.series!]}</p>
+                  <p class="pc-foot">{status === 'published' ? w.venue : t.embargo}{!w.doi && <span> · {home.mlePending}</span>}</p>
+                </div>
+                {figure && <ArticleFigure image={figure} lang={lang} />}
               </div>
             </li>
           );
         })}
       </ol>
       <p class="acts">
-        <a class="act" href={links.zenodo}>{home.mleZenodoCta} <Icon name="arrow" /></a>
+        <a class="act" href={localePath('/open-science/', lang)}>{UI[lang].openScience.title} <Icon name="arrow" /></a>
         <a class="act" href={`${localePath('/research/', lang)}#electrolysis`}>{UI[lang].research.title} <Icon name="arrow" /></a>
       </p>
     </div>
@@ -93,53 +93,39 @@ const gallery = lines.find((l) => l.id === 'electrolysis')?.gallery ?? [];
 </Base>
 
 <style>
-  .ph-acts { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px !important; }
+  .ph-acts { display: flex; flex-wrap: wrap; gap: 12px; margin: 16px 0 0; }
 
-  .papers { padding-block: clamp(56px, 8vw, 104px); }
+  .papers { padding-block: clamp(28px, 5vw, 64px); }
   .mle { list-style: none; margin: 40px 0 36px; padding: 0; color: var(--ink); }
   .mle > li { border-bottom: 1px solid var(--rule); }
-  .row { display: grid; grid-template-columns: 56px minmax(0, 1.6fr) minmax(0, 1fr) 140px 220px; gap: 18px; align-items: center; padding: 20px 0; }
-  .mle-no { color: var(--h-bet-ink); font-size: 0.95rem; font-weight: 600; }
-  .mle-title { font: 500 1.22rem/1.3 var(--hand); color: var(--ink); }
-  .mle-venue { color: var(--ink-soft); font-size: 0.92rem; }
-  .mle .stage { color: var(--h-bet-ink); }
-  .mle-links { display: flex; align-items: center; gap: 14px; font-size: 0.95rem; justify-content: flex-end; }
-  .mle-links a { color: var(--ink); }
-  /* sticker that peels open the paper card */
-  .peel {
-    --tilt: -2deg;
-    position: relative;
-    font: 700 0.9rem/1 var(--hand);
-    color: var(--signal-ink);
-    background: var(--signal);
-    border: 2.5px solid var(--ink);
-    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
-    padding: 0.55rem 0.9rem 0.5rem;
-    transform: rotate(var(--tilt));
-    box-shadow: 0 8px 12px -8px rgba(13, 27, 94, 0.6);
-    cursor: pointer;
-    transition: transform 0.3s var(--ease-out);
-  }
-  .peel:hover { transform: rotate(calc(var(--tilt) * -1)) translateY(-2px); }
+  .row { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; gap: 14px 20px; align-items: start; padding: 22px 0; }
+  .mle-no { color: var(--ink-soft); font-size: 0.92rem; font-weight: 650; padding-top: 4px; }
+  .mle-tags, .mle-links { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+  .mle-title { margin-top: 8px; font: 650 clamp(1.08rem, 2vw, 1.32rem)/1.3 var(--sans); }
+  .mle-venue { margin: 4px 0 0; color: var(--ink-soft); font-size: 0.92rem; }
+  .mle .stage { color: var(--ink-soft); }
+  .mle-links { align-self: center; }
   .peel .peel-close { display: none; }
-  .peel[aria-expanded='true'] { background: var(--ink); color: var(--on-ink, var(--signal)); }
+  .peel[aria-expanded='true'] { background: var(--plate); box-shadow: inset 0 -3px 0 #ff7a59; }
   .peel[aria-expanded='true'] .peel-open { display: none; }
   .peel[aria-expanded='true'] .peel-close { display: inline; }
-  .paper-card { margin: 0 0 28px 74px; max-width: 860px; }
-  .paper-card:not([hidden]) { animation: paint 0.5s var(--ease-out); }
-  @keyframes paint { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
-  @media (prefers-reduced-motion: reduce) { .paper-card:not([hidden]) { animation: none; } }
-  .pc-k { margin: 0 0 4px; font-size: 0.66rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--signal-ink); opacity: 0.75; }
-  .pc-sum { margin: 0 0 16px; font-size: 1.05rem; line-height: 1.55; color: #0d1b5e; }
-  .pc-what { margin: 0 0 16px; font-size: 0.95rem; color: #0d1b5e; }
-  .pc-foot { margin: 0; font-size: 0.88rem; font-style: italic; color: #0d1b5e; }
-  .pending { opacity: 0.8; }
+  .paper-card {
+    margin: 0 0 22px 56px;
+    padding: clamp(16px, 3vw, 28px);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    background: var(--paper-2);
+  }
+  .paper-card.has-figure:not([hidden]) { display: grid; grid-template-columns: minmax(0, 1fr) minmax(180px, 280px); align-items: center; gap: 24px 36px; }
+  .pc-k { margin: 0 0 6px; font-size: 0.85rem; font-weight: 650; color: var(--ink); }
+  .pc-sum { margin: 0 0 12px; line-height: 1.55; }
+  .pc-foot { margin: 0; font-size: 0.88rem; color: var(--ink-soft); }
   .acts { display: flex; flex-wrap: wrap; gap: 12px; margin: 0; }
-  @media (max-width: 900px) {
-    .row { grid-template-columns: 40px minmax(0, 1fr); gap: 8px 14px; }
-    .row > :not(.mle-no) { grid-column: 2; }
-    .mle-links { justify-content: flex-start; }
-    .paper-card { margin-left: 0; padding: 40px 9% 36px; }
+  @media (max-width: 760px) {
+    .row { grid-template-columns: 28px minmax(0, 1fr); gap: 10px; }
+    .mle-links { grid-column: 2; }
+    .paper-card { margin-left: 0; }
+    .paper-card.has-figure:not([hidden]) { grid-template-columns: minmax(0, 1fr); }
   }
 
   .hw { padding-block: clamp(56px, 7vw, 88px); }
@@ -147,7 +133,7 @@ const gallery = lines.find((l) => l.id === 'electrolysis')?.gallery ?? [];
   .hw-fig { margin: 0; width: min(100%, 300px); display: flex; flex-direction: column; align-items: flex-start; gap: 14px; }
   .hw-fig .sticker { width: 100%; }
   .hw-fig .sticker img { width: 100%; height: auto; aspect-ratio: 1; object-fit: contain; background: #fff; }
-  .hw-fig figcaption { color: var(--ink-soft); font: 500 1rem/1.3 var(--hand); padding-left: 4px; }
+  .hw-fig figcaption { color: var(--ink-soft); font: 500 1rem/1.3 var(--sans); padding-left: 4px; }
 </style>
 
 <script>

@@ -25,4 +25,4 @@ npm install
 npm run dev
 ```
 
-Content is licensed CC BY 4.0. Fonts: Playpen Sans, Funnel Sans and Martian Mono (SIL Open Font License), self-hosted through Fontsource.
+Content is licensed CC BY 4.0. Inter and Martian Mono are licensed under the SIL Open Font License and self-hosted through Fontsource.

@@ -1,0 +1,26 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "src/styles/global.css"
+        ],
+        "createdAt": "2026-11-22T19:59:05.222Z",
+        "reason": "Codex: .ticked::before draws the spectrometer ruler documented in DESIGN.md, using graduated tick backgrounds across the top of lists."
+      },
+      {
+        "rule": "layout-transition",
+        "value": "*",
+        "files": [
+          "src/views/HomeView.astro"
+        ],
+        "createdAt": "2026-11-22T19:59:05.243Z",
+        "reason": "Codex: .emit path animates SVG stroke-width from 4 to 7 inside a fixed-size SVG; the list layout dimensions stay constant."
+      }
+    ]
+  }
+}

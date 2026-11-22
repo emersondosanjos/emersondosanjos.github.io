@@ -9,7 +9,7 @@ import {
   YEAR_MIN,
   YEAR_MAX,
   seriesLabel,
-  statusLabel,
+  statusLabel, publicStatus,
   typeLabel,
   doiUrl,
   lines,
@@ -63,12 +63,12 @@ const lineName = Object.fromEntries(lines.map((l) => [l.id, lang === 'pt' && l.n
             id={`b-${w.id}`}
             data-id={w.id}
             data-line={w.line}
-            data-status={w.status}
+            data-status={publicStatus(w)}
             data-type={w.type}
             style={`--x:${w.pct}%;--xw:${w.pctW}%;--i:${i}`}
             tabindex={w.id === initial.id ? 0 : -1}
             aria-pressed={w.id === initial.id ? 'true' : 'false'}
-            aria-label={`${w.year}, ${typeLabel(w.type, lang)}, ${statusLabel(w.status, lang)}: ${w.title}`}
+            aria-label={`${w.year}, ${typeLabel(w.type, lang)}, ${statusLabel(publicStatus(w), lang)}: ${w.title}`}
           ><span></span></button>
         ))}
       </div>
@@ -94,11 +94,11 @@ const lineName = Object.fromEntries(lines.map((l) => [l.id, lang === 'pt' && l.n
         <p class="ro-meta">
           <span class="ro-series">{lineName[w.line]} <span class="mono">{SERIES[w.line].symbol} {SERIES[w.line].nm.toFixed(1)} nm</span></span>
           <span class="mono">{w.year}</span>
-          <span class="stage" data-status={w.status} title={w.status === 'under-review' ? (lang === 'pt' ? 'Em sigilo até a publicação' : 'Confidential until publication') : undefined}>{statusLabel(w.status, lang)}</span>
+          <span class="stage" data-status={publicStatus(w)} title={publicStatus(w) === 'confidential' ? (lang === 'pt' ? 'Em sigilo até a publicação' : 'Confidential until publication') : undefined}>{statusLabel(publicStatus(w), lang)}</span>
         </p>
         {(w.doi || w.github || w.zenodo) && (
           <p class="ro-links">
-            {w.doi && <a class="act ghost" href={doiUrl(w.doi)}><DoiLogo size={20} /> <span class="mono">{w.doi}</span></a>}
+            {w.doi && <a class="act ghost" href={doiUrl(w.doi)}><DoiLogo /> <span class="mono">{w.doi}</span></a>}
             {w.github && <a class="act ghost" href={w.github}><Icon name="github" /> {t.designFiles}</a>}
             {w.zenodo && <a class="act ghost" href={w.zenodo}><Icon name="data" /> {t.zenodoData}</a>}
           </p>
@@ -169,7 +169,7 @@ const lineName = Object.fromEntries(lines.map((l) => [l.id, lang === 'pt' && l.n
   .line[data-type='chapter'] span { width: 2px; height: 70%; }
   .line[data-type='thesis'] span { width: 5px; }
   .line[data-type='tool'] span { width: 1.5px; height: 40%; opacity: 0.85; }
-  .line[data-status='under-review'] span { background: repeating-linear-gradient(to bottom, var(--c) 0 10px, transparent 10px 16px); opacity: 0.9; }
+  .line[data-status='confidential'] span { background: repeating-linear-gradient(to bottom, var(--c) 0 10px, transparent 10px 16px); opacity: 0.9; }
   .line[data-status='in-preparation'] span { background: repeating-linear-gradient(to bottom, var(--c) 0 3px, transparent 3px 9px); opacity: 0.75; }
   .line:hover span, .line[aria-pressed='true'] span { width: 7px; }
   .line:focus-visible { outline-offset: -2px; }
@@ -180,7 +180,7 @@ const lineName = Object.fromEntries(lines.map((l) => [l.id, lang === 'pt' && l.n
   }
 
   .legend { display: flex; flex-wrap: wrap; gap: 8px 10px; margin-bottom: 14px; }
-  .key { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; padding: 7px 14px 7px 10px; border-radius: 999px; border: 1.5px solid color-mix(in srgb, var(--c) 70%, transparent); background: transparent; color: var(--mist); font: 500 0.98rem/1 var(--hand); transition: background-color .25s var(--ease-out), opacity .25s; }
+  .key { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; padding: 7px 14px 7px 10px; border-radius: 999px; border: 1.5px solid color-mix(in srgb, var(--c) 70%, transparent); background: transparent; color: var(--mist); font: 500 0.98rem/1 var(--sans); transition: background-color .25s var(--ease-out), opacity .25s; }
   .key svg { width: 6px; height: 20px; }
   .key svg path { stroke: var(--c); stroke-width: 3; stroke-linecap: round; }
   .key-sym { color: var(--c); font-weight: 700; }

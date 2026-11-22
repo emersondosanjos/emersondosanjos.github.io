@@ -1,5 +1,5 @@
-@import '@fontsource-variable/playpen-sans';
-@import '@fontsource-variable/funnel-sans';
+@import '@fontsource-variable/inter/standard.css';
+@import '@fontsource-variable/inter/standard-italic.css';
 @import '@fontsource-variable/martian-mono';
 
 :root {
@@ -27,8 +27,7 @@
   --h-bet: #ffd23f;  --h-bet-ink: #7a5a00;
   --h-alp: #ff5c5c;  --h-alp-ink: #b42323;
 
-  --hand: 'Playpen Sans Variable', 'Comic Neue', cursive;
-  --sans: 'Funnel Sans Variable', system-ui, sans-serif;
+  --sans: 'Inter Variable', system-ui, sans-serif;
   --mono: 'Martian Mono Variable', ui-monospace, monospace;
 
   --gutter: clamp(16px, 4vw, 56px);
@@ -134,7 +133,7 @@ a:hover { text-decoration-thickness: 2px; }
 :focus-visible { outline: 2px solid var(--signal); outline-offset: 3px; border-radius: 2px; }
 .paper :focus-visible { outline-color: var(--ink); }
 
-h1, h2, h3 { font-family: var(--hand); font-weight: 500; line-height: 1.05; letter-spacing: -0.01em; margin: 0; text-wrap: balance; }
+h1, h2, h3 { font-family: var(--sans); font-weight: 600; line-height: 1.12; letter-spacing: -0.02em; margin: 0; text-wrap: balance; }
 p { text-wrap: pretty; }
 
 .wrap { width: 100%; max-width: 1360px; margin-inline: auto; padding-inline: var(--gutter); }
@@ -153,7 +152,7 @@ p { text-wrap: pretty; }
 /* links that read as actions: solid signal fill, dark ink, heavy rim and a pressed offset */
 .act {
   display: inline-flex; align-items: center; gap: 0.5em;
-  font: 600 1.05rem/1 var(--hand);
+  font: 600 1.05rem/1 var(--sans);
   padding: 0.78em 1.15em; border-radius: 10px;
   border: 2px solid currentColor; text-decoration: none;
   cursor: pointer;
@@ -187,7 +186,7 @@ p { text-wrap: pretty; }
 /* status marks: the line style tells the stage */
 .stage { display: inline-flex; align-items: center; gap: 0.45em; font: 600 0.85rem/1 var(--sans); white-space: nowrap; }
 .stage::before { content: ''; width: 22px; height: 0; border-top: 2.5px solid currentColor; flex: none; }
-.stage[data-status='under-review']::before { border-top-style: dashed; }
+.stage[data-status='confidential']::before { border-top-style: dashed; }
 .stage[data-status='in-preparation']::before { border-top-style: dotted; opacity: 0.8; }
 
 /* paint swatch: a loose, dry-brush stroke of signal yellow instead of a formal box */
@@ -243,6 +242,37 @@ p { text-wrap: pretty; }
 .doi-link:hover .doi-logo { transform: rotate(-8deg) scale(1.08); }
 .doi-logo { transition: transform 0.2s var(--ease-out); }
 
+.publication-type {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 5px;
+  background: #dce8f8;
+  color: #193b67;
+  padding: 4px 8px;
+  font: 650 0.8rem/1.25 var(--sans);
+}
+.publication-type[data-type='conference'] { background: #fce3d8; color: #763514; }
+.publication-type[data-type='chapter'] { background: #dceee4; color: #155436; }
+.publication-type[data-type='thesis'] { background: #eae4f3; color: #55386d; }
+.article-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 7px 12px;
+  border: 1px solid #536787;
+  border-radius: 7px;
+  background: #fff;
+  color: var(--ink);
+  font: 650 0.86rem/1.2 var(--sans);
+  text-decoration: none;
+  cursor: pointer;
+}
+.article-link.primary { background: var(--ink); color: #fff; border-color: var(--ink); }
+.article-link:not(.primary):hover { background: var(--plate); }
+.article-link.primary:hover { box-shadow: inset 0 -3px 0 #ff7a59; }
+
 /* light variants: line colours used as text switch to their text-safe ink */
 html[data-theme='white'] .ro-series, html[data-theme='kraft'] .ro-series,
 html[data-theme='white'] .key-sym, html[data-theme='kraft'] .key-sym { color: var(--c-ink); }
@@ -255,6 +285,7 @@ html[data-theme='white'] .top { background: color-mix(in srgb, var(--plate) 94%,
 html[data-theme='white'] .nav-feature::before, html[data-theme='kraft'] .nav-feature::before {
   background: linear-gradient(180deg, rgba(232, 222, 190, 0.95), rgba(214, 200, 160, 0.85));
 }
+
 
 /* ===== B: every yellow becomes dark blue; text that sat on yellow turns white ===== */
 html[data-theme='white'] {
@@ -282,34 +313,33 @@ html[data-theme='white'] .peel,
 html[data-theme='white'] .zf-x { border-color: var(--pe-yellow); }
 html[data-theme='white'] .lang-switch a[aria-current='true'] { box-shadow: inset 0 0 0 2px var(--pe-yellow); }
 
-/* B · contrast colour: coral (complementary to the navy) on button frames and a highlighter swipe on "dos Anjos" */
+/* B · coral frames and name highlight */
 html[data-theme='white'] {
   --pe-yellow: #ff7a59;
-  --name-hl: linear-gradient(100deg, transparent 0 0.6%, rgba(255, 122, 89, 0.55) 1.6% 97.8%, transparent 99.2%);
 }
-@media (prefers-reduced-motion: no-preference) {
-  html[data-theme='white'] .name span { animation: hl-swipe 0.9s var(--ease-out) 0.25s both; }
-  @keyframes hl-swipe { from { background-size: 0% 46%; } to { background-size: 100% 46%; } }
+.name-highlight { color: var(--name-color, var(--accent)); }
+html[data-theme='white'] .name-highlight {
+  position: relative;
+  isolation: isolate;
+  display: inline-block;
+  line-height: 1;
+  padding-inline: 0.09em;
+  white-space: nowrap;
+}
+html[data-theme='white'] .name-highlight::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset-inline: 0;
+  inset-block-end: 0.04em;
+  block-size: 0.46em;
+  border-radius: 0.06em;
+  background: var(--name-highlight);
 }
 
 /* ===== B · coral pass ===== */
 html[data-theme='white'] {
-  --alt-btn: #f6a593;
-  --alt-btn-ink: #0b2d6b;
-  /* taller, thicker highlighter: from the baseline up to the cap height of "A" */
-  --name-hl: linear-gradient(100deg, transparent 0 0.6%, rgba(255, 122, 89, 0.6) 1.6% 97.8%, transparent 99.2%);
-  --name-hl-size: 100% 74%;
-}
-html[data-theme='white'] .name span { background-position: 0 92%; }
-@media (prefers-reduced-motion: no-preference) {
-  html[data-theme='white'] .name span { animation-name: hl-swipe-tall; }
-  @keyframes hl-swipe-tall { from { background-size: 0% 74%; } to { background-size: 100% 74%; } }
-}
-html[data-theme='white'] .nav-feature.alt { border-color: #0b2d6b; }
-/* menu wordmark gets the same swipe */
-html[data-theme='white'] .mark-name span {
-  background: linear-gradient(100deg, transparent 0 1%, rgba(255, 122, 89, 0.6) 3% 96%, transparent 99%) 0 92% / 100% 72% no-repeat;
-  padding: 0 0.1em; border-radius: 0.3em 0.6em 0.4em 0.7em;
+  --name-highlight: #f6a593;
 }
 /* EBA sticker on a coral die-cut */
 /* page-top ruler: dark navy, heavier marks for contrast */
@@ -319,7 +349,7 @@ html[data-theme='white'] .ruler {
     linear-gradient(#0b2d6b, #0b2d6b),
     repeating-linear-gradient(90deg, #0b2d6b 0 1.5px, transparent 1.5px 12px),
     repeating-linear-gradient(90deg, #0b2d6b 0 2.5px, transparent 2.5px 120px);
-  background-size: 100% 2.5px, 100% 6px, 100% 11px;
+  background-size: 100% 2.5px, 100% 5px, 100% 8px;
   background-position: left bottom, left bottom, left bottom;
 }
 /* spectrum sticker: a deeper blue field */
@@ -346,15 +376,6 @@ html[data-theme='white'] .mini { background: #b7cdec; }
 /* page-top ruler hangs from the top edge, like a real rule */
 html[data-theme='white'] .ruler { background-position: left top, left top, left top; }
 
-/* ===== B · hand-made touches ===== */
-/* felt-tip highlighter that skips in places: drawn, not a flat gradient */
-html[data-theme='white'] { --name-hl: url('/images/highlight-coral.svg'); --name-hl-size: 100% 78%; }
-html[data-theme='white'] .name span { background-position: 0 95%; }
-@media (prefers-reduced-motion: no-preference) {
-  html[data-theme='white'] .name span { animation-name: hl-swipe-hand; }
-  @keyframes hl-swipe-hand { from { background-size: 0% 78%; } to { background-size: 100% 78%; } }
-}
-html[data-theme='white'] .mark-name span { background: url('/images/highlight-coral.svg') 0 95% / 100% 76% no-repeat; }
 /* stickers carry a coral keyline so they stand out on the ice-blue page */
 html[data-theme='white'] .sticker {
   box-shadow: 0 0 0 2.5px #ff7a59, 0 16px 26px -12px rgba(11, 45, 107, 0.55), 0 2px 0 3px rgba(11, 45, 107, 0.12);
@@ -363,17 +384,20 @@ html[data-theme='white'] .instrument {
   box-shadow: 0 0 0 7px #fff, 0 0 0 9.5px #ff7a59, 0 26px 44px -20px rgba(11, 45, 107, 0.6);
 }
 
-/* confidential papers carry a rubber stamp instead of a plain status */
-.stage[data-status='under-review'] {
-  color: #c8102e !important;
+/* Published and confidential work use the same stamp silhouette. */
+.stage:is([data-status='published'], [data-status='confidential']) {
+  --stamp-ink: #155436;
+  --stamp-paper: #e2f0e7;
+  color: var(--stamp-ink) !important;
   font: 800 0.72rem/1 var(--mono);
   letter-spacing: 0.14em;
   text-transform: uppercase;
   padding: 5px 9px 4px;
-  border: 2px solid #c8102e;
+  border: 2px solid var(--stamp-ink);
   border-radius: 4px;
   transform: rotate(-4deg);
-  background: rgba(200, 16, 46, 0.06);
-  box-shadow: inset 0 0 0 1px rgba(200, 16, 46, 0.35);
+  background: var(--stamp-paper);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--stamp-ink) 35%, transparent);
 }
-.stage[data-status='under-review']::before { display: none; }
+.stage[data-status='confidential'] { --stamp-ink: #b01833; --stamp-paper: #fae9eb; }
+.stage:is([data-status='published'], [data-status='confidential'])::before { display: none; }

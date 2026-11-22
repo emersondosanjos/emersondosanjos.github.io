@@ -1,0 +1,202 @@
+---
+import { education, awards, reviewer, links, projects, works, tools, doiUrl, statusLabel, type ProjectEntry } from '../lib/works';
+import { UI, type Lang } from '../lib/i18n';
+
+interface Props { lang: Lang; portrait: string | null }
+interface Row { date?: string | number; title: string; detail?: string; prose?: string; doi?: string }
+interface Group { title?: string; rows: Row[] }
+interface Section { title: string; groups: Group[]; compact?: boolean }
+
+const { lang, portrait } = Astro.props;
+const t = UI[lang].cv;
+const p = t.print;
+const pt = lang === 'pt';
+const translated = (en: string, translated?: string) => (pt && translated) || en;
+
+const section = (title: string, rows: Row[], compact = false): Section => ({ title, groups: [{ rows }], compact });
+const names = (items: readonly string[]): Row[] => items.map((title) => ({ title }));
+const dateOrder = (a: { span: string }, b: { span: string }) => b.span.localeCompare(a.span);
+const positions = [...t.positions].sort(dateOrder);
+const positionRow = (position: (typeof positions)[number]): Row => ({
+  date: position.span, title: position.role, detail: position.org, prose: position.note,
+});
+const degrees: Row[] = [...education].sort(dateOrder).map((degree) => ({
+  date: degree.span, title: translated(degree.degree, degree.degree_pt),
+  detail: degree.org, prose: translated(degree.note, degree.note_pt),
+}));
+const projectRow = (project: ProjectEntry): Row => ({
+  date: project.span, title: translated(project.name, project.name_pt),
+  detail: [
+    translated(project.role, project.role_pt), translated(project.org, project.org_pt),
+    project.confidential ? statusLabel('confidential', lang) : '',
+  ].filter(Boolean).join(' · '),
+  prose: translated(project.trl_note ?? '', project.trl_note_pt),
+});
+const projectList = [...projects].sort(dateOrder);
+const distinctions: Row[] = [...awards].sort((a, b) => b.year - a.year).map((award) => ({
+  date: award.year, title: translated(award.name, award.name_pt),
+}));
+const orderedPublications = works.filter((work) => work.status === 'published').reverse();
+const bibliography: Section = {
+  title: p.bibliography,
+  groups: [
+    { kind: 'journal', label: pt ? 'Artigos completos em periódicos' : 'Journal articles' },
+    { kind: 'conference', label: pt ? 'Trabalhos em congressos' : 'Conference papers' },
+    { kind: 'chapter', label: pt ? 'Capítulos de livros' : 'Book chapters' },
+    { kind: 'thesis', label: pt ? 'Teses e dissertações' : 'Theses and dissertations' },
+  ].map(({ kind, label }) => ({
+    title: label,
+    rows: orderedPublications.filter((work) => work.type === kind).map((work) => ({
+      date: work.year, title: work.title, detail: work.venue, prose: work.authors, doi: work.doi,
+    })),
+  })),
+};
+const technical: Row[] = [...tools].sort((a, b) => b.year - a.year).map((tool) => ({
+  date: tool.year, title: translated(tool.name, tool.name_pt),
+  prose: tool.confidential ? statusLabel('confidential', lang) : translated(tool.note, tool.note_pt),
+}));
+
+const formats = [
+  {
+    id: 'professional', title: p.industryTitle, profile: p.industryProfile,
+    sections: [
+      section(p.work, positions.filter((position) => 'industry' in position && position.industry).map(positionRow)),
+      section(p.industryProjects, projectList.filter((project) => project.industry).map(projectRow)),
+      section(t.practicalTitle, t.practical.map(({ title, body }) => ({ title, prose: body }))),
+      section(p.education, degrees),
+      section(p.languages, names(p.languageRows), true),
+      { title: p.digital, compact: true, groups: t.skillGroups.slice(2).map(({ title, skills }) => ({ title, rows: names(skills) })) },
+      { title: p.industrySkills, compact: true, groups: t.skillGroups.slice(0, 2).map(({ title, skills }) => ({ title, rows: names(skills) })) },
+    ],
+  },
+  {
+    id: 'academic', title: p.academicTitle, profile: t.lede,
+    sections: [
+      section(t.sections.education, degrees),
+      section(t.sections.positions, positions.map(positionRow)),
+      section(t.sections.projects, projectList.map(projectRow)),
+      bibliography,
+      section(p.technical, technical),
+      section(t.sections.reviewer, names(reviewer), true),
+      section(t.sections.awards, distinctions),
+      section(t.sections.languages, names(p.languageRows), true),
+    ],
+  },
+
+];
+---
+
+<div class="cv-print" data-cv-format="professional">
+  {formats.map((format) => (
+    <article class={`print-document print-${format.id}`} aria-label={format.title}>
+      <header class="print-heading">
+        <div>
+          <h1>Emerson Barbosa <span class="name-highlight">dos Anjos</span></h1>
+          <p class="print-title">{format.title}</p>
+          <p class="cv-prose">{format.profile}</p>
+          <p class="print-contact">
+            <span>{p.city}</span>
+            <a href={`mailto:${links.email}`}>{links.email}</a>
+            {Astro.site && <a href={Astro.site.href}>{Astro.site.hostname}</a>}
+            <a href={links.orcid}>ORCID</a>
+            {format.id === 'academic' ? <a href={links.lattes}>Lattes CNPq</a> : <a href={links.linkedin}>LinkedIn</a>}
+          </p>
+        </div>
+        {portrait && (
+          <span class="print-photo sticker">
+            <img class="print-portrait" src={portrait} alt={t.portraitAlt} width="132" height="132" loading="eager" />
+          </span>
+        )}
+      </header>
+      {format.sections.map((entry) => (
+        <section class="print-section">
+          <h2>{entry.title}</h2>
+          {entry.groups.filter((group) => group.rows.length).map((group) => (
+            <>
+              {group.title && <h3>{group.title}</h3>}
+              <ul class:list={{ "print-compact": entry.compact }}>
+                {group.rows.map((row) => (
+                  <li class:list={['print-row', { dated: row.date }]}>
+                    {row.date && <span class="print-date">{row.date}</span>}
+                    <div>
+                      <strong>{row.title}</strong>
+                      {row.detail && <p class="print-detail">{row.detail}</p>}
+                      {row.prose && <p class="cv-prose">{row.prose}</p>}
+                      {row.doi && <a class="print-doi" href={doiUrl(row.doi)}>{row.doi}</a>}
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </>
+          ))}
+        </section>
+      ))}
+    </article>
+  ))}
+</div>
+
+<style>
+  .cv-print { display: none; }
+
+  @media print {
+    @page { size: A4; margin: 15mm; }
+    :global(body:has(.cv-print) > :not(main)),
+    :global(body:has(.cv-print) .cv-screen),
+    :global(body:has(.cv-print) .cv) { display: none; }
+    :global(html:has(.cv-print)), :global(body:has(.cv-print)) { background: #fff; overflow: visible; }
+    .cv-print { display: block; color: #1d2940; font: 10.5pt/1.35 var(--sans); }
+    .print-document { display: none; }
+    [data-cv-format='professional'] .print-professional,
+    [data-cv-format='academic'] .print-academic { display: block; }
+    .print-heading {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6mm;
+      padding: 5mm;
+      background: var(--plate);
+      color: var(--ink);
+      border-bottom: 1.5pt solid var(--name-highlight);
+      break-inside: avoid;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+    .print-heading h1 { margin: 0 0 2mm; font-size: 23pt; color: var(--ink); text-wrap: wrap; }
+    .print-heading p { margin: 0 0 2mm; }
+    .print-title { font-weight: 700; }
+    .print-contact { display: flex; flex-wrap: wrap; gap: 0.6mm 3mm; margin-bottom: 0 !important; }
+    .print-contact a, .print-doi { overflow-wrap: anywhere; }
+    .print-photo {
+      --tilt: 2deg;
+      flex: none;
+      padding: 1.25mm;
+      border: 0.9pt solid #ff7a59;
+      border-radius: 2.5mm;
+      outline: 0;
+      background: #fff;
+      box-shadow: none;
+    }
+    .print-photo::before { width: 10mm; height: 3.4mm; top: -2mm; right: -3mm; }
+    .print-portrait { width: 29mm; height: 33mm; object-fit: cover; border-radius: 1.5mm; }
+    .print-professional { font-size: 10.15pt; line-height: 1.3; }
+    .print-professional .print-section { padding-block: 2.2mm; }
+    .print-professional .print-row { padding-block: 0.6mm; }
+    .print-section { padding: 3mm 0; border-bottom: 0.5pt solid var(--rule); }
+    .print-section h2, .print-section h3 { color: var(--ink); break-after: avoid; }
+    .print-section h2 { margin: 0 0 1.5mm; font-size: 13pt; }
+    .print-section h3 { margin: 2mm 0 1mm; font-size: 10.7pt; }
+    .print-section ul { margin: 0; padding: 0; list-style: none; }
+    .print-row { padding: 0.9mm 0; break-inside: avoid; }
+    .print-row.dated { display: grid; grid-template-columns: 23mm minmax(0, 1fr); gap: 3mm; }
+    .print-date { color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+    .print-row strong { color: var(--ink); font-weight: 650; }
+    .print-detail, .print-row .cv-prose { margin: 0.4mm 0 0; }
+    .cv-prose { text-align: justify; text-wrap: wrap; hyphens: auto; orphans: 2; widows: 2; }
+    .print-section .print-compact { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 4mm; }
+    .print-compact strong { font-weight: 500; }
+    .print-academic { font-size: 10pt; }
+    .print-academic .print-section { padding-block: 2.5mm; }
+    .print-academic .print-row { padding-block: 0.75mm; }
+    .print-doi { display: inline-block; font-size: 9pt; }
+  }
+</style>

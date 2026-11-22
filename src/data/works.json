@@ -17,6 +17,7 @@
      "caption_pt": "Reator catalítico de leito fixo para reforma a vapor do tolueno",
      "wide": false,
      "project": "Reactor modelling for hydrogen production (PIBIC/PIBEC)",
+     "doi": "10.1007/s40430-020-2195-8",
      "ref": "J. Braz. Soc. Mech. Sci. Eng. 42 (2020) 114"
     }
    ]
@@ -36,6 +37,7 @@
      "caption": "Droplet-freezing rig · 3D model after the published setup, Phil. Trans. R. Soc. A (2025)",
      "caption_pt": "Bancada de congelamento de gotas · modelo 3D a partir do aparato publicado, Phil. Trans. R. Soc. A (2025)",
      "wide": false,
+     "doi": "10.1098/rsta.2024.0363",
      "ref": "Phil. Trans. R. Soc. A 383 (2025) 20240363",
      "legend": [
       "Machine-vision camera (Basler ace class)",
@@ -165,6 +167,7 @@
      "caption": "Single-channel cell · Paper 01 (IJHE, 2025)",
      "caption_pt": "Célula de canal único · Artigo 01 (IJHE, 2025)",
      "project": "EnerGente: distributed polygeneration of electricity, desalinated water and hydrogen",
+     "doi": "10.1016/j.ijhydene.2025.151751",
      "ref": "Int. J. Hydrogen Energy 182 (2025) 151751",
      "wide": false
     },
@@ -417,6 +420,7 @@
    "line": "electrolysis",
    "type": "journal",
    "status": "in-preparation",
+   "confidential": true,
    "series": "05",
    "title": "Load cycling in chloride-containing electrolyte",
    "venue": "Paper 05 of the membraneless electrolyzer series"
@@ -439,6 +443,8 @@
    "trl_note_pt": "Membranas poliméricas, membranas de carbono e adsorventes para recuperação de hidrogênio de gás residual de refinaria, com planta piloto para separação por PSA e membranas.",
    "trl_confirmed": true,
    "sponsor": "Petrobras",
+   "industry": true,
+   "confidential": true,
    "org_pt": "LabPAM e NUCAT, COPPE/UFRJ, com Petrobras"
   },
   {
@@ -462,6 +468,7 @@
    "image_caption": "EnerGente demonstration site · LabMEMS / Petrogal Brasil (Galp)",
    "image_caption_pt": "Área de demonstração do EnerGente · LabMEMS / Petrogal Brasil (Galp)",
    "sponsor": "Petrogal Brasil (Galp)",
+   "industry": true,
    "org_pt": "LabMEMS, COPPE/UFRJ, com Petrogal Brasil (Galp)"
   },
   {
@@ -485,6 +492,7 @@
    "image_caption": "DCMD desalination loop driven by recovered heat",
    "image_caption_pt": "Circuito de dessalinização DCMD acionado por calor recuperado",
    "sponsor": "Petrogal Brasil (Galp)",
+   "industry": true,
    "org_pt": "LabMEMS, COPPE/UFRJ, com Petrogal Brasil (Galp)"
   },
   {
@@ -581,6 +589,7 @@
    "year": 2026,
    "line": "recovery",
    "name": "Pilot-plant simulator in virtual and augmented reality",
+   "confidential": true,
    "name_pt": "Simulador de planta piloto em realidade virtual e aumentada",
    "note": "Interactive 3D model of the LabPAM hydrogen skids (web, phone and VR). Private development.",
    "note_pt": "Modelo 3D interativo dos skids de hidrogênio do LabPAM (web, celular e VR). Desenvolvimento privado."
@@ -589,6 +598,7 @@
    "year": 2026,
    "line": "electrolysis",
    "name": "Face-centred response-surface design for three factors",
+   "confidential": true,
    "name_pt": "Planejamento composto central de face centrada para três fatores",
    "note": "Python software for the DoE study of the outlet streams. To be released on Zenodo.",
    "note_pt": "Software em Python para o estudo DoE das correntes de saída. A ser publicado no Zenodo."

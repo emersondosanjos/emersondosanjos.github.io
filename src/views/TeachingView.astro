@@ -8,6 +8,7 @@
 import 'katex/dist/katex.min.css';
 import Base from '../layouts/Base.astro';
 import PageHead from '../components/PageHead.astro';
+import Icon from '../components/Icon.astro';
 import { type Lang } from '../lib/i18n';
 
 interface Props { lang?: Lang }
@@ -22,16 +23,20 @@ const T = lang === 'pt'
 
   <section class="paper teach">
     <div class="wrap">
+      <div class="teaching-author">
+        <strong>Emerson Barbosa dos Anjos</strong>
+        <span>Doutor em Engenharia Mecânica</span>
+      </div>
       <!-- 1 · sign-in -->
       <form class="gate" id="gate" autocomplete="on">
         <h2 class="g-title">{T.signin}</h2>
         <label class="g-field"><span>{T.user}</span><input name="u" autocomplete="username" autocapitalize="none" spellcheck="false" required /></label>
         <label class="g-field"><span>{T.pass}</span>
-          <span class="g-pass"><input name="p" type="password" autocomplete="current-password" required /><button type="button" class="g-eye" aria-label={T.show} aria-pressed="false">👁</button></span>
+          <span class="g-pass"><input name="p" type="password" autocomplete="current-password" required /><button type="button" class="g-eye" aria-label={T.show} aria-pressed="false"><Icon name="eye" /></button></span>
         </label>
         <button class="act solid g-go" type="submit">{T.enter}</button>
         <p class="g-msg" role="alert" aria-live="assertive"></p>
-        <p class="g-lock mono">🔒 {T.lock}</p>
+        <p class="g-lock mono"><Icon name="lock" /> {T.lock}</p>
       </form>
 
       <!-- 2 · catalog -->
@@ -48,13 +53,15 @@ const T = lang === 'pt'
           <button type="button" class="act solid" id="print">{T.print}</button>
         </div>
         <div class="deck" id="deck" tabindex="0" aria-roledescription="slides">
-          <div class="deck-stage" id="stage" aria-live="polite"></div>
-          <div class="deck-bar">
-            <button type="button" class="db" id="prev" aria-label={T.prev}>←</button>
-            <span class="db-count mono"><b id="cur">1</b> / <span id="tot">1</span></span>
-            <span class="db-prog"><i id="prog"></i></span>
-            <button type="button" class="db" id="next" aria-label={T.next}>→</button>
-            <button type="button" class="db" id="full" aria-label={T.full} title={T.full}>⛶</button>
+          <div class="presentation-grid">
+            <div class="deck-stage" id="stage" aria-live="polite"></div>
+            <div class="deck-bar">
+              <button type="button" class="db" id="prev" aria-label={T.prev}><Icon name="chevron-left" /></button>
+              <span class="db-count mono"><b id="cur">1</b> / <span id="tot">1</span></span>
+              <span class="db-prog" aria-hidden="true"><i id="prog"></i></span>
+              <button type="button" class="db" id="next" aria-label={T.next}><Icon name="chevron-right" /></button>
+              <button type="button" class="db" id="full" aria-label={T.full} title={T.full}><Icon name="expand" /></button>
+            </div>
           </div>
           <p class="deck-help">{T.help}</p>
         </div>
@@ -68,10 +75,16 @@ const T = lang === 'pt'
 <style>
   .teach { padding-block: clamp(40px, 6vw, 80px) clamp(72px, 9vw, 120px); }
   [hidden] { display: none !important; }
+  .teaching-author { display: grid; gap: 2px; width: fit-content; margin: 0 auto 28px; color: var(--ink); text-align: center; }
+  .teaching-author span { font-size: 0.9rem; color: var(--ink-soft); }
+  .g-eye :global(svg), .g-lock :global(svg) { width: 16px; height: 16px; vertical-align: middle; }
+  .g-field input[type='password'], .g-pass input { padding-inline-end: 44px; }
+  .g-eye { min-width: 40px; min-height: 40px; }
+
 
   /* ---------- sign-in: a clean card, centred ---------- */
   .gate { max-width: 440px; margin: 0 auto; display: grid; gap: 16px; padding: 30px 30px 24px; background: #fff; border-radius: 18px; box-shadow: 0 0 0 2.5px #ff7a59, 0 24px 48px -24px rgba(11, 45, 107, 0.5); }
-  .g-title { font: 500 1.7rem/1.1 var(--hand); }
+  .g-title { font: 500 1.7rem/1.1 var(--sans); }
   .g-field { display: grid; gap: 6px; font: 600 0.92rem/1.2 var(--sans); color: var(--ink-soft); }
   .g-field input { width: 100%; font: 500 1.05rem/1.2 var(--sans); padding: 0.75em 0.9em; border-radius: 12px; border: 1.5px solid var(--plate-rule); background: var(--paper); color: var(--ink); }
   .g-field input:focus { outline: 2px solid #ff7a59; outline-offset: 1px; border-color: transparent; }
@@ -86,16 +99,16 @@ const T = lang === 'pt'
 
   /* ---------- catalog: ruled lists, like the rest of the site ---------- */
   .cat-bar { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
-  .cat-h { font: 500 clamp(1.6rem, 3vw, 2.2rem)/1.1 var(--hand); }
+  .cat-h { font: 500 clamp(1.6rem, 3vw, 2.2rem)/1.1 var(--sans); }
   #courses :global(.course) { margin-top: 28px; }
   #courses :global(.course-h) { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
-  #courses :global(.course-h h3) { font: 500 clamp(1.8rem, 3.6vw, 2.6rem)/1 var(--hand); background: url('/images/highlight-coral.svg') 0 95% / 100% 40% no-repeat; padding: 0 0.1em; }
+  #courses :global(.course-h h3) { font: 500 clamp(1.8rem, 3.6vw, 2.6rem)/1 var(--sans); background: url('/images/highlight-coral.svg') 0 95% / 100% 40% no-repeat; padding: 0 0.1em; }
   #courses :global(.course-h p) { margin: 0; color: var(--ink-soft); }
   #courses :global(.lessons) { list-style: none; margin: 18px 0 0; padding-left: 0; color: var(--ink); }
   #courses :global(.les) { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 18px; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--rule); }
-  #courses :global(.les-n) { font: 700 1.5rem/1 var(--hand); color: var(--ink); display: grid; place-items: center; align-content: center; width: 54px; height: 54px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 2px #ff7a59; }
+  #courses :global(.les-n) { font: 700 1.5rem/1 var(--sans); color: var(--ink); display: grid; place-items: center; align-content: center; width: 54px; height: 54px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 2px #ff7a59; }
   #courses :global(.les-n small) { display: block; font: 600 0.6rem/1 var(--mono); color: var(--ink-soft); margin-top: 2px; }
-  #courses :global(.les-t) { font: 500 1.25rem/1.25 var(--hand); color: var(--ink); margin: 0; }
+  #courses :global(.les-t) { font: 500 1.25rem/1.25 var(--sans); color: var(--ink); margin: 0; }
   #courses :global(.les-s) { margin: 4px 0 0; color: var(--ink-soft); font-size: 0.92rem; }
   #courses :global(.les-tp) { margin: 6px 0 0; display: flex; flex-wrap: wrap; gap: 6px; }
   #courses :global(.les-tp span) { font-size: 0.74rem; padding: 3px 8px; border-radius: 99px; background: var(--plate); color: var(--ink); }
@@ -108,51 +121,53 @@ const T = lang === 'pt'
 
   /* ---------- lesson room ---------- */
   .room-bar { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 18px; }
-  .room-title { flex: 1; margin: 0; font: 500 1.2rem/1.2 var(--hand); text-align: center; }
-  .deck { position: relative; outline: none; }
-  .deck:fullscreen { background: #0b2d6b; display: flex; flex-direction: column; justify-content: center; padding: 2vh 2vw; }
+  .room-title { flex: 1; margin: 0; font: 500 1.2rem/1.2 var(--sans); text-align: center; }
+  .deck { position: relative; --slide-coral: var(--name-highlight, #f6a593); }
+  .presentation-grid { display: grid; gap: 14px; max-width: 1240px; margin-inline: auto; min-width: 0; }
   .deck-stage { position: relative; aspect-ratio: 16 / 9; width: 100%; container-type: inline-size; }
-  .deck:fullscreen .deck-stage { width: min(100%, calc((100vh - 90px) * 16 / 9)); margin: 0 auto; }
+  .deck:fullscreen { background: var(--plate); overflow-y: auto; padding: 16px clamp(14px, 3vw, 36px); }
+  .deck:fullscreen .presentation-grid { max-width: min(1500px, calc((100dvh - 106px) * 16 / 9)); }
   .deck-help { margin: 8px 0 0; font-size: 0.8rem; color: var(--ink-soft); text-align: center; }
   .deck:fullscreen .deck-help { display: none; }
   .deck-stage :global(.deck-slides) { position: absolute; inset: 0; }
   .deck-stage :global(.slide) {
     position: absolute; inset: 0; display: none; flex-direction: column;
-    padding: 4.6cqw 6cqw 4.2cqw; background: #fff; color: #0b2d6b; border-radius: 1.6cqw; overflow: hidden;
-    box-shadow: 0 0 0 0.45cqw #ff7a59, 0 3cqw 5cqw -2.5cqw rgba(11, 45, 107, 0.5);
+    padding: 3.8cqw 5cqw; background: var(--paper); color: var(--ink); border: 3px solid var(--slide-coral); border-radius: 12px; overflow: auto;
+    box-shadow: 0 2cqw 4cqw -2.5cqw rgba(11, 45, 107, 0.5);
     font-size: 2.05cqw; line-height: 1.45;
   }
   .deck-stage :global(.slide.on) { display: flex; animation: slide-in 0.35s var(--ease-out); }
   @keyframes slide-in { from { opacity: 0; transform: translateX(1.5cqw); } }
-  .deck-stage :global(.slide::after) { content: attr(data-n); position: absolute; right: 3cqw; bottom: 2cqw; font: 600 1.2cqw/1 var(--mono); color: #4d5b7c; }
-  .deck-stage :global(.slide::before) { content: attr(data-foot); position: absolute; left: 6cqw; bottom: 2cqw; font: 500 1.15cqw/1 var(--sans); color: #4d5b7c; }
-  .deck-stage :global(.s-title) { font: 500 3.8cqw/1.05 var(--hand); margin: 0 0 2cqw; padding-bottom: 1.1cqw; background: url('/images/highlight-coral.svg') 0 100% / 30cqw 1.1cqw no-repeat; }
-  .deck-stage :global(.s-body) { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 1.5cqw; min-height: 0; }
+  .deck-stage :global(.s-title) { font: 500 3.8cqw/1.05 var(--sans); margin: 0 0 2cqw; padding-bottom: 1.1cqw; border-bottom: 2px solid var(--slide-coral); }
+  .deck-stage :global(.s-body) { flex: 1 0 auto; display: flex; flex-direction: column; justify-content: safe center; gap: 1.5cqw; }
   .deck-stage :global(.cover), .deck-stage :global(.section) { background: #0b2d6b; color: #fff; }
   .deck-stage :global(.cover .s-body), .deck-stage :global(.section .s-body) { align-items: flex-start; }
-  .deck-stage :global(.cover h1) { font: 500 6.4cqw/0.98 var(--hand); color: #fff; margin: 0; background: url('/images/highlight-coral.svg') 0 92% / 100% 40% no-repeat; }
-  .deck-stage :global(.cover::before), .deck-stage :global(.cover::after), .deck-stage :global(.section::before), .deck-stage :global(.section::after) { color: #b9c7e4; }
+  .deck-stage :global(.cover h1) { font: 500 6.4cqw/0.98 var(--sans); color: #fff; margin: 0; }
   .deck-stage :global(.s-kicker) { font-size: 1.3cqw; letter-spacing: 0.14em; text-transform: uppercase; color: #ffb3a0; margin: 0; }
-  .deck-stage :global(.s-sub) { font: 500 2.2cqw/1.2 var(--hand); margin: 1.5cqw 0 0; }
+  .deck-stage :global(.s-sub) { font: 500 2.2cqw/1.2 var(--sans); margin: 1.5cqw 0 0; }
+  .deck-stage :global(.s-author-role) { color: #dbe7f6; font-size: 1.8cqw; }
   .deck-stage :global(.s-base) { font-size: 1.4cqw; color: #b9c7e4; margin: 0; }
-  .deck-stage :global(.sec-n) { font: 700 9cqw/1 var(--mono); color: #ff7a59; margin: 0; }
-  .deck-stage :global(.sec-t) { font: 500 5.4cqw/1 var(--hand); color: #fff; margin: 0; }
+  .deck-stage :global(.sec-n) { font: 700 9cqw/1 var(--mono); color: var(--slide-coral); margin: 0; }
+  .deck-stage :global(.sec-t) { font: 500 5.4cqw/1 var(--sans); color: #fff; margin: 0; }
   .deck-stage :global(.sec-l) { font-size: 2.1cqw; color: #dbe7f6; margin: 1cqw 0 0; max-width: 70cqw; }
-  .deck-stage :global(.s-agenda) { font: 500 2.5cqw/1.55 var(--hand); padding-left: 3.5cqw; margin: 0; }
-  .deck-stage :global(.s-agenda li::marker) { color: #ff7a59; font-weight: 700; }
+  .deck-stage :global(.s-agenda) { font: 500 2.5cqw/1.55 var(--sans); padding-left: 3.5cqw; margin: 0; }
+  .deck-stage :global(.s-agenda li::marker) { color: var(--slide-coral); font-weight: 700; }
   .deck-stage :global(.s-list) { margin: 0; padding-left: 2.6cqw; }
   .deck-stage :global(.s-list li) { margin: 0.5cqw 0; }
-  .deck-stage :global(.s-list li::marker) { color: #ff7a59; }
+  .deck-stage :global(.s-list li::marker) { color: var(--slide-coral); }
   .deck-stage :global(p) { margin: 0; }
   .deck-stage :global(.s-center) { text-align: center; }
   .deck-stage :global(.s-split) { display: grid; grid-template-columns: 1fr 1fr; gap: 3cqw; align-items: center; }
-  .deck-stage :global(.s-fig) { margin: 0; }
+  .deck-stage :global(.s-fig) { margin: 0; padding: 8px; border: 1px solid var(--plate-rule); border-radius: 8px; background: #fff; }
+  .deck-stage :global(.s-fig.taped::before) { top: -7px; right: 8px; width: 38px; height: 12px; pointer-events: none; }
   .deck-stage :global(.s-fig svg) { width: 100%; height: auto; max-height: 30cqw; display: block; font-family: var(--sans); }
+  .deck-stage :global(.system-diagram) { width: min(100%, 48rem); align-self: center; }
+  .deck-stage :global(.system-diagram svg) { max-height: min(24cqw, 255px); }
   .deck-stage :global(.s-fig figcaption) { font-size: 1.3cqw; color: #4d5b7c; margin-top: 0.6cqw; text-align: center; }
   .deck-stage :global(.k-def) { background: #f1f5fc; border-radius: 1.2cqw; padding: 1.4cqw 2cqw; box-shadow: inset 0 0 0 0.15cqw #b7cdec; }
-  .deck-stage :global(.k-def b) { font: 600 2.1cqw/1.2 var(--hand); color: #0b2d6b; }
+  .deck-stage :global(.k-def b) { font: 600 2.1cqw/1.2 var(--sans); color: #0b2d6b; }
   .deck-stage :global(.k-def p) { margin: 0.5cqw 0 0; }
-  .deck-stage :global(.k-idea) { align-self: flex-start; font: 600 2.3cqw/1.3 var(--hand); padding: 0.8cqw 2cqw; background: url('/images/highlight-coral.svg') center / 100% 100% no-repeat; }
+  .deck-stage :global(.k-idea) { align-self: flex-start; font: 600 2.3cqw/1.3 var(--sans); padding: 0.8cqw 2cqw; background: #ffd2c6; border-radius: 8px; }
   .deck-stage :global(.k-warn), .deck-stage :global(.k-ask) { border-radius: 1.2cqw; padding: 1.2cqw 2cqw; }
   .deck-stage :global(.k-warn) { background: #fff1ee; box-shadow: inset 0 0 0 0.15cqw #ffb3a0; }
   .deck-stage :global(.k-ask) { background: #0b2d6b; color: #fff; }
@@ -161,44 +176,116 @@ const T = lang === 'pt'
   .deck-stage :global(.k-ask b) { color: #ffb3a0; }
   .deck-stage :global(.k-warn p), .deck-stage :global(.k-ask p) { margin: 0.5cqw 0 0; }
   .deck-stage :global(.k-steps) { margin: 0; padding-left: 3cqw; display: grid; gap: 0.8cqw; }
-  .deck-stage :global(.k-steps li::marker) { color: #ff7a59; font-weight: 700; }
-  .deck-stage :global(.s-answer) { align-self: center; padding: 1cqw 2.4cqw; font: 600 2.2cqw/1.3 var(--hand); background: url('/images/highlight-coral.svg') center / 100% 100% no-repeat; }
+  .deck-stage :global(.k-steps li::marker) { color: var(--slide-coral); font-weight: 700; }
+  .deck-stage :global(.s-answer) { align-self: center; padding: 1cqw 2.4cqw; font: 600 2.2cqw/1.3 var(--sans); background: #ffd2c6; border-radius: 8px; }
   .deck-stage :global(.s-src) { font-size: 1.15cqw; color: #4d5b7c; }
   .deck-stage :global(table) { width: 100%; border-collapse: collapse; font-size: 1.8cqw; }
   .deck-stage :global(th), .deck-stage :global(td) { padding: 0.6cqw 1.1cqw; border-bottom: 0.12cqw solid #dbe7f6; text-align: left; }
-  .deck-stage :global(th) { background: #0b2d6b; color: #fff; font: 600 1.6cqw/1.2 var(--hand); }
+  .deck-stage :global(th) { background: #0b2d6b; color: #fff; font: 600 1.6cqw/1.2 var(--sans); }
   .deck-stage :global(.eq) { position: relative; margin: 0; padding: 1.1cqw 7cqw 1.1cqw 2cqw; background: #f8fafd; border: 0.12cqw solid #dbe7f6; border-radius: 1.2cqw; font-size: 1.15em; }
   .deck-stage :global(.eq .katex-display) { margin: 0; }
   .deck-stage :global(.eq-tag) { position: absolute; right: 2cqw; top: 50%; transform: translateY(-50%); font-size: 1.3cqw; color: #4d5b7c; }
-  .deck-stage :global(.calc) { padding: 2cqw; background: #0b2d6b; color: #fff; border-radius: 1.4cqw; box-shadow: 0 0 0 0.3cqw #ff7a59; font-size: 1.7cqw; }
-  .deck-stage :global(.calc input) { width: 100%; accent-color: #ff7a59; margin: 1cqw 0; }
+  .deck-stage :global(.calc) { padding: 2cqw; background: #0b2d6b; color: #fff; border-radius: 1.4cqw; box-shadow: 0 0 0 0.3cqw var(--slide-coral); font-size: 1.7cqw; }
+  .deck-stage :global(.calc input) { width: 100%; accent-color: var(--slide-coral); margin: 1cqw 0; }
   .deck-stage :global(.calc dl) { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1cqw; margin: 0; }
   .deck-stage :global(.calc dl div) { background: rgba(255, 255, 255, 0.1); border-radius: 0.8cqw; padding: 0.8cqw; }
   .deck-stage :global(.calc dt) { font-size: 1.2cqw; opacity: 0.85; }
   .deck-stage :global(.calc dd) { margin: 0.3cqw 0 0; font: 700 2cqw/1.1 var(--sans); }
   /* progressive reveal */
-  .deck-stage :global(.frag) { opacity: 0; transform: translateY(0.6cqw); transition: opacity 0.3s var(--ease-out), transform 0.3s var(--ease-out); }
-  .deck-stage :global(.frag.shown) { opacity: 1; transform: none; }
-  @media (prefers-reduced-motion: reduce) { .deck-stage :global(.slide.on) { animation: none; } .deck-stage :global(.frag) { transition: none; } }
+  .deck-stage :global(.frag:not(.shown)) { display: none; }
+  .deck-stage :global(.frag.shown) { animation: fragment-in 0.3s var(--ease-out); }
+  @keyframes fragment-in { from { opacity: 0; transform: translateY(0.6cqw); } }
+  @media (prefers-reduced-motion: reduce) { .deck-stage :global(.slide.on), .deck-stage :global(.frag.shown) { animation: none; } }
 
-  .deck-bar { display: flex; align-items: center; gap: 12px; margin-top: 16px; }
-  .deck:fullscreen .deck-bar { width: min(100%, calc((100vh - 90px) * 16 / 9)); margin: 14px auto 0; color: #fff; }
-  .db { width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid #ff7a59; background: var(--ink); color: #fff; font: 700 1.1rem/1 var(--sans); cursor: pointer; }
+  .deck-bar { display: flex; align-items: center; gap: 8px; }
+  .db { width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid var(--slide-coral); background: var(--ink); color: #fff; font: 700 1.1rem/1 var(--sans); cursor: pointer; }
+  .db :global(svg) { width: 20px; height: 20px; display: block; margin: auto; }
   .db:disabled { opacity: 0.35; cursor: default; }
   .db-count { font-size: 0.85rem; min-width: 64px; text-align: center; }
   .db-prog { flex: 1; height: 6px; border-radius: 99px; background: var(--plate); overflow: hidden; }
-  .db-prog i { display: block; height: 100%; width: 0; background: #ff7a59; transition: width 0.3s var(--ease-out); }
+  .db-prog i { display: block; height: 100%; transform: scaleX(var(--progress, 0)); transform-origin: left; background: var(--slide-coral); }
+
+  .deck-stage :global(.slide-experiment) {
+    flex: none;
+    margin-top: 12px;
+    color: var(--ink);
+    font-size: clamp(0.83rem, 1.55cqw, 1rem);
+  }
+  .deck-stage :global(.slide-experiment summary) {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: fit-content;
+    min-height: 44px;
+    padding: 7px 14px;
+    border: 1px solid var(--ink);
+    border-radius: 140px 12px 110px 10px / 10px 100px 10px 80px;
+    background: var(--slide-coral);
+    color: var(--ink);
+    box-shadow: 0 2px 0 var(--ink);
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .deck-stage :global(.slide-experiment summary::-webkit-details-marker) { display: none; }
+  .deck-stage :global(.slide-experiment summary .experiment-indicator) { font-size: 1.25em; line-height: 1; }
+  .deck-stage :global(.slide-experiment[open] summary .experiment-indicator) { transform: rotate(45deg); }
+  .deck-stage :global(.experiment-content) {
+    margin-top: 10px;
+    padding: clamp(12px, 1.7cqw, 20px);
+    border: 1px solid var(--plate-rule);
+    border-radius: 9px;
+    background: var(--paper-2);
+  }
+  .deck-stage :global(.experiment-content h3) { margin: 0 0 6px; font-size: 1.07em; line-height: 1.25; color: var(--ink); }
+  .deck-stage :global(.experiment-question) { margin: 0 0 6px; color: var(--ink-soft); }
+  .deck-stage :global(.experiment-formula) { margin: 0 0 10px; padding: 7px 9px; border-radius: 6px; background: var(--plate); }
+  .deck-stage :global(.experiment-controls) { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr)); gap: 7px 16px; }
+  .deck-stage :global(.experiment-param) { display: grid; gap: 2px; }
+  .deck-stage :global(.experiment-param span) { display: flex; align-items: baseline; justify-content: space-between; gap: 7px; }
+  .deck-stage :global(.experiment-content input) { width: 100%; min-height: 34px; margin: 0; accent-color: var(--ink); cursor: pointer; }
+  .deck-stage :global(.experiment-content output) { flex: none; font-weight: 700; }
+  .deck-stage :global(.experiment-content dl) { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 185px), 1fr)); gap: 6px 14px; margin: 8px 0 0; padding: 9px 12px; border-radius: 7px; background: var(--ink); color: #fff; }
+  .deck-stage :global(.experiment-content dl div) { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .deck-stage :global(.experiment-content dd) { margin: 0; white-space: nowrap; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .deck-stage :global(.experiment-content button) { padding-block: 7px; margin-top: 8px; font-size: 0.83rem; }
+  .deck-stage :global(.slide-experiment :is(summary, input, button):focus-visible) { outline: 2px solid currentColor; outline-offset: 3px; }
+  @media (min-width: 761px) {
+    .deck-stage :global(.slide:has(.slide-experiment[open])) { padding-block: clamp(14px, 2cqw, 24px); }
+    .deck-stage :global(.slide:has(.slide-experiment[open]) .s-title) { font-size: 3cqw; margin-bottom: 10px; padding-bottom: 6px; }
+    .deck-stage :global(.slide:has(.slide-experiment[open]) .s-body) { gap: 8px; justify-content: flex-start; }
+    .deck-stage :global(.slide:has(.slide-experiment[open]) .system-diagram svg) { max-height: min(16cqw, 185px); }
+  }
+
+  @media (max-width: 760px) {
+    .teach { padding-block: 24px 56px; }
+    .room-title { order: -1; flex-basis: 100%; text-align: left; }
+    .room-bar .act { font-size: 0.86rem; min-height: 44px; }
+    .deck:fullscreen .presentation-grid { max-width: 100%; }
+    .deck-stage { aspect-ratio: auto; }
+    .deck-stage :global(.deck-slides), .deck-stage :global(.slide) { position: relative; inset: auto; }
+    .deck-stage :global(.slide) { min-height: 220px; padding: 18px; font-size: 0.92rem; }
+    .deck-stage :global(.s-body) { gap: 9px; }
+    .deck-stage :global(.s-title), .deck-stage :global(.cover h1), .deck-stage :global(.sec-t) { font-size: clamp(1.25rem, 5.5cqw, 2rem); }
+    .deck-stage :global(.s-kicker), .deck-stage :global(.s-base), .deck-stage :global(.s-src), .deck-stage :global(.s-fig figcaption) { font-size: 0.76rem; }
+    .deck-stage :global(.s-sub), .deck-stage :global(.s-author-role), .deck-stage :global(.sec-l), .deck-stage :global(.s-agenda), .deck-stage :global(.s-answer), .deck-stage :global(.k-idea), .deck-stage :global(.k-def b), .deck-stage :global(.k-warn b), .deck-stage :global(.k-ask b) { font-size: 0.92rem; }
+    .deck-stage :global(.s-split) { grid-template-columns: minmax(0, 1fr) !important; gap: 12px; }
+    .deck-stage :global(.s-fig svg), .deck-stage :global(.system-diagram svg) { max-height: none; }
+    .deck-stage :global(table), .deck-stage :global(th) { font-size: 0.8rem; }
+    .deck-stage :global(.eq) { overflow-x: auto; padding: 9px; font-size: 0.82rem; }
+    .deck-stage :global(.eq-tag) { position: static; display: block; text-align: right; font-size: 0.72rem; transform: none; }
+    .deck-stage :global(.calc), .deck-stage :global(.calc dt), .deck-stage :global(.calc dd) { font-size: 0.8rem; }
+  }
 
   /* ---------- handout (printable "apostila") ---------- */
   #lesson :global(.lesson) { max-width: 920px; color: var(--ink); }
   #lesson :global(.l-kicker) { font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin: 0; }
-  #lesson :global(h1) { font: 500 clamp(2rem, 4.6vw, 3.2rem)/1 var(--hand); margin: 8px 0 12px; }
+  #lesson :global(h1) { font: 500 clamp(2rem, 4.6vw, 3.2rem)/1 var(--sans); margin: 8px 0 12px; }
   #lesson :global(.l-lede) { font-size: 1.1rem; color: var(--ink-soft); }
   #lesson :global(.l-toc) { margin: 18px 0 0; padding: 16px 22px 16px 42px; background: var(--plate); border-radius: 14px; columns: 2; column-gap: 32px; }
   #lesson :global(section) { padding-top: 36px; }
-  #lesson :global(h2) { font: 500 1.8rem/1.1 var(--hand); padding-bottom: 8px; border-bottom: 2px solid var(--plate-rule); margin-bottom: 12px; display: flex; gap: 10px; align-items: baseline; }
+  #lesson :global(h2) { font: 500 1.8rem/1.1 var(--sans); padding-bottom: 8px; border-bottom: 2px solid var(--plate-rule); margin-bottom: 12px; display: flex; gap: 10px; align-items: baseline; }
   #lesson :global(h2 .n) { font-size: 0.75rem; color: #fff; background: var(--ink); border-radius: 99px; padding: 4px 9px; }
-  #lesson :global(h3) { font: 600 1.15rem/1.3 var(--hand); }
+  #lesson :global(h3) { font: 600 1.15rem/1.3 var(--sans); }
   #lesson :global(p), #lesson :global(li) { line-height: 1.7; }
   #lesson :global(.eq) { position: relative; margin: 14px 0; padding: 14px 70px 14px 16px; background: #fff; border: 1px solid var(--plate-rule); border-radius: 12px; overflow-x: auto; }
   #lesson :global(.eq .katex-display) { margin: 0; }
@@ -208,7 +295,7 @@ const T = lang === 'pt'
   #lesson :global(.l-fig figcaption) { font-size: 0.88rem; color: var(--ink-soft); margin-top: 6px; }
   #lesson :global(.l-note) { margin: 16px 0; padding: 12px 16px; background: var(--plate); border-radius: 12px; }
   #lesson :global(.ex) { margin: 18px 0; padding: 18px 20px; background: #fff; border-radius: 14px; border: 1.5px solid var(--plate-rule); }
-  #lesson :global(.ans) { margin: 10px 0 0; padding: 8px 14px; background: url('/images/highlight-coral.svg') center / 100% 100% no-repeat; font-weight: 600; }
+  #lesson :global(.ans) { margin: 10px 0 0; padding: 8px 14px; background: #ffd2c6; border-radius: 8px; font-weight: 600; }
   #lesson :global(table) { border-collapse: collapse; width: 100%; background: #fff; font-size: 0.92rem; }
   #lesson :global(th), #lesson :global(td) { padding: 8px 10px; border-bottom: 1px solid var(--rule); text-align: left; }
   #lesson :global(th) { background: var(--ink); color: #fff; }
@@ -222,6 +309,8 @@ const T = lang === 'pt'
 </style>
 
 <script>
+  import { experimentFor, type Experiment } from '../teaching/experiments';
+
   /* encrypted bundle produced locally by `npm run teaching` (scripts/build-teaching.ts) */
   let V: any = null;
   const vaultReady = fetch('/teaching/vault.json').then((r) => r.json()).then((v) => (V = v));
@@ -273,6 +362,7 @@ const T = lang === 'pt'
   /* ---------- lesson ---------- */
   const stage = $('stage'), lesson = $('lesson');
   let slides: HTMLElement[] = [], cur = 0, frags: HTMLElement[] = [], fi = 0;
+  let lessonNum = 0;
   async function openLesson(id: string, mode: 'slides' | 'handout') {
     $('roomTitle').textContent = L.loading;
     cat.hidden = true; room.hidden = false;
@@ -282,7 +372,25 @@ const T = lang === 'pt'
     stage.innerHTML = `<div class="deck-slides">${data.slides.join('')}</div>`;
     lesson.innerHTML = data.handout;
     slides = [...stage.querySelectorAll<HTMLElement>('.slide')];
-    slides.forEach((s, k) => { s.dataset.n = `${k + 1}`; s.dataset.foot = `Aula ${data.num} · ${data.title}`; });
+    lessonNum = data.num;
+    if (data.num === 1) {
+      const diagram = slides[4]?.querySelector('svg:has(marker[id="ta-n1"])');
+      diagram?.closest('.s-fig')?.classList.add('system-diagram');
+      diagram?.querySelectorAll('marker').forEach((marker) => {
+        marker.setAttribute('markerUnits', 'userSpaceOnUse');
+        marker.setAttribute('markerWidth', '10');
+        marker.setAttribute('markerHeight', '10');
+      });
+      diagram?.querySelectorAll('[marker-end]').forEach((arrow) => arrow.setAttribute('stroke-width', '3'));
+    }
+    stage.querySelectorAll('.s-fig').forEach((figure) => figure.classList.add('taped'));
+    stage.querySelectorAll('.cover .s-sub').forEach((name) => {
+      name.textContent = 'Emerson Barbosa dos Anjos';
+      const degree = document.createElement('p');
+      degree.className = 's-author-role';
+      degree.textContent = 'Doutor em Engenharia Mecânica';
+      name.after(degree);
+    });
     $('tot').textContent = String(slides.length);
     window.scrollTo({ top: room.getBoundingClientRect().top + scrollY - 90 });
     if (mode === 'handout') { $('deck').hidden = true; lesson.hidden = false; }
@@ -297,26 +405,55 @@ const T = lang === 'pt'
     fi = atEnd ? frags.length : 0;
     frags.forEach((f, k) => f.classList.toggle('shown', k < fi));
     $('cur').textContent = String(cur + 1);
-    ($('prog') as HTMLElement).style.width = `${((cur + 1) / slides.length) * 100}%`;
-    ($('prev') as HTMLButtonElement).disabled = cur === 0;
+    $('prog').style.setProperty('--progress', String((cur + 1) / slides.length));
+    const slide = slides[cur];
+    if (!slide.querySelector('.slide-experiment, [data-calc]')) {
+      const title = slide.querySelector('h1,h2')?.textContent ?? '';
+      renderExperiment(slide, experimentFor(lessonNum, title));
+    }
+    slide.scrollTop = 0;
+    updateNavigation();
   }
-  function next() { if (fi < frags.length) frags[fi++].classList.add('shown'); else if (cur < slides.length - 1) show(cur + 1); }
-  function prev() { if (fi > 0) frags[--fi].classList.remove('shown'); else if (cur > 0) show(cur - 1, true); }
+  function updateNavigation() {
+    ($('prev') as HTMLButtonElement).disabled = cur === 0 && fi === 0;
+    ($('next') as HTMLButtonElement).disabled = cur === slides.length - 1 && fi === frags.length;
+  }
+  function next() {
+    if (fi < frags.length) frags[fi++].classList.add('shown');
+    else if (cur < slides.length - 1) show(cur + 1);
+    updateNavigation();
+  }
+  function prev() {
+    if (fi > 0) frags[--fi].classList.remove('shown');
+    else if (cur > 0) show(cur - 1, true);
+    updateNavigation();
+  }
   $('next').addEventListener('click', next);
   $('prev').addEventListener('click', prev);
   $('full').addEventListener('click', () => { if (document.fullscreenElement) document.exitFullscreen(); else $('deck').requestFullscreen?.(); });
   $('deck').addEventListener('keydown', (e) => {
-    if ((e.target as HTMLElement).tagName === 'INPUT') return;
+    if ((e.target as HTMLElement).closest('input,button,a,select,textarea,summary')) return;
     if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); next(); }
     if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); prev(); }
     if (e.key === 'Home') show(0);
     if (e.key === 'End') show(slides.length - 1, true);
     if (e.key.toLowerCase() === 'f') $('full').click();
   });
-  let tx = 0;
-  stage.addEventListener('touchstart', (e) => { tx = e.touches[0].clientX; }, { passive: true });
-  stage.addEventListener('touchend', (e) => { const dx = e.changedTouches[0].clientX - tx; if (Math.abs(dx) > 50) (dx < 0 ? next : prev)(); });
-  stage.addEventListener('click', (e) => { if (!(e.target as HTMLElement).closest('input,button,a,label')) next(); });
+  let swipeStart: { x: number; y: number } | null = null;
+  stage.addEventListener('touchstart', (event) => {
+    const interactive = (event.target as Element).closest('input,button,a,label,summary,.eq');
+    swipeStart = event.touches.length === 1 && !interactive
+      ? { x: event.touches[0].clientX, y: event.touches[0].clientY }
+      : null;
+  }, { passive: true });
+  stage.addEventListener('touchend', (event) => {
+    if (!swipeStart) return;
+    const dx = event.changedTouches[0].clientX - swipeStart.x;
+    const dy = event.changedTouches[0].clientY - swipeStart.y;
+    swipeStart = null;
+    if (Math.abs(dx) > Math.max(50, 1.4 * Math.abs(dy))) (dx < 0 ? next : prev)();
+  });
+  stage.addEventListener('touchcancel', () => { swipeStart = null; });
   $('print').addEventListener('click', () => { const was = lesson.hidden; lesson.hidden = false; window.print(); lesson.hidden = was; });
   $('back').addEventListener('click', () => { stage.innerHTML = ''; lesson.innerHTML = ''; room.hidden = true; cat.hidden = false; });
 
@@ -348,6 +485,60 @@ const T = lang === 'pt'
       if (s) { key = await importCK(unb64(s)); await showCatalog(); }
     } catch { try { sessionStorage.removeItem(SK); } catch {} }
   })();
+
+  function renderExperiment(slide: HTMLElement, model: Experiment) {
+    const panel = document.createElement('details');
+    panel.className = 'slide-experiment';
+    panel.lang = 'pt-BR';
+    const initial = model.parameters.map((parameter) => parameter.initial);
+    const values = initial.slice();
+    const formats = [0, 1, 2, 3, 4].map((maximumFractionDigits) => new Intl.NumberFormat('pt-BR', { maximumFractionDigits }));
+    const format = (quantity: number, digits = 2) => formats[digits].format(quantity);
+    const withUnit = (quantity: number, unit: string, digits = 2) => [format(quantity, digits), unit].filter(Boolean).join(' ');
+
+    panel.innerHTML = `<summary><span class="experiment-indicator" aria-hidden="true">+</span> Testar no slide</summary>
+      <div class="experiment-content"><h3>${model.title}</h3>
+      <p class="experiment-question">${model.prompt}</p>
+      <p class="experiment-formula">${model.formula}</p>
+      <div class="experiment-controls">${model.parameters.map((parameter, index) => `
+        <label class="experiment-param">
+          <span>${parameter.label}<output></output></span>
+          <input type="range" min="${parameter.min}" max="${parameter.max}" step="${parameter.step}"
+            value="${values[index]}" aria-label="${parameter.label}${parameter.unit ? ` (${parameter.unit})` : ''}">
+        </label>`).join('')}</div>
+      <dl aria-live="polite"></dl>
+      <button type="button" class="article-link">Restaurar valores</button></div>`;
+    slide.append(panel);
+    panel.addEventListener('toggle', () => {
+      if (!panel.open) return;
+      const overflow = panel.getBoundingClientRect().bottom - slide.getBoundingClientRect().bottom;
+      if (overflow > 0) slide.scrollTop += Math.ceil(overflow) + 12;
+    });
+
+    const inputs = [...panel.querySelectorAll<HTMLInputElement>('input')];
+    const outputs = [...panel.querySelectorAll<HTMLOutputElement>('output')];
+    const results = panel.querySelector('dl')!;
+    function update() {
+      model.parameters.forEach((parameter, index) => {
+        outputs[index].textContent = withUnit(values[index], parameter.unit);
+        inputs[index].setAttribute('aria-valuetext', outputs[index].textContent);
+      });
+      results.innerHTML = model.calculate(values).map(({ label, unit, value, decimals }) =>
+        `<div><dt>${label}</dt><dd>${withUnit(value, unit, decimals)}</dd></div>`).join('');
+    }
+    inputs.forEach((input, index) => input.addEventListener('input', () => {
+      values[index] = input.valueAsNumber;
+      update();
+    }));
+    panel.querySelector('button')!.addEventListener('click', () => {
+      inputs.forEach((input, index) => {
+        values[index] = initial[index];
+        input.value = String(values[index]);
+      });
+      update();
+    });
+    update();
+  }
 
   /* interactive electrolyzer calculator used inside some slides */
   function wireCalculator(scope: HTMLElement) {

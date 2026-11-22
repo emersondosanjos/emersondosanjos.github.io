@@ -4,7 +4,8 @@ import { join } from 'node:path';
 import Base from '../layouts/Base.astro';
 import PageHead from '../components/PageHead.astro';
 import Icon from '../components/Icon.astro';
-import { education, awards, reviewer, links, projects } from '../lib/works';
+import CvPrint from '../components/CvPrint.astro';
+import { education, awards, reviewer, links, projects, statusLabel } from '../lib/works';
 import { UI, type Lang } from '../lib/i18n';
 
 interface Props {
@@ -13,16 +14,25 @@ interface Props {
 const { lang = 'en' } = Astro.props;
 const t = UI[lang].cv;
 
+
 const portraitCandidates = ['portrait.jpg', 'portrait.jpeg', 'portrait.png', 'portrait.webp'];
 const foundPortrait = portraitCandidates.find((file) => existsSync(join(process.cwd(), 'public', file)));
 const portraitSrc = foundPortrait ? `/${foundPortrait}` : null;
+const printPortraitSrc = existsSync(join(process.cwd(), 'public', 'portrait-face.jpg')) ? '/portrait-face.jpg' : portraitSrc;
 ---
 <Base title={t.title} current="/cv/" lang={lang}>
+  <div class="cv-screen">
   <PageHead title={t.title} lede={t.lede} hasAside={true}>
+    <p class="print-options-label">{t.printTitle}</p>
+    <div class="cv-print-actions" role="group" aria-label={t.printTitle}>
+      <button type="button" class="act solid" data-print-cv="professional"><Icon name="print" /> {t.printProfessional}</button>
+      <button type="button" class="act ghost" data-print-cv="academic"><Icon name="print" /> {t.printAcademic}</button>
+    </div>
     <p class="ph-acts">
       <a class="act ghost" href={links.lattes}>{t.lattes} <Icon name="arrow" /></a>
       <a class="act ghost" href={links.orcid}>{t.orcid} <Icon name="arrow" /></a>
       <a class="act ghost" href={links.linkedin}>LinkedIn <Icon name="arrow" /></a>
+      {Astro.site && <a class="act ghost" href={Astro.site.href}>{Astro.site.hostname} <Icon name="arrow" /></a>}
     </p>
     <div slot="aside" class="portrait-circle sticker" style="--tilt:3deg">
       {portraitSrc ? (
@@ -41,6 +51,7 @@ const portraitSrc = foundPortrait ? `/${foundPortrait}` : null;
       )}
     </div>
   </PageHead>
+  </div>
 
   <div class="paper cv">
     <div class="wrap">
@@ -96,7 +107,8 @@ const portraitSrc = foundPortrait ? `/${foundPortrait}` : null;
                 <span>
                   <strong>{pName}</strong>
                   {p.trl && <span class="trl-tag mono"> · TRL {p.trl[0]}–{p.trl[1]}</span>}
-                  <br />{pRole} · {p.org}
+                  <br />{pRole} · {lang === 'pt' && p.org_pt ? p.org_pt : p.org}
+                  {p.confidential && <><br /><span class="stage" data-status="confidential">{statusLabel('confidential', lang)}</span></>}
                 </span>
               </li>
             );
@@ -104,14 +116,31 @@ const portraitSrc = foundPortrait ? `/${foundPortrait}` : null;
         </ul>
       </section>
 
-      <section aria-labelledby="sk">
-        <h2 id="sk">{t.sections.skills}</h2>
-        <ul class="tags">
-          {t.skills.map((s) => <li>{s}</li>)}
-        </ul>
+      <section aria-labelledby="practical">
+        <h2 id="practical">{t.practicalTitle}</h2>
+        <div class="experience-grid">
+          {t.practical.map((experience) => (
+            <article class="cv-experience">
+              <h3>{experience.title}</h3>
+              <p>{experience.body}</p>
+            </article>
+          ))}
+        </div>
       </section>
 
-      <section aria-labelledby="rv">
+      <section aria-labelledby="sk">
+        <h2 id="sk">{t.sections.skills}</h2>
+        <div class="skills-grid">
+          {t.skillGroups.map(({ title, skills }) => (
+            <div class="cv-skill-group">
+              <h3>{title}</h3>
+              <ul class="tags">{skills.map((skill) => <li>{skill}</li>)}</ul>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section class="academic-review" aria-labelledby="rv">
         <h2 id="rv">{t.sections.reviewer}</h2>
         <ul>
           {reviewer.map((r) => <li><span></span><span>{r}</span></li>)}
@@ -126,10 +155,15 @@ const portraitSrc = foundPortrait ? `/${foundPortrait}` : null;
       </section>
     </div>
   </div>
+  <CvPrint lang={lang} portrait={printPortraitSrc} />
 </Base>
 
 <style>
-  .ph-acts { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px !important; }
+  .cv-print-actions, .ph-acts { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0 0; }
+  .print-options-label { font-size: 0.88rem; color: var(--ink-soft); font-weight: 650; margin: 16px 0 0; }
+  .cv-print-actions { margin-top: 8px; }
+  .cv-print-actions .act { min-height: 44px; line-height: 1.2; }
+  .ph-acts .act { font-size: 0.88rem; }
   .portrait-circle {
     width: 200px;
     height: 200px;
@@ -151,21 +185,46 @@ const portraitSrc = foundPortrait ? `/${foundPortrait}` : null;
     background: var(--plate);
   }
   .mono-mark {
-    font: 600 2.2rem/1 var(--hand);
+    font: 600 2.2rem/1 var(--sans);
     color: var(--signal);
   }
 
   .cv { padding-block: 24px 112px; }
   section { display: grid; grid-template-columns: minmax(0, 0.55fr) minmax(0, 1.45fr); gap: 16px 56px; padding-block: 40px; border-bottom: 1.5px solid var(--ink); }
-  h2 { font: 500 clamp(1.7rem, 3vw, 2.3rem)/1.05 var(--hand); }
+  h2 { font: 500 clamp(1.7rem, 3vw, 2.3rem)/1.05 var(--sans); }
   ul { list-style: none; margin: 0; padding: 0; }
   li { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--rule); color: var(--ink-soft); }
   li:last-child { border-bottom: 0; }
   li .mono { padding-top: 3px; }
   strong { color: var(--ink); font-weight: 600; }
+  .experience-grid, .skills-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .cv-experience, .cv-skill-group { padding: 16px; border-radius: 9px; border: 1px solid var(--rule); background: var(--paper-2); }
+  .cv-experience h3, .cv-skill-group h3 { font-size: 1rem; color: var(--ink); }
+  .cv-experience p { margin: 8px 0 0; color: var(--ink-soft); }
+  .cv-skill-group .tags { margin-top: 10px; }
   .tags { display: flex; flex-wrap: wrap; gap: 8px; }
-  .tags li { display: block; padding: 8px 14px; border: 1.5px solid var(--ink); border-radius: 999px; color: var(--ink); font: 500 0.95rem/1.2 var(--hand); }
+  .tags li { display: block; padding: 6px 9px; border: 1px solid var(--plate-rule); border-radius: 6px; background: var(--paper); color: var(--ink); font: 500 0.85rem/1.35 var(--sans); }
   @media (max-width: 820px) { .portrait-circle { width: 160px; height: 160px; } }
   @media (max-width: 760px) { section { grid-template-columns: 1fr; } li { grid-template-columns: 84px minmax(0, 1fr); } }
+  @media (max-width: 520px) {
+    .experience-grid, .skills-grid { grid-template-columns: 1fr; }
+    .cv { padding-block: 8px 56px; }
+    section { padding-block: 24px; }
+    li { grid-template-columns: 64px minmax(0, 1fr); gap: 12px; }
+  }
   .trl-tag { font-size: 0.72rem; color: var(--ink-soft); white-space: nowrap; }
+
 </style>
+
+<script>
+  const cv = document.querySelector<HTMLElement>('[data-cv-format]');
+  if (cv) {
+    document.querySelectorAll<HTMLButtonElement>('[data-print-cv]').forEach((button) => {
+      button.addEventListener('click', () => {
+        cv.dataset.cvFormat = button.dataset.printCv;
+        window.print();
+      });
+    });
+    window.addEventListener('afterprint', () => { cv.dataset.cvFormat = 'professional'; });
+  }
+</script>

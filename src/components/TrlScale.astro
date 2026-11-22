@@ -1,5 +1,5 @@
 ---
-import { projects, lines } from '../lib/works';
+import { projects, lines, statusLabel } from '../lib/works';
 import { TRL_LEVELS, UI, type Lang } from '../lib/i18n';
 
 interface Props {
@@ -50,6 +50,7 @@ const usedLines = lines.filter((l) => rows.some((p) => p.line === l.id));
             <p class="pmeta"><span class="mono">{p.span}</span> · {lang === 'pt' && p.org_pt ? p.org_pt : p.org}</p>
             <p class="pname">{pName}</p>
             <p class="prole">{pRole}</p>
+            {p.confidential && <span class="stage" data-status="confidential">{statusLabel('confidential', lang)}</span>}
           </div>
           <div class="lane">
             <div
@@ -138,7 +139,7 @@ const usedLines = lines.filter((l) => rows.some((p) => p.line === l.id));
   .levels li[data-phase='1'] { background: var(--ph1); }
   .levels li[data-phase='2'] { background: var(--ph2); }
   .levels b { font-size: 0.95rem; font-weight: 600; color: var(--ink); }
-  .levels span { font: 500 0.74rem/1.15 var(--hand); color: var(--ink-soft); hyphens: auto; }
+  .levels span { font: 500 0.74rem/1.15 var(--sans); color: var(--ink-soft); hyphens: auto; }
 
   /* ---------- rows ---------- */
   /* ruled list, as in Research Lines: projects separated by rules and space, not boxes */
@@ -165,7 +166,7 @@ const usedLines = lines.filter((l) => rows.some((p) => p.line === l.id));
   .who::before { content: ''; position: absolute; left: 0; top: 32px; width: 4px; height: 3.2em; border-radius: 2px; background: var(--c-ink); }
   .pmeta { margin: 0 0 6px; color: var(--ink-soft); font-size: 0.84rem; line-height: 1.4; }
   .pmeta .mono { font-size: 0.72rem; color: var(--c-ink); font-weight: 600; }
-  .pname { margin: 0; font: 500 1.2rem/1.25 var(--hand); color: var(--ink); }
+  .pname { margin: 0; font: 500 1.2rem/1.25 var(--sans); color: var(--ink); }
   .prole { margin: 6px 0 0; color: var(--ink-soft); font-size: 0.9rem; line-height: 1.45; }
 
   .lane { padding: 30px 0; background: var(--cols); }
@@ -216,11 +217,11 @@ const usedLines = lines.filter((l) => rows.some((p) => p.line === l.id));
     padding: 4px 10px;
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
   }
-  .range-names { font-family: var(--hand); }
+  .range-names { font-family: var(--sans); }
   .note { margin: 6px 0 0; color: var(--ink-soft); font-size: 0.92rem; max-width: var(--measure); }
 
   /* ---------- line key ---------- */
-  .lines-key { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 16px; color: var(--ink-soft); font: 500 0.92rem/1.2 var(--hand); }
+  .lines-key { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 16px; color: var(--ink-soft); font: 500 0.92rem/1.2 var(--sans); }
   .line-key { display: inline-flex; align-items: center; gap: 8px; }
   .line-key i { width: 18px; height: 8px; border-radius: 999px; background: var(--c); border: 1.5px solid var(--c-ink); flex: none; }
 

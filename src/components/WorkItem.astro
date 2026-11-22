@@ -1,49 +1,55 @@
 ---
+import ArticleFigure from './ArticleFigure.astro';
 import DoiLogo from './DoiLogo.astro';
-import type { Work } from '../lib/works';
-import { SERIES, seriesLabel, statusLabel, typeLabel, doiUrl, workLogo } from '../lib/works';
-import type { Lang } from '../lib/i18n';
+import { SERIES, seriesLabel, statusLabel, publicStatus, typeLabel, doiUrl, workLogo, workFigure, type Work } from '../lib/works';
+import { UI, type Lang } from '../lib/i18n';
 
 interface Props {
   w: Work;
   lang?: Lang;
+  showFigure?: boolean;
 }
-const { w, lang = 'en' } = Astro.props;
+const { w, lang = 'en', showFigure = false } = Astro.props;
 const logo = workLogo(w);
+const status = publicStatus(w);
+const figure = showFigure ? workFigure(w) : undefined;
+const t = UI[lang].publications;
 ---
-<li class="wi" data-line={w.line} data-type={w.type} data-status={w.status}>
-  <span class="wi-sym" title={seriesLabel(w.line, lang)}>{SERIES[w.line].symbol}</span>
+<li class:list={['wi', { 'has-figure': figure }]} data-line={w.line} data-type={w.type} data-status={status} data-doi={w.doi}>
   <div class="wi-body">
-    <p class="wi-title">{w.title}</p>
-    <p class="wi-venue">{logo && <img class="wi-logo" src={logo.src} alt={logo.name} title={logo.name} height="24" loading="lazy" decoding="async" />}{w.venue}</p>
+    <div class="wi-meta">
+      <span class="publication-type" data-type={w.type}>{typeLabel(w.type, lang)}</span>
+      <span class="wi-theme"><b>{SERIES[w.line].symbol}</b> {seriesLabel(w.line, lang)}</span>
+    </div>
+    <h3 class="wi-title">{w.title}</h3>
+    <p class="wi-venue">{logo && <img class="wi-logo" src={logo.src} alt="" height="24" loading="lazy" decoding="async" />}{w.venue}</p>
     {w.authors && <p class="wi-auth">{w.authors}</p>}
+    <div class="wi-actions">
+      {w.doi && <a class="article-link primary" href={doiUrl(w.doi)} title={w.doi}><DoiLogo /> {t.readDoi}</a>}
+      {w.github && <a class="article-link" href={w.github}>GitHub</a>}
+      {w.zenodo && <a class="article-link" href={w.zenodo}>Zenodo</a>}
+      <span class="stage" data-status={status}>{statusLabel(status, lang)}</span>
+    </div>
   </div>
-  <div class="wi-side">
-    <span class="wi-type">{typeLabel(w.type, lang)}</span>
-    <span class="stage" data-status={w.status} title={w.status === 'under-review' ? (lang === 'pt' ? 'Em sigilo até a publicação' : 'Confidential until publication') : undefined}>{statusLabel(w.status, lang)}</span>
-    <span class="wi-links">
-      {w.doi && <a class="mono doi-link" href={doiUrl(w.doi)}><DoiLogo size={18} /> {w.doi}</a>}
-      {w.github && <a href={w.github}>GitHub</a>}
-      {w.zenodo && <a href={w.zenodo}>Zenodo</a>}
-    </span>
-  </div>
+  {figure && <div class="wi-figure"><ArticleFigure image={figure} lang={lang} /></div>}
 </li>
 
 <style>
-  .wi-logo { height: 24px; width: auto; vertical-align: -3px; margin-right: 8px; padding: 2px 5px; background: #fff; border-radius: 4px; box-shadow: 0 0 0 1px var(--plate-rule); }
-  .wi { display: grid; grid-template-columns: 56px minmax(0, 1fr) 240px; gap: 18px; padding: 20px 0; border-bottom: 1px solid var(--rule); }
-  .wi-sym { font: 600 1.25rem/1.2 var(--hand); color: var(--c-ink); }
-  .wi-title { margin: 0; font: 600 1.08rem/1.35 var(--sans); color: var(--ink); max-width: 64ch; }
-  .wi-venue { margin: 4px 0 0; color: var(--ink-soft); }
-  .wi-auth { margin: 4px 0 0; color: var(--ink-soft); font-size: 0.92rem; }
-  .wi-side { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
-  .wi-type { color: var(--ink-soft); font-size: 0.85rem; }
-  .wi .stage { color: var(--c-ink); font-size: 0.82rem; }
-  .wi-links { display: flex; flex-direction: column; gap: 4px; word-break: break-all; }
-  .wi-links .mono { font-size: 0.7rem; }
-  .wi-links a { color: var(--ink); }
-  @media (max-width: 760px) {
-    .wi { grid-template-columns: 44px minmax(0, 1fr); gap: 10px 12px; }
-    .wi-side { grid-column: 2; flex-direction: row; flex-wrap: wrap; gap: 8px 14px; align-items: center; }
+  .wi { padding-block: 24px; border-bottom: 1px solid var(--rule); }
+  .wi.has-figure { display: grid; grid-template-columns: minmax(0, 1fr) minmax(180px, 250px); align-items: center; gap: 22px 36px; }
+  .wi-meta, .wi-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+  .wi-meta { margin-bottom: 8px; }
+  .wi-theme { display: inline-flex; align-items: baseline; gap: 6px; font-size: 0.82rem; color: var(--ink-soft); }
+  .wi-theme b { color: var(--c-ink); }
+  .wi-title { margin: 0; font: 650 clamp(1.05rem, 2vw, 1.3rem)/1.3 var(--sans); letter-spacing: -0.015em; color: var(--ink); max-width: 68ch; text-wrap: pretty; }
+  .wi-venue { margin: 6px 0 0; color: var(--ink-soft); font-size: 0.95rem; }
+  .wi-logo { max-width: 64px; max-height: 22px; width: auto; height: auto; vertical-align: middle; margin-right: 7px; border-radius: 3px; background: #fff; }
+  .wi-auth { margin: 3px 0 0; color: var(--ink-soft); font-size: 0.88rem; }
+  .wi-actions { margin-top: 12px; }
+  .wi-actions .stage { color: var(--ink-soft); }
+  .wi-figure { min-width: 0; padding: 8px 14px 0 4px; }
+  @media (max-width: 640px) {
+    .wi { padding-block: 20px; }
+    .wi.has-figure { grid-template-columns: minmax(0, 1fr); }
   }
 </style>

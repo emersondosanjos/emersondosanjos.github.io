@@ -53,7 +53,6 @@ const [primaryEmail, ...extraEmails] = emails;
         ))}
       </div>
       <div class="wrap bar">
-        <a class="mobile-teaching" href={localePath(t.navTeach.href, lang)} aria-current={current === t.navTeach.href ? 'page' : undefined}><Icon name="lock" />{t.navTeach.label}</a>
         <a class="mark" href={localePath('/', lang)} aria-label="Emerson Barbosa dos Anjos">
           <span class="brand-name"><span class="given-name">Emerson Barbosa</span> <span class="name-highlight">dos Anjos</span></span>
         </a>
@@ -135,6 +134,9 @@ const [primaryEmail, ...extraEmails] = emails;
         {featured.map(({ href, label }, index) => (
           <a class:list={['nav-feature', { alt: index === 1 }]} href={localePath(href, lang)} aria-current={current === href ? 'page' : undefined}>{label}<Icon name="arrow" /></a>
         ))}
+        <a class="nav-feature teaching-feature" href={localePath(t.navTeach.href, lang)} aria-current={current === t.navTeach.href ? 'page' : undefined}>
+          <span><Icon name="lock" />{t.navTeach.label}</span><Icon name="arrow" />
+        </a>
       </nav>
     </dialog>
 
@@ -224,7 +226,6 @@ const [primaryEmail, ...extraEmails] = emails;
   .bar { display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 54px; }
   .mark { display: inline-flex; align-items: center; font: 600 1.03rem/1.15 var(--sans); text-decoration: none; color: var(--mist); }
   .given-name { white-space: nowrap; }
-  .mobile-teaching { display: none; }
   .mark .name-highlight { text-shadow: var(--name-outline-sm, none); }
 
   .nav-cluster, .main-nav ul, .featured-nav { display: flex; align-items: center; }
@@ -240,7 +241,7 @@ const [primaryEmail, ...extraEmails] = emails;
     color: var(--mist-soft);
     white-space: nowrap;
   }
-  .main-nav a :global(svg), .mobile-teaching :global(svg) { width: 0.95em; height: 0.95em; flex: none; }
+  .main-nav a :global(svg) { width: 0.95em; height: 0.95em; flex: none; }
   .main-nav a:hover, .main-nav a[aria-current='page'] { color: var(--mist); }
   .main-nav a[aria-current='page'] { text-decoration: underline 2px; text-underline-offset: 0.42em; }
   .featured-nav { gap: 8px; }
@@ -349,6 +350,9 @@ const [primaryEmail, ...extraEmails] = emails;
   .menu-main a:hover, .menu-main a[aria-current='page'] { background: var(--paper-2); text-decoration: underline; }
   .menu-featured { gap: 12px; padding-inline: 4px; }
   .menu-featured .nav-feature { margin-inline: 0; min-height: 44px; justify-content: space-between; gap: 10px; }
+  .menu-featured .teaching-feature { display: none; --tilt: 0.7deg; background: var(--plate); color: var(--ink); border-color: var(--ink); }
+  .menu-featured .teaching-feature > span { display: inline-flex; align-items: center; gap: 8px; }
+  .menu-featured .teaching-feature[aria-current='page'] { background: var(--paper); box-shadow: 0 0 0 2px var(--signal); }
 
   .lang-switch {
     display: inline-flex;
@@ -385,21 +389,8 @@ const [primaryEmail, ...extraEmails] = emails;
   @media (max-width: 960px) {
     .bar { gap: 8px; padding-block: 4px; }
     .mark { margin-right: auto; min-width: 0; font-size: 0.94rem; }
-    .mobile-teaching {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 44px;
-      gap: 4px;
-      padding-inline: 7px;
-      border: 1px solid var(--plate-rule);
-      border-radius: 6px;
-      background: var(--paper);
-      color: var(--ink);
-      font: 600 0.83rem/1 var(--sans);
-      text-decoration: none;
-    }
-    .mobile-teaching:hover, .mobile-teaching[aria-current='page'] { background: var(--signal); color: var(--signal-ink); }
+    .nav-cluster { gap: 8px; }
+    .menu-featured .teaching-feature { display: inline-flex; }
     .nav-toggle { flex: none; }
     .main-nav, .toggle-featured { display: none; }
     .menu-main { display: grid; }
@@ -415,8 +406,6 @@ const [primaryEmail, ...extraEmails] = emails;
     .mark { font-size: 0.86rem; }
     .brand-name .given-name { display: block; }
     .lang-switch a { padding-inline: 5px; }
-    .mobile-teaching { padding-inline: 5px; font-size: 0.78rem; }
-    .nav-toggle span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
     .nav-toggle { min-width: 44px; }
   }
 

@@ -48,7 +48,7 @@ const paper01 = series.find((w) => w.series === '01');
       <div class="spec-head">
         <h2 id="spec-title" class="section-title">{t.specTitle}</h2>
         <details class="spec-info">
-          <summary aria-label={t.specInfoLabel} title={t.specInfoLabel}><span aria-hidden="true">i</span></summary>
+          <summary aria-label={t.specInfoLabel} title={t.specInfoLabel}><span aria-hidden="true">i</span><span class="spec-info-label">{t.specInfoLabel}</span></summary>
           <div class="spec-info-panel">
             <p class="spec-info-title">{t.specInfoLabel}</p>
             <ol>{t.specInfo.map((p) => <li>{p}</li>)}</ol>
@@ -242,6 +242,7 @@ doi:10.1016/j.ijhydene.2025.151751</pre>
     cursor: pointer;
     transition: background-color 0.2s var(--ease-out), color 0.2s;
   }
+  .spec-info-label { display: none; }
   .spec-info summary::-webkit-details-marker { display: none; }
   .spec-info summary:hover, .spec-info[open] summary { background: var(--signal); color: var(--signal-ink); }
   .spec-info-panel {
@@ -268,7 +269,13 @@ doi:10.1016/j.ijhydene.2025.151751</pre>
     .domains { gap: 8px 14px; }
     .domains li { font-size: 0.875rem; white-space: normal; }
     .lede { font-size: 1.02rem; margin-bottom: 14px; }
-    .role { display: none; }
+    .role { margin-bottom: 14px; font-size: 0.9rem; }
+    .spec-head { display: block; }
+    .spec-info { margin-top: 10px; }
+    .spec-info summary { display: inline-flex; justify-content: center; gap: 8px; min-height: 44px; width: fit-content; padding-inline: 12px; border-width: 1px; border-radius: 8px; font-size: 0.88rem; }
+    .spec-info-label { display: inline; }
+    .spec-info-panel { position: static; width: 100%; margin-top: 8px; padding: 12px 14px; }
+    .spec-info-title { display: none; }
     .acts .act { font-size: 0.95rem; padding: 0.65em 1em; }
   }
 

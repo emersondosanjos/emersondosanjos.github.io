@@ -15,8 +15,8 @@ interface Props { lang?: Lang }
 const { lang = 'en' } = Astro.props;
 
 const T = lang === 'pt'
-  ? { title: 'Ensino', lede: 'Área privada com o material das minhas disciplinas: slides das aulas e apostilas para download.', signin: 'Entrar na área do aluno', user: 'Usuário', pass: 'Senha', show: 'Mostrar senha', enter: 'Entrar', wrong: 'Usuário ou senha incorretos.', out: 'Sair', lock: 'Conteúdo criptografado de ponta a ponta', unlocking: 'Verificando…', lessons: 'aulas', slidesBtn: 'Slides', handoutBtn: 'Apostila', back: 'Voltar às aulas', prev: 'Anterior', next: 'Avançar', full: 'Tela cheia', print: 'Baixar apostila (PDF)', loading: 'Carregando aula…', help: 'Use ← → ou espaço para avançar. F = tela cheia.', choose: 'Escolha a disciplina e a aula' }
-  : { title: 'Teaching', lede: 'Private area with my course material: lecture slides and downloadable handouts.', signin: 'Student sign-in', user: 'Username', pass: 'Password', show: 'Show password', enter: 'Sign in', wrong: 'Wrong username or password.', out: 'Sign out', lock: 'End-to-end encrypted content', unlocking: 'Checking…', lessons: 'lessons', slidesBtn: 'Slides', handoutBtn: 'Handout', back: 'Back to lessons', prev: 'Previous', next: 'Next', full: 'Full screen', print: 'Download handout (PDF)', loading: 'Loading lesson…', help: 'Use ← → or space to advance. F = full screen.', choose: 'Choose a course and a lesson' };
+  ? { title: 'Ensino', lede: 'Área privada com o material das minhas disciplinas: slides das aulas e apostilas para download.', signin: 'Entrar na área do aluno', user: 'Usuário', pass: 'Senha', show: 'Mostrar senha', enter: 'Entrar', wrong: 'Usuário ou senha incorretos.', out: 'Sair', lock: 'Conteúdo criptografado de ponta a ponta', unlocking: 'Verificando…', lessons: 'aulas', slidesBtn: 'Slides', handoutBtn: 'Apostila', back: 'Voltar às aulas', prev: 'Anterior', next: 'Avançar', full: 'Tela cheia', fullExit: 'Sair da tela cheia', lessonLabel: 'Aula', lessonError: 'Não foi possível carregar a aula. Volte à lista e tente novamente.', print: 'Baixar apostila (PDF)', loading: 'Carregando aula…', help: 'Use ← → ou espaço para avançar. F = tela cheia.', choose: 'Escolha a disciplina e a aula' }
+  : { title: 'Teaching', lede: 'Private area with my course material: lecture slides and downloadable handouts.', signin: 'Student sign-in', user: 'Username', pass: 'Password', show: 'Show password', enter: 'Sign in', wrong: 'Wrong username or password.', out: 'Sign out', lock: 'End-to-end encrypted content', unlocking: 'Checking…', lessons: 'lessons', slidesBtn: 'Slides', handoutBtn: 'Handout', back: 'Back to lessons', prev: 'Previous', next: 'Next', full: 'Full screen', fullExit: 'Exit full screen', lessonLabel: 'Lesson', lessonError: 'This lesson could not be loaded. Return to the list and try again.', print: 'Download handout (PDF)', loading: 'Loading lesson…', help: 'Use ← → or space to advance. F = full screen.', choose: 'Choose a course and a lesson' };
 ---
 <Base title={T.title} description={T.lede} current="/teaching/" lang={lang}>
   <PageHead title={T.title} lede={T.lede} />
@@ -52,9 +52,13 @@ const T = lang === 'pt'
           <p class="room-title" id="roomTitle"></p>
           <button type="button" class="act solid" id="print">{T.print}</button>
         </div>
-        <div class="deck" id="deck" tabindex="0" aria-roledescription="slides">
+        <div class="deck" id="deck" tabindex="0" aria-labelledby="roomTitle">
+          <div class="presentation-head" id="presentation-head" hidden>
+            <p id="presentation-title"></p>
+            <button type="button" class="act" id="exit-presentation">{T.fullExit}</button>
+          </div>
           <div class="presentation-grid">
-            <div class="deck-stage" id="stage" aria-live="polite"></div>
+            <div class="deck-stage" id="stage" lang="pt-BR" aria-live="polite"></div>
             <div class="deck-bar">
               <button type="button" class="db" id="prev" aria-label={T.prev}><Icon name="chevron-left" /></button>
               <span class="db-count mono"><b id="cur">1</b> / <span id="tot">1</span></span>
@@ -125,10 +129,39 @@ const T = lang === 'pt'
   .deck { position: relative; --slide-coral: var(--name-highlight, #f6a593); }
   .presentation-grid { display: grid; gap: 14px; max-width: 1240px; margin-inline: auto; min-width: 0; }
   .deck-stage { position: relative; aspect-ratio: 16 / 9; width: 100%; container-type: inline-size; }
-  .deck:fullscreen { background: var(--plate); overflow-y: auto; padding: 16px clamp(14px, 3vw, 36px); }
-  .deck:fullscreen .presentation-grid { max-width: min(1500px, calc((100dvh - 106px) * 16 / 9)); }
+  :global(html:has(#deck.presenting)), :global(body:has(#deck.presenting)) { overflow: hidden; }
+  .deck.presenting {
+    position: fixed;
+    z-index: 20;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    height: 100dvh;
+    background: var(--plate);
+    color: var(--ink);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: env(safe-area-inset-top) max(12px, env(safe-area-inset-right))
+      max(10px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  }
+  .deck.presenting .presentation-grid { max-width: min(1500px, max(240px, calc((100dvh - 140px) * 16 / 9))); }
+  .presentation-head {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding-block: 8px;
+    background: var(--plate);
+  }
+  .presentation-head p { margin: 0; font-size: 0.88rem; font-weight: 600; overflow-wrap: anywhere; }
+  .presentation-head .act { flex: none; min-height: 44px; color: var(--ink); background: var(--paper); font-size: 0.82rem; padding: 6px 10px; }
+  .deck.presenting .deck-bar { position: sticky; bottom: 0; z-index: 2; padding-block: 6px; background: var(--plate); }
+  .deck.presenting #full { display: none; }
   .deck-help { margin: 8px 0 0; font-size: 0.8rem; color: var(--ink-soft); text-align: center; }
-  .deck:fullscreen .deck-help { display: none; }
+  .deck.presenting .deck-help { display: none; }
   .deck-stage :global(.deck-slides) { position: absolute; inset: 0; }
   .deck-stage :global(.slide) {
     position: absolute; inset: 0; display: none; flex-direction: column;
@@ -260,7 +293,7 @@ const T = lang === 'pt'
     .teach { padding-block: 24px 56px; }
     .room-title { order: -1; flex-basis: 100%; text-align: left; }
     .room-bar .act { font-size: 0.86rem; min-height: 44px; }
-    .deck:fullscreen .presentation-grid { max-width: 100%; }
+    .deck.presenting .presentation-grid { max-width: 100%; }
     .deck-stage { aspect-ratio: auto; }
     .deck-stage :global(.deck-slides), .deck-stage :global(.slide) { position: relative; inset: auto; }
     .deck-stage :global(.slide) { min-height: 220px; padding: 18px; font-size: 0.92rem; }
@@ -274,6 +307,9 @@ const T = lang === 'pt'
     .deck-stage :global(.eq) { overflow-x: auto; padding: 9px; font-size: 0.82rem; }
     .deck-stage :global(.eq-tag) { position: static; display: block; text-align: right; font-size: 0.72rem; transform: none; }
     .deck-stage :global(.calc), .deck-stage :global(.calc dt), .deck-stage :global(.calc dd) { font-size: 0.8rem; }
+  }
+  @media (max-width: 760px) and (orientation: portrait) {
+    .deck.presenting .deck-stage :global(.slide) { min-height: max(220px, calc(100dvh - 140px)); }
   }
 
   /* ---------- handout (printable "apostila") ---------- */
@@ -360,15 +396,88 @@ const T = lang === 'pt'
   });
 
   /* ---------- lesson ---------- */
-  const stage = $('stage'), lesson = $('lesson');
+  const stage = $('stage'), lesson = $('lesson'), deck = $('deck');
+  const fullButton = $('full');
+  const exitPresentation = $('exit-presentation');
+  const presentationHead = $('presentation-head');
+  const presentationTitle = $('presentation-title');
+  const blockedInPresentation = [...document.querySelectorAll<HTMLElement>('.top, .foot, .skip, .room-bar')];
+  const handset = matchMedia('(max-width: 960px) and (pointer: coarse), (max-width: 640px)');
+  let nativePresentation = false;
+  let lessonRequest = 0;
+
+  function setPresentation(active: boolean) {
+    deck.classList.toggle('presenting', active);
+    presentationHead.hidden = !active;
+    deck.setAttribute('aria-labelledby', active ? 'presentation-title' : 'roomTitle');
+    blockedInPresentation.forEach((element) => { element.inert = active; });
+    if (active) {
+      deck.scrollTop = 0;
+      exitPresentation.focus({preventScroll: true});
+    }
+  }
+
+  async function enterPresentation() {
+    setPresentation(true);
+    if (document.fullscreenEnabled && deck.requestFullscreen) {
+      try {
+        await deck.requestFullscreen();
+        if (!deck.classList.contains('presenting') && document.fullscreenElement === deck) await document.exitFullscreen();
+      } catch {
+        // The layout already fills the viewport when native fullscreen is unavailable.
+      }
+    }
+  }
+
+  function leavePresentation(restoreFocus = true) {
+    setPresentation(false);
+    if (document.fullscreenElement === deck) void document.exitFullscreen().catch(() => {});
+    if (restoreFocus && !deck.hidden) fullButton.focus({preventScroll: true});
+  }
+
+  document.addEventListener('fullscreenchange', () => {
+    if (document.fullscreenElement === deck) nativePresentation = true;
+    else if (nativePresentation) {
+      nativePresentation = false;
+      if (deck.classList.contains('presenting')) leavePresentation();
+    }
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !nativePresentation && deck.classList.contains('presenting')) {
+      event.preventDefault();
+      leavePresentation();
+    }
+  });
+  fullButton.addEventListener('click', enterPresentation);
+  exitPresentation.addEventListener('click', () => leavePresentation());
+
   let slides: HTMLElement[] = [], cur = 0, frags: HTMLElement[] = [], fi = 0;
   let lessonNum = 0;
   async function openLesson(id: string, mode: 'slides' | 'handout') {
-    $('roomTitle').textContent = L.loading;
-    cat.hidden = true; room.hidden = false;
-    const box = await (await fetch(`/teaching/data/${id}.json`)).json();
-    const data = await openBox(box);
-    $('roomTitle').textContent = `Aula ${data.num} · ${data.title}`;
+    const request = ++lessonRequest;
+    $('roomTitle').textContent = presentationTitle.textContent = L.loading;
+    cat.hidden = true;
+    room.hidden = false;
+    deck.hidden = mode !== 'slides';
+    lesson.hidden = true;
+    stage.innerHTML = '';
+    lesson.innerHTML = '';
+    if (mode === 'slides' && handset.matches) void enterPresentation();
+
+    let data;
+    try {
+      const response = await fetch(`/teaching/data/${id}.json`);
+      if (!response.ok) throw new Error('Could not fetch lesson');
+      data = await openBox(await response.json());
+    } catch {
+      if (request !== lessonRequest) return;
+      deck.hidden = true;
+      leavePresentation(false);
+      $('roomTitle').textContent = L.lessonError;
+      return;
+    }
+    if (request !== lessonRequest) return;
+    $('roomTitle').textContent = presentationTitle.textContent = `${L.lessonLabel} ${data.num} · ${data.title}`;
     stage.innerHTML = `<div class="deck-slides">${data.slides.join('')}</div>`;
     lesson.innerHTML = data.handout;
     slides = [...stage.querySelectorAll<HTMLElement>('.slide')];
@@ -392,9 +501,12 @@ const T = lang === 'pt'
       name.after(degree);
     });
     $('tot').textContent = String(slides.length);
-    window.scrollTo({ top: room.getBoundingClientRect().top + scrollY - 90 });
-    if (mode === 'handout') { $('deck').hidden = true; lesson.hidden = false; }
-    else { $('deck').hidden = false; lesson.hidden = true; show(0); $('deck').focus(); }
+    if (!deck.classList.contains('presenting')) window.scrollTo({ top: room.getBoundingClientRect().top + scrollY - 90 });
+    if (mode === 'handout') lesson.hidden = false;
+    else {
+      show(0);
+      if (!deck.classList.contains('presenting')) deck.focus({preventScroll: true});
+    }
     wireCalculator(stage);
   }
   function show(i: number, atEnd = false) {
@@ -430,14 +542,16 @@ const T = lang === 'pt'
   }
   $('next').addEventListener('click', next);
   $('prev').addEventListener('click', prev);
-  $('full').addEventListener('click', () => { if (document.fullscreenElement) document.exitFullscreen(); else $('deck').requestFullscreen?.(); });
   $('deck').addEventListener('keydown', (e) => {
     if ((e.target as HTMLElement).closest('input,button,a,select,textarea,summary')) return;
     if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); next(); }
     if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); prev(); }
     if (e.key === 'Home') show(0);
     if (e.key === 'End') show(slides.length - 1, true);
-    if (e.key.toLowerCase() === 'f') $('full').click();
+    if (e.key.toLowerCase() === 'f') {
+      if (deck.classList.contains('presenting')) leavePresentation();
+      else void enterPresentation();
+    }
   });
   let swipeStart: { x: number; y: number } | null = null;
   stage.addEventListener('touchstart', (event) => {
@@ -455,7 +569,14 @@ const T = lang === 'pt'
   });
   stage.addEventListener('touchcancel', () => { swipeStart = null; });
   $('print').addEventListener('click', () => { const was = lesson.hidden; lesson.hidden = false; window.print(); lesson.hidden = was; });
-  $('back').addEventListener('click', () => { stage.innerHTML = ''; lesson.innerHTML = ''; room.hidden = true; cat.hidden = false; });
+  $('back').addEventListener('click', () => {
+    lessonRequest++;
+    leavePresentation(false);
+    stage.innerHTML = '';
+    lesson.innerHTML = '';
+    room.hidden = true;
+    cat.hidden = false;
+  });
 
   /* ---------- sign-in / session ---------- */
   gate.querySelector('.g-eye')!.addEventListener('click', (e) => {

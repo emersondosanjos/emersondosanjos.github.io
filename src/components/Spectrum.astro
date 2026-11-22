@@ -38,6 +38,7 @@ const lineName = Object.fromEntries(lines.map((l) => [l.id, lang === 'pt' && l.n
       <button type="button" class="key" data-line={id} aria-pressed="true">
         <svg viewBox="0 0 6 20" aria-hidden="true"><path d="M3 1v18" /></svg>
         <span class="key-name">{seriesLabel(id, lang)}</span>
+        <span class="key-name-short">{UI[lang].publications.topics[id]}</span>
         <span class="key-sym">{SERIES[id].symbol} <span class="mono">{SERIES[id].nm.toFixed(1)} nm</span></span>
       </button>
     ))}
@@ -181,6 +182,7 @@ const lineName = Object.fromEntries(lines.map((l) => [l.id, lang === 'pt' && l.n
 
   .legend { display: flex; flex-wrap: wrap; gap: 8px 10px; margin-bottom: 14px; }
   .key { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; padding: 7px 14px 7px 10px; border-radius: 999px; border: 1.5px solid color-mix(in srgb, var(--c) 70%, transparent); background: transparent; color: var(--mist); font: 500 0.98rem/1 var(--sans); transition: background-color .25s var(--ease-out), opacity .25s; }
+  .key-name-short { display: none; }
   .key svg { width: 6px; height: 20px; }
   .key svg path { stroke: var(--c); stroke-width: 3; stroke-linecap: round; }
   .key-sym { color: var(--c); font-weight: 700; }
@@ -242,8 +244,15 @@ const lineName = Object.fromEntries(lines.map((l) => [l.id, lang === 'pt' && l.n
     .line span { width: 2px; }
     .line[data-type='thesis'] span { width: 3px; }
     .line:hover span, .line[aria-pressed='true'] span { width: 5px; }
-    .legend { flex-wrap: nowrap; overflow-x: auto; margin-inline: calc(var(--gutter) * -1); padding: 2px var(--gutter) 6px; scrollbar-width: none; }
-    .key { flex: none; }
+    .legend { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .key { min-height: 44px; gap: 5px; padding: 6px 8px; font-size: 0.8rem; line-height: 1.15; text-align: left; }
+    .key svg { flex: none; }
+    .key-name, .key-sym .mono { display: none; }
+    .key-name-short { display: inline; }
+    .key-sym { margin-left: auto; }
+    .step, .play { min-width: 44px; min-height: 44px; }
+    .ro-links .act { min-height: 44px; max-width: 100%; }
+    .ro-links .mono { overflow-wrap: anywhere; }
   }
 </style>
 

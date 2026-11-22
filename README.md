@@ -25,4 +25,6 @@ npm install
 npm run dev
 ```
 
-Content is licensed CC BY 4.0. Inter and Martian Mono are licensed under the SIL Open Font License and self-hosted through Fontsource.
+Original public site content by Emerson Barbosa dos Anjos is offered under [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/). Third-party material and linked repositories, articles, and datasets are governed by their own terms. Access-restricted teaching materials are outside the scope of this license. Earlier license grants remain in effect.
+
+Inter and Martian Mono are licensed under the SIL Open Font License and self-hosted through Fontsource.

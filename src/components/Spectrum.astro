@@ -165,18 +165,18 @@ const lineName = Object.fromEntries(lines.map((l) => [l.id, lang === 'pt' && l.n
   .track:hover .slit { opacity: 0.7; transition: opacity .2s; }
 
   .line { position: absolute; top: 0; bottom: 0; width: 16px; margin-left: -8px; padding: 0; background: none; border: 0; cursor: pointer; display: grid; place-items: center; }
-  .line span { display: block; width: 3px; height: 82%; border-radius: 999px; background: var(--c); box-shadow: 0 0 10px color-mix(in srgb, var(--c) 55%, transparent); transition: width .3s var(--ease-out), opacity .3s; }
-  .line[data-type='conference'] span { width: 2px; height: 60%; }
-  .line[data-type='chapter'] span { width: 2px; height: 70%; }
-  .line[data-type='thesis'] span { width: 5px; }
-  .line[data-type='tool'] span { width: 1.5px; height: 40%; opacity: 0.85; }
+  .line span { display: block; width: 7px; height: 82%; scale: var(--line-rest-scale, 0.4286) 1; border-radius: 999px; background: var(--c); box-shadow: 0 0 10px color-mix(in srgb, var(--c) 55%, transparent); }
+  .line[data-type='conference'] span { --line-rest-scale: 0.2857; height: 60%; }
+  .line[data-type='chapter'] span { --line-rest-scale: 0.2857; height: 70%; }
+  .line[data-type='thesis'] span { --line-rest-scale: 0.7143; }
+  .line[data-type='tool'] span { --line-rest-scale: 0.2143; height: 40%; opacity: 0.85; }
   .line[data-status='confidential'] span { background: repeating-linear-gradient(to bottom, var(--c) 0 10px, transparent 10px 16px); opacity: 0.9; }
   .line[data-status='in-preparation'] span { background: repeating-linear-gradient(to bottom, var(--c) 0 3px, transparent 3px 9px); opacity: 0.75; }
-  .line:hover span, .line[aria-pressed='true'] span { width: 7px; }
+  .line:hover span, .line[aria-pressed='true'] span { scale: 1 1; }
   .line:focus-visible { outline-offset: -2px; }
   .line.dim span { opacity: 0.12; }
   @media (prefers-reduced-motion: no-preference) {
-    .line span { animation: ignite 0.9s var(--ease-out) backwards; animation-delay: calc(var(--i) * 45ms + 200ms); }
+    .line span { transition: scale .3s var(--ease-out), opacity .3s; animation: ignite 0.9s var(--ease-out) backwards; animation-delay: calc(var(--i) * 45ms + 200ms); }
     @keyframes ignite { from { opacity: 0.05; transform: scaleY(0.15); } }
   }
 
@@ -241,9 +241,10 @@ const lineName = Object.fromEntries(lines.map((l) => [l.id, lang === 'pt' && l.n
     .yl.narrow { display: none; }
     .yl .short { display: inline; }
     .line { width: 10px; margin-left: -5px; }
-    .line span { width: 2px; }
-    .line[data-type='thesis'] span { width: 3px; }
-    .line:hover span, .line[aria-pressed='true'] span { width: 5px; }
+    .line span { width: 5px; --line-rest-scale: 0.4; }
+    .line:is([data-type='conference'], [data-type='chapter']) span { --line-rest-scale: 0.4; }
+    .line[data-type='thesis'] span { --line-rest-scale: 0.6; }
+    .line[data-type='tool'] span { --line-rest-scale: 0.3; }
     .legend { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
     .key { min-height: 44px; gap: 5px; padding: 6px 8px; font-size: 0.8rem; line-height: 1.15; text-align: left; }
     .key svg { flex: none; }

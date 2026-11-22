@@ -14,6 +14,9 @@ interface Props {
 
 const { title, description, current = '/', lang = 'en' } = Astro.props;
 const t = UI[lang];
+const contentLicense = lang === 'pt'
+  ? 'https://creativecommons.org/licenses/by-nc/4.0/deed.pt-br'
+  : 'https://creativecommons.org/licenses/by-nc/4.0/';
 const mainNav = [...t.nav, t.navTeach];
 const featured = [t.navFeature, t.navFeature2];
 const desc = description ?? t.siteDescriptionDefault;
@@ -167,7 +170,7 @@ const [primaryEmail, ...extraEmails] = emails;
           <li><a href={links.github}><span class="fl-name"><ProfileLogo name="github" />GitHub</span> <span class="sub">emersondosanjos</span></a></li>
           <li><a href={links.zenodo}><span class="fl-name"><ProfileLogo name="zenodo" />Zenodo</span> <span class="sub">{t.footer.zenodoSub}</span></a></li>
         </ul>
-        <p class="foot-legal">© {year} Emerson Barbosa dos Anjos · {t.footer.location} · {t.footer.legal}</p>
+        <p class="foot-legal">© {year} Emerson Barbosa dos Anjos · {t.footer.location} · {t.footer.licenseLabel} <a rel="license" href={contentLicense}>CC BY-NC 4.0</a> · {t.footer.legal}</p>
       </div>
     </footer>
   </body>

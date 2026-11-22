@@ -1,0 +1,57 @@
+---
+import Icon from './Icon.astro';
+import { UI, type Lang } from '../lib/i18n';
+
+interface Props { citationId: string; lang: Lang }
+const { citationId, lang } = Astro.props;
+const t = UI[lang].home;
+---
+<button
+  class="copy"
+  type="button"
+  data-copy-citation={citationId}
+  data-label-default={t.citeCopy}
+  data-label-copied={t.citeCopied}
+  data-label-fallback={t.citeFallback}
+>
+  <Icon name="copy" /> <span aria-live="polite">{t.citeCopy}</span>
+</button>
+
+<style>
+  .copy {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 8px 14px;
+    background: transparent;
+    border: 1.5px solid var(--ink);
+    border-radius: 999px;
+    color: var(--ink);
+    font: 550 0.9rem/1.2 var(--sans);
+    cursor: pointer;
+  }
+  .copy :global(svg) { width: 16px; height: 16px; flex: none; }
+  .copy:hover { background: var(--ink); color: var(--on-ink, var(--signal)); }
+  .copy:focus-visible { outline-color: currentColor; }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-copy-citation]').forEach((button) => {
+    let reset: ReturnType<typeof setTimeout>;
+    button.addEventListener('click', async () => {
+      const citation = document.getElementById(button.dataset.copyCitation!);
+      const label = button.querySelector('span')!;
+      if (!citation) return;
+
+      clearTimeout(reset);
+      try {
+        await navigator.clipboard.writeText(citation.textContent?.trim() ?? '');
+        label.textContent = button.dataset.labelCopied!;
+      } catch {
+        label.textContent = button.dataset.labelFallback!;
+      }
+      reset = setTimeout(() => { label.textContent = button.dataset.labelDefault!; }, 2200);
+    });
+  });
+</script>

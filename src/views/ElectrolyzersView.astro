@@ -1,6 +1,7 @@
 ---
 import Base from '../layouts/Base.astro';
 import ArticleFigure from '../components/ArticleFigure.astro';
+import CitationCopy from '../components/CitationCopy.astro';
 import PageHead from '../components/PageHead.astro';
 import DoiLogo from '../components/DoiLogo.astro';
 import Icon from '../components/Icon.astro';
@@ -34,6 +35,9 @@ const gallery = lines.find((l) => l.id === 'electrolysis')?.gallery ?? [];
           const cid = `paper-${w.series}`;
           const figure = workFigure(w);
           const status = publicStatus(w);
+          const citation = w.status === 'published' && w.doi
+            ? [w.authors, w.title, w.venue].filter(Boolean).join('. ') + '. doi:' + w.doi
+            : undefined;
           return (
             <li>
               <div class="row">
@@ -48,18 +52,26 @@ const gallery = lines.find((l) => l.id === 'electrolysis')?.gallery ?? [];
                 </div>
                 <div class="mle-links">
                   {w.doi && <a class="article-link primary" href={doiUrl(w.doi)} title={w.doi}><DoiLogo /> DOI</a>}
-                  <button type="button" class="article-link peel" aria-expanded="false" aria-controls={cid}>
-                    <span class="peel-open">{t.peelLabel}</span><span class="peel-close">{t.closeLabel}</span>
+                  <button type="button" class="act solid peel" aria-expanded="false" aria-controls={cid}>
+                    <span class="peel-label"><span class="peel-open">{t.peelLabel}</span><span class="peel-close">{t.closeLabel}</span></span>
+                    <Icon name="chevron-right" />
                   </button>
                 </div>
               </div>
               <div class:list={['paper-card', { 'has-figure': figure }]} id={cid} hidden>
-                <div>
-                  <p class="pc-k">{t.summaryLabel}</p>
+                <section class="article-brief brush" data-article-summary aria-labelledby={`${cid}-headline`}>
+                  <h4 class="pc-k" id={`${cid}-headline`}>{t.summaryLabel}</h4>
                   <p class="pc-sum">{t.summaries[w.series!]}</p>
-                  <p class="pc-foot">{status === 'published' ? w.venue : t.embargo}{!w.doi && <span> · {home.mlePending}</span>}</p>
-                </div>
-                {figure && <ArticleFigure image={figure} lang={lang} />}
+                  {citation ? (
+                    <div class="pc-source">
+                      <p class="pc-citation mono" id={`${cid}-citation`}>{citation}</p>
+                      <CitationCopy citationId={`${cid}-citation`} lang={lang} />
+                    </div>
+                  ) : (
+                    <p class="pc-foot">{t.embargo}{!w.doi && <span> · {home.mlePending}</span>}</p>
+                  )}
+                </section>
+                {figure && <div class="paper-figure"><ArticleFigure image={figure} lang={lang} /></div>}
               </div>
             </li>
           );
@@ -105,27 +117,35 @@ const gallery = lines.find((l) => l.id === 'electrolysis')?.gallery ?? [];
   .mle-venue { margin: 4px 0 0; color: var(--ink-soft); font-size: 0.92rem; }
   .mle .stage { color: var(--ink-soft); }
   .mle-links { align-self: center; }
-  .peel .peel-close { display: none; }
-  .peel[aria-expanded='true'] { background: var(--plate); box-shadow: inset 0 -3px 0 #ff7a59; }
-  .peel[aria-expanded='true'] .peel-open { display: none; }
-  .peel[aria-expanded='true'] .peel-close { display: inline; }
-  .paper-card {
-    margin: 0 0 22px 56px;
-    padding: clamp(16px, 3vw, 28px);
-    border: 1px solid var(--rule);
-    border-radius: 10px;
-    background: var(--paper-2);
-  }
-  .paper-card.has-figure:not([hidden]) { display: grid; grid-template-columns: minmax(0, 1fr) minmax(180px, 280px); align-items: center; gap: 24px 36px; }
-  .pc-k { margin: 0 0 6px; font-size: 0.85rem; font-weight: 650; color: var(--ink); }
-  .pc-sum { margin: 0 0 12px; line-height: 1.55; }
-  .pc-foot { margin: 0; font-size: 0.88rem; color: var(--ink-soft); }
+  .peel { min-height: 44px; padding: 7px 13px; border-radius: 999px; font-size: 0.86rem; }
+  .peel :global(svg) { width: 16px; height: 16px; flex: none; }
+  .peel:hover :global(svg) { transform: none; }
+  .peel-label { display: grid; }
+  .peel-label > span { grid-area: 1 / 1; }
+  .peel-close { visibility: hidden; }
+  .peel[aria-expanded='true'] { box-shadow: 1px 1px 0 var(--shadow-ink); }
+  .peel[aria-expanded='true'] :global(svg) { transform: rotate(90deg); }
+  .peel[aria-expanded='true'] .peel-open { visibility: hidden; }
+  .peel[aria-expanded='true'] .peel-close { visibility: visible; }
+  .paper-card { margin: 0 0 26px 56px; }
+  .paper-card.has-figure:not([hidden]) { display: grid; grid-template-columns: minmax(0, 1fr) minmax(180px, 260px); align-items: center; gap: 24px 32px; }
+  .article-brief { min-width: 0; max-width: 64rem; padding: clamp(38px, 5vw, 62px) clamp(22px, 5vw, 58px); }
+  .pc-k { margin: 0 0 10px; font: 650 clamp(1.15rem, 2vw, 1.55rem)/1.2 var(--sans); }
+  .pc-sum { margin: 0; max-width: 66ch; line-height: 1.6; }
+  .pc-foot { margin: 14px 0 0; max-width: 66ch; font-size: 0.9rem; }
+  .pc-source { margin-top: 17px; padding-top: 12px; border-top: 1px solid rgb(255 255 255 / 36%); }
+  .pc-citation { margin: 0 0 10px; max-width: 72ch; line-height: 1.6; overflow-wrap: anywhere; }
+  .paper-figure { min-width: 0; padding: 7px 13px 0 4px; }
   .acts { display: flex; flex-wrap: wrap; gap: 12px; margin: 0; }
+  @media (max-width: 900px) {
+    .article-brief { padding-block: 72px; }
+    .paper-card.has-figure:not([hidden]) { grid-template-columns: minmax(0, 1fr); }
+  }
   @media (max-width: 760px) {
     .row { grid-template-columns: 28px minmax(0, 1fr); gap: 10px; }
     .mle-links { grid-column: 2; }
     .paper-card { margin-left: 0; }
-    .paper-card.has-figure:not([hidden]) { grid-template-columns: minmax(0, 1fr); }
+    .pc-citation { font-size: 0.85rem; }
   }
 
   .hw { padding-block: clamp(56px, 7vw, 88px); }

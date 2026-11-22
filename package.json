@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "check:design": "node scripts/check-article-design.mjs",
     "preview": "astro preview",
     "teaching": "node --experimental-strip-types --no-warnings scripts/build-teaching.ts"
   },

@@ -5,7 +5,8 @@ import Base from '../layouts/Base.astro';
 import PageHead from '../components/PageHead.astro';
 import Icon from '../components/Icon.astro';
 import CvPrint from '../components/CvPrint.astro';
-import { education, awards, reviewer, links, projects, statusLabel } from '../lib/works';
+import ArticleFigure from '../components/ArticleFigure.astro';
+import { education, awards, reviewer, links, projects, statusLabel, works, workFigure } from '../lib/works';
 import { UI, type Lang } from '../lib/i18n';
 
 interface Props {
@@ -13,7 +14,9 @@ interface Props {
 }
 const { lang = 'en' } = Astro.props;
 const t = UI[lang].cv;
-
+const experienceIcons = ['data', 'code', 'cube', 'layers'] as const;
+const benchWork = works.find((work) => work.doi === '10.1098/rsta.2024.0363');
+const benchFigure = benchWork && workFigure(benchWork);
 
 const portraitCandidates = ['portrait.jpg', 'portrait.jpeg', 'portrait.png', 'portrait.webp'];
 const foundPortrait = portraitCandidates.find((file) => existsSync(join(process.cwd(), 'public', file)));
@@ -25,8 +28,8 @@ const printPortraitSrc = existsSync(join(process.cwd(), 'public', 'portrait-face
   <PageHead title={t.title} lede={t.lede} hasAside={true}>
     <p class="print-options-label">{t.printTitle}</p>
     <div class="cv-print-actions" role="group" aria-label={t.printTitle}>
-      <button type="button" class="act solid" data-print-cv="professional"><Icon name="print" /> {t.printProfessional}</button>
-      <button type="button" class="act ghost" data-print-cv="academic"><Icon name="print" /> {t.printAcademic}</button>
+      <button type="button" class="cv-print-button taped" data-print-cv="professional"><Icon name="print" /> {t.printProfessional}</button>
+      <button type="button" class="cv-print-button cv-print-academic taped" data-print-cv="academic"><Icon name="print" /> {t.printAcademic}</button>
     </div>
     <p class="ph-acts">
       <a class="act ghost" href={links.lattes}>{t.lattes} <Icon name="arrow" /></a>
@@ -116,30 +119,43 @@ const printPortraitSrc = existsSync(join(process.cwd(), 'public', 'portrait-face
         </ul>
       </section>
 
-      <section aria-labelledby="practical">
-        <h2 id="practical">{t.practicalTitle}</h2>
-        <div class="experience-grid">
-          {t.practical.map((experience) => (
-            <article class="cv-experience">
-              <h3>{experience.title}</h3>
-              <p>{experience.body}</p>
-            </article>
-          ))}
-        </div>
-      </section>
+    </div>
 
-      <section aria-labelledby="sk">
-        <h2 id="sk">{t.sections.skills}</h2>
-        <div class="skills-grid">
-          {t.skillGroups.map(({ title, skills }) => (
-            <div class="cv-skill-group">
-              <h3>{title}</h3>
-              <ul class="tags">{skills.map((skill) => <li>{skill}</li>)}</ul>
-            </div>
-          ))}
-        </div>
-      </section>
+    <div class="cv-showcases">
+      <div class="wrap">
+        <section class="cv-showcase" aria-labelledby="practical">
+          <h2 id="practical">{t.practicalTitle}</h2>
+          <div class:list={['practice-layout', { 'has-bench': benchFigure }]}>
+            <ul class="experience-list">
+              {t.practical.map((experience, index) => (
+                <li class="cv-experience">
+                  <span class="experience-mark" aria-hidden="true"><Icon name={experienceIcons[index]} /></span>
+                  <div>
+                    <h3>{experience.title}</h3>
+                    <p>{experience.body}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            {benchFigure && <div class="practice-figure"><ArticleFigure image={benchFigure} lang={lang} /></div>}
+          </div>
+        </section>
 
+        <section class="cv-showcase" aria-labelledby="sk">
+          <h2 id="sk">{t.sections.skills}</h2>
+          <div class="skills-list">
+            {t.skillGroups.map(({ title, skills }) => (
+              <div class="cv-skill-group">
+                <h3 class="subject-label">{title}</h3>
+                <ul class="skill-points">{skills.map((skill) => <li>{skill}</li>)}</ul>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div class="wrap">
       <section class="academic-review" aria-labelledby="rv">
         <h2 id="rv">{t.sections.reviewer}</h2>
         <ul>
@@ -161,8 +177,28 @@ const printPortraitSrc = existsSync(join(process.cwd(), 'public', 'portrait-face
 <style>
   .cv-print-actions, .ph-acts { display: flex; flex-wrap: wrap; gap: 10px; margin: 16px 0 0; }
   .print-options-label { font-size: 0.88rem; color: var(--ink-soft); font-weight: 650; margin: 16px 0 0; }
-  .cv-print-actions { margin-top: 8px; }
-  .cv-print-actions .act { min-height: 44px; line-height: 1.2; }
+  .cv-print-actions { gap: 14px 16px; margin-top: 8px; padding-block: 4px; }
+  .cv-print-button {
+    --button-tilt: -1deg;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 8px 14px;
+    border: 1.5px solid #ff7a59;
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+    background: var(--ink);
+    color: #fff;
+    font: 700 0.94rem/1.2 var(--sans);
+    box-shadow: 0 3px 0 var(--ink);
+    transform: rotate(var(--button-tilt));
+    cursor: pointer;
+  }
+  .cv-print-academic { --button-tilt: 1deg; border-color: var(--ink); background: var(--name-highlight, #f6a593); color: var(--ink); }
+  .cv-print-button :global(svg) { width: 18px; height: 18px; flex: none; }
+  .cv-print-button::before { top: -7px; right: 4px; width: 30px; height: 11px; pointer-events: none; }
+  .cv-print-button:hover { transform: translateY(-1px); box-shadow: 0 4px 0 var(--ink); }
+  .cv-print-button:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--ink); }
   .ph-acts .act { font-size: 0.88rem; }
   .portrait-circle {
     width: 200px;
@@ -190,27 +226,64 @@ const printPortraitSrc = existsSync(join(process.cwd(), 'public', 'portrait-face
   }
 
   .cv { padding-block: 24px 112px; }
-  section { display: grid; grid-template-columns: minmax(0, 0.55fr) minmax(0, 1.45fr); gap: 16px 56px; padding-block: 40px; border-bottom: 1.5px solid var(--ink); }
+  .cv > .wrap > section { display: grid; grid-template-columns: minmax(0, 0.55fr) minmax(0, 1.45fr); gap: 16px 56px; padding-block: 40px; border-bottom: 1.5px solid var(--ink); }
   h2 { font: 500 clamp(1.7rem, 3vw, 2.3rem)/1.05 var(--sans); }
   ul { list-style: none; margin: 0; padding: 0; }
-  li { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--rule); color: var(--ink-soft); }
+  .cv > .wrap > section li { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 16px; padding: 12px 0; border-bottom: 1px solid var(--rule); color: var(--ink-soft); }
   li:last-child { border-bottom: 0; }
   li .mono { padding-top: 3px; }
   strong { color: var(--ink); font-weight: 600; }
-  .experience-grid, .skills-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-  .cv-experience, .cv-skill-group { padding: 16px; border-radius: 9px; border: 1px solid var(--rule); background: var(--paper-2); }
+  .cv-showcases { background: #fff; border-bottom: 1.5px solid var(--ink); }
+  .cv-showcase { padding-block: clamp(28px, 5vw, 64px); }
+  .cv-showcase + .cv-showcase { border-top: 1px solid var(--rule); }
+  .cv-showcase h2 { font-weight: 650; }
+  .practice-layout { margin-top: 22px; }
+  .practice-layout.has-bench { display: grid; grid-template-columns: minmax(0, 1fr) minmax(210px, 300px); gap: 26px 44px; align-items: center; }
+  .experience-list { border-top: 1px solid var(--rule); }
+  .cv-experience { display: grid; grid-template-columns: 42px minmax(0, 1fr); gap: 12px; padding-block: 16px; border-bottom: 1px solid var(--rule); }
+  .experience-mark {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 36px;
+    border: 1px solid var(--ink);
+    border-radius: 105px 10px 90px 12px / 12px 76px 10px 68px;
+    background: var(--plate);
+    color: var(--ink);
+    box-shadow: 0 2px 0 var(--ink);
+    transform: rotate(-5deg);
+  }
+  .cv-experience:nth-child(even) .experience-mark { background: var(--name-highlight, #f6a593); transform: rotate(4deg); }
+  .experience-mark :global(svg) { width: 19px; height: 19px; }
   .cv-experience h3, .cv-skill-group h3 { font-size: 1rem; color: var(--ink); }
-  .cv-experience p { margin: 8px 0 0; color: var(--ink-soft); }
-  .cv-skill-group .tags { margin-top: 10px; }
-  .tags { display: flex; flex-wrap: wrap; gap: 8px; }
-  .tags li { display: block; padding: 6px 9px; border: 1px solid var(--plate-rule); border-radius: 6px; background: var(--paper); color: var(--ink); font: 500 0.85rem/1.35 var(--sans); }
+  .cv-experience p { margin: 6px 0 0; color: var(--ink-soft); max-width: 66ch; }
+  .practice-figure { padding: 9px 16px 0 6px; }
+  .skills-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 40px; margin-top: 24px; }
+  .cv-skill-group { border-top: 1px solid var(--rule); padding-top: 13px; }
+  .subject-label {
+    display: inline-block;
+    max-width: 100%;
+    padding: 5px 9px;
+    border: 1px solid var(--ink);
+    border-radius: 130px 12px 105px 15px / 10px 80px 12px 70px;
+    background: var(--plate);
+    transform: rotate(-1deg);
+  }
+  .cv-skill-group:nth-child(even) .subject-label { background: var(--name-highlight, #f6a593); transform: rotate(1deg); }
+  .skill-points { list-style: disc; padding-left: 1.25em; margin-top: 10px; color: var(--ink-soft); }
+  .skill-points li + li { margin-top: 5px; }
+  .skill-points li::marker { color: var(--ink); }
   @media (max-width: 820px) { .portrait-circle { width: 160px; height: 160px; } }
-  @media (max-width: 760px) { section { grid-template-columns: 1fr; } li { grid-template-columns: 84px minmax(0, 1fr); } }
+  @media (max-width: 760px) {
+    .cv > .wrap > section { grid-template-columns: 1fr; }
+    .cv > .wrap > section li { grid-template-columns: 84px minmax(0, 1fr); }
+    .practice-layout.has-bench { grid-template-columns: minmax(0, 1fr); }
+  }
   @media (max-width: 520px) {
-    .experience-grid, .skills-grid { grid-template-columns: 1fr; }
+    .skills-list { grid-template-columns: minmax(0, 1fr); gap: 20px; }
     .cv { padding-block: 8px 56px; }
-    section { padding-block: 24px; }
-    li { grid-template-columns: 64px minmax(0, 1fr); gap: 12px; }
+    .cv > .wrap > section { padding-block: 24px; }
+    .cv > .wrap > section li { grid-template-columns: 64px minmax(0, 1fr); gap: 12px; }
   }
   .trl-tag { font-size: 0.72rem; color: var(--ink-soft); white-space: nowrap; }
 

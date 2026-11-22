@@ -1,0 +1,95 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import Icon from '../components/Icon.astro';
+import DoiLogo from '../components/DoiLogo.astro';
+import { links, statusLabel, type Status } from '../lib/works';
+import { UI, type Lang } from '../lib/i18n';
+
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'en' } = Astro.props;
+const t = UI[lang].openScience;
+const homeT = UI[lang].home;
+---
+<Base title={t.title} current="/open-science/" lang={lang}>
+  <PageHead title={t.title} lede={t.lede}>
+    <p class="ph-acts">
+      <a class="act solid" href={links.zenodo}><Icon name="data" /> {t.zenodoBtn}</a>
+      <a class="act ghost" href={links.github}><Icon name="github" /> github.com/emersondosanjos</a>
+    </p>
+  </PageHead>
+
+  <section class="paper recs" aria-labelledby="rec-title" data-line="electrolysis">
+    <div class="wrap">
+      <div class="recs-head">
+        <h2 id="rec-title" class="section-title">{t.seriesTitle}</h2>
+        <figure class="recs-fig sticker" style="--tilt:2deg">
+          <img
+            src="/images/electrolyzer-single-channel.jpg"
+            alt={homeT.mleFigureAlt}
+            width="360"
+            height="358"
+            loading="eager"
+            decoding="sync"
+          />
+          <figcaption>{homeT.mleFigureCaption}</figcaption>
+        </figure>
+      </div>
+      <ol class="ticked">
+        {t.records.map((r) => (
+          <li>
+            <span class="no mono">{r.no}</span>
+            <div>
+              <p class="t">{r.title}</p>
+              <p class="w">{r.what}</p>
+            </div>
+            <span class="stage" data-status={r.status}>{statusLabel(r.status as Status, lang)}</span>
+            <span class="links">
+              {r.where.length ? r.where.map((l) => l.href.includes('doi.org') ? <a class="doi-link" href={l.href} aria-label="DOI"><DoiLogo size={22} /></a> : <a href={l.href}>{l.label}</a>) : <span class="pending">{t.pending}</span>}
+            </span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="paper how" aria-labelledby="how-title">
+    <div class="wrap how-grid">
+      <h2 id="how-title" class="section-title">{t.howTitle}</h2>
+      <div>
+        <p>{t.howP1}</p>
+        <p>{t.howP2}</p>
+        <p><a class="act" href={`mailto:${links.email}?subject=Data%20or%20code%20request`}><Icon name="mail" /> {t.requestBtn}</a></p>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .ph-acts { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px !important; }
+  .recs { padding-block: clamp(56px, 8vw, 96px) 40px; }
+  .recs-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 340px); gap: 24px 40px; align-items: end; }
+  .recs-fig { margin: 0; }
+  .recs-fig img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: contain; background: #fff; }
+  .recs-fig figcaption { padding: 8px 4px 2px; font-size: 0.78rem; line-height: 1.35; color: var(--ink-soft); }
+  @media (max-width: 820px) { .recs-head { grid-template-columns: 1fr; } }
+  .recs ol { list-style: none; margin: 32px 0 0; padding: 0; color: var(--ink); }
+  .recs li { display: grid; grid-template-columns: 52px minmax(0, 1fr) 150px 200px; gap: 18px; align-items: baseline; padding: 22px 0; border-bottom: 1px solid var(--rule); }
+  .no { color: var(--c-ink); font-size: 1rem; }
+  .t { margin: 0; font: 500 1.3rem/1.25 var(--hand); }
+  .w { margin: 6px 0 0; color: var(--ink-soft); max-width: 60ch; }
+  .recs .stage { color: var(--c-ink); }
+  .links { display: flex; gap: 14px; flex-wrap: wrap; }
+  .links a { color: var(--ink); }
+  .pending { color: var(--ink-soft); font-size: 0.88rem; }
+  .how { padding-block: 64px 112px; }
+  .how-grid { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr); gap: 32px 64px; border-top: 1.5px solid var(--ink); padding-top: 40px; }
+  .how p { max-width: var(--measure); color: var(--ink-soft); margin: 0 0 18px; }
+  @media (max-width: 900px) {
+    .recs li { grid-template-columns: 36px minmax(0, 1fr); gap: 8px 12px; }
+    .recs li > :not(.no) { grid-column: 2; }
+    .how-grid { grid-template-columns: 1fr; }
+  }
+</style>

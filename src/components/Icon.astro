@@ -1,0 +1,35 @@
+---
+interface Props {
+  name:
+    | 'arrow'
+    | 'down'
+    | 'copy'
+    | 'github'
+    | 'doi'
+    | 'data'
+    | 'mail'
+    | 'code'
+    | 'cube'
+    | 'vr'
+    | 'gamepad'
+    | 'layers'
+    | 'shield';
+  label?: string;
+}
+const { name, label } = Astro.props;
+---
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden={label ? undefined : 'true'} role={label ? 'img' : undefined} aria-label={label}>
+  {name === 'arrow' && <path d="M7 17 17 7M9 7h8v8" />}
+  {name === 'down' && <path d="M12 5v14M6 13l6 6 6-6" />}
+  {name === 'copy' && <><rect x="9" y="9" width="11" height="11" rx="2" /><path d="M5 15V6a2 2 0 0 1 2-2h8" /></>}
+  {name === 'github' && <path d="M9 19c-4 1.3-4-2-6-2.5M15 21v-3.5c0-1 .1-1.4-.5-2 2.8-.3 5.5-1.4 5.5-6a4.6 4.6 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12 12 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.6 4.6 0 0 0 4 9.5c0 4.6 2.7 5.7 5.5 6-.6.6-.6 1.2-.5 2V21" />}
+  {name === 'doi' && <><circle cx="12" cy="12" r="8.5" /><path d="M8.5 12h7M12 8.5v7" /></>}
+  {name === 'data' && <><ellipse cx="12" cy="6" rx="7" ry="2.5" /><path d="M5 6v12c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5V6M5 12c0 1.4 3.1 2.5 7 2.5s7-1.1 7-2.5" /></>}
+  {name === 'mail' && <><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m3.5 6 8.5 7 8.5-7" /></>}
+  {name === 'code' && <><path d="m8 8-5 4 5 4" /><path d="m16 8 5 4-5 4" /><path d="m14 5-4 14" /></>}
+  {name === 'cube' && <><path d="M12 3 4 7.5v9L12 21l8-4.5v-9L12 3Z" /><path d="M12 12 4 7.5M12 12l8-4.5M12 12v9" /></>}
+  {name === 'vr' && <><rect x="2.5" y="7" width="19" height="10" rx="2.5" /><path d="M8.5 17c1-2.5 2-3.5 3.5-3.5s2.5 1 3.5 3.5" /><circle cx="7.5" cy="12" r="1.2" /><circle cx="16.5" cy="12" r="1.2" /></>}
+  {name === 'gamepad' && <><rect x="3" y="7" width="18" height="10" rx="4" /><path d="M7.5 10.5v3M6 12h3" /><circle cx="15.5" cy="11" r="0.8" /><circle cx="17.5" cy="13" r="0.8" /></>}
+  {name === 'layers' && <><path d="m12 3 9 4.5-9 4.5-9-4.5L12 3Z" /><path d="m3 12 9 4.5 9-4.5" /><path d="m3 16.5 9 4.5 9-4.5" /></>}
+  {name === 'shield' && <><path d="M12 3 4.5 6v5.5c0 5 3.2 8.4 7.5 9.5 4.3-1.1 7.5-4.5 7.5-9.5V6L12 3Z" /><path d="m9 12 2 2 4-4" /></>}
+</svg>

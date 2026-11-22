@@ -1,0 +1,138 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import Icon from '../components/Icon.astro';
+import { links } from '../lib/works';
+import { UI, type Lang } from '../lib/i18n';
+
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'en' } = Astro.props;
+const t = UI[lang].ai;
+---
+<Base title={t.title} current="/ai/" lang={lang}>
+  <PageHead title={t.title} lede={t.lede} />
+  <div class="paper ai-page">
+    <section class="ai-sec" aria-labelledby="cap-title">
+      <div class="wrap split">
+        <header class="col-head">
+          <h2 id="cap-title">{t.capTitle}</h2>
+          <p>{t.capLede}</p>
+        </header>
+        <ol class="ai-caps ticked">
+          {t.cards.map((c, idx) => (
+            <li>
+              <span class="mono no">{String(idx + 1).padStart(2, '0')}</span>
+              <div>
+                <h3>{c.title}</h3>
+                <p class="cap-body">{c.body}</p>
+                <ul class="cap-bullets">
+                  {c.bullets.map((b) => <li>{b}</li>)}
+                </ul>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+
+    <section class="ai-sec" aria-labelledby="wf-title">
+      <div class="wrap split">
+        <header class="col-head">
+          <h2 id="wf-title">{t.wfTitle}</h2>
+          <p>{t.wfLede}</p>
+        </header>
+        <ol class="ai-steps ticked">
+          {t.steps.map((s) => (
+            <li>
+              <span class="mono no">{s.no}</span>
+              <div>
+                <h3>{s.title}</h3>
+                <p>{s.body}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </section>
+
+    <section class="ai-sec" aria-labelledby="stack-title">
+      <div class="wrap split">
+        <header class="col-head">
+          <h2 id="stack-title">{t.stackTitle}</h2>
+        </header>
+        <ul class="ai-stack ticked">
+          {t.stackRows.map((row) => (
+            <li>
+              <span class="stack-cat">{row.cat}</span>
+              <span class="stack-tools">{row.tools}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <section class="ai-note-sec" id="industry" aria-labelledby="note-title">
+      <div class="wrap">
+        <div class="ai-note-card brush">
+          <h2 id="note-title">{t.noteTitle}</h2>
+          <p>{t.noteBody}</p>
+          <p class="note-act">
+            <a class="act" href={`mailto:${links.email}`}><Icon name="mail" /> {t.noteCta}</a>
+          </p>
+        </div>
+      </div>
+    </section>
+  </div>
+</Base>
+
+<style>
+  .ai-page { padding-bottom: 112px; }
+  .ai-sec { padding-block: clamp(56px, 8vw, 92px); border-bottom: 1.5px solid var(--ink); }
+  .split { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr); gap: 32px 64px; }
+  .col-head { position: sticky; top: 100px; align-self: start; }
+  .col-head h2 { font: 500 clamp(1.9rem, 3.4vw, 2.7rem)/1.05 var(--hand); color: var(--ink); }
+  .col-head p { color: var(--ink-soft); margin: 18px 0 0; max-width: 48ch; }
+
+  .ai-caps, .ai-steps, .ai-stack { list-style: none; margin: 0; padding: 0; color: var(--ink); }
+  .ai-caps > li, .ai-steps > li {
+    display: grid;
+    grid-template-columns: 52px minmax(0, 1fr);
+    gap: 16px;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .ai-caps > li:last-child, .ai-steps > li:last-child, .ai-stack li:last-child { border-bottom: 0; }
+  .no { font-size: 0.92rem; font-weight: 600; color: var(--ink); padding-top: 4px; }
+  .ai-caps h3, .ai-steps h3 { font: 500 1.3rem/1.25 var(--hand); color: var(--ink); margin: 0 0 8px; }
+  .cap-body, .ai-steps p { margin: 0; color: var(--ink-soft); max-width: var(--measure); }
+  .cap-bullets { margin: 12px 0 0; padding-left: 18px; color: var(--ink-soft); font-size: 0.94rem; }
+  .cap-bullets li { margin: 4px 0; }
+
+  .ai-stack li {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: 16px;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--rule);
+    align-items: baseline;
+  }
+  .stack-cat { font: 500 1.15rem/1.25 var(--hand); color: var(--ink); }
+  .stack-tools { color: var(--ink-soft); }
+
+  .ai-note-sec { padding-top: clamp(56px, 7vw, 88px); scroll-margin-top: 90px; }
+  .ai-note-card { max-width: 860px; padding: clamp(40px, 5vw, 56px) 9% clamp(40px, 5vw, 52px) 9%; }
+  .ai-note-card h2 { font: 500 clamp(1.6rem, 3vw, 2.2rem)/1.1 var(--hand); color: var(--ink); margin-bottom: 14px; }
+  .ai-note-card p { color: var(--ink); max-width: var(--measure); margin: 0 0 18px; }
+  .note-act { margin-bottom: 0 !important; margin-top: 24px !important; }
+
+  @media (max-width: 900px) {
+    .split { grid-template-columns: 1fr; }
+    .col-head { position: static; }
+  }
+  @media (max-width: 640px) {
+    .ai-caps > li, .ai-steps > li { grid-template-columns: 36px minmax(0, 1fr); gap: 12px; }
+    .ai-stack li { grid-template-columns: 1fr; gap: 6px; }
+  }
+</style>

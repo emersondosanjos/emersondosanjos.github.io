@@ -1,0 +1,12 @@
+---
+/* DOI mark (doi.org orange disc) used in place of the bare "DOI" word on every DOI link. */
+interface Props { size?: number }
+const { size = 20 } = Astro.props;
+---
+<svg class="doi-logo" viewBox="0 0 32 32" width={size} height={size} aria-hidden="true">
+  <circle cx="16" cy="16" r="15.5" fill="#FCB425" />
+  <text x="16" y="20.2" text-anchor="middle" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="11.5" font-weight="800" fill="#231f20" letter-spacing="-0.2">doi</text>
+</svg>
+<style>
+  .doi-logo { display: inline-block; flex: none; vertical-align: -0.28em; }
+</style>

@@ -1,0 +1,29 @@
+---
+/* Pernambuco + Brazil flags, set inline after the surname. */
+interface Props { lang?: 'en' | 'pt' }
+const { lang = 'en' } = Astro.props;
+const label = lang === 'pt' ? 'Pernambuco, Brasil' : 'Pernambuco, Brazil';
+---
+<span class="flags" role="img" aria-label={label} title={label}>
+  <svg viewBox="0 0 30 20" aria-hidden="true">
+    <rect width="30" height="20" fill="#fff" />
+    <rect width="30" height="13.4" fill="#1d4fa3" />
+    <path d="M9.6 11.6a5.4 5.4 0 0 1 10.8 0" fill="none" stroke="#d6262b" stroke-width="1.1" />
+    <path d="M10.7 11.6a4.3 4.3 0 0 1 8.6 0" fill="none" stroke="#f6d21b" stroke-width="1.1" />
+    <path d="M11.8 11.6a3.2 3.2 0 0 1 6.4 0" fill="none" stroke="#2f9d47" stroke-width="1.1" />
+    <circle cx="15" cy="11.2" r="1.6" fill="#f6d21b" />
+    <path d="M15 2.1l.7 1.6 1.7.1-1.3 1.1.4 1.7-1.5-.9-1.5.9.4-1.7-1.3-1.1 1.7-.1z" fill="#f6d21b" />
+    <path d="M14.3 14.2h1.4v5.2h-1.4zM12.6 15.7h4.8v1.3h-4.8z" fill="#d6262b" />
+  </svg>
+  <svg viewBox="0 0 30 20" aria-hidden="true">
+    <rect width="30" height="20" fill="#009c3b" />
+    <polygon points="15,2.3 27.4,10 15,17.7 2.6,10" fill="#ffdf00" />
+    <circle cx="15" cy="10" r="4.3" fill="#002776" />
+    <path d="M11 9.4a7 7 0 0 1 8 1" fill="none" stroke="#fff" stroke-width="0.9" />
+  </svg>
+</span>
+
+<style>
+  .flags { display: inline-flex; gap: 0.12em; vertical-align: 0.12em; margin-left: 0.22em; }
+  .flags svg { width: 0.5em; height: auto; display: block; border-radius: 0.05em; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25); }
+</style>

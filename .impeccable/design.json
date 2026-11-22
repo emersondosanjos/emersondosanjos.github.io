@@ -1,0 +1,589 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-22T14:15:11+00:00",
+  "title": "Design System: Emerson dos Anjos · Hydrogen research",
+  "extensions": {
+    "colorMeta": {
+      "ground": {
+        "role": "neutral",
+        "displayName": "Spectral Ground",
+        "canonical": "oklch(26.5% 0.120 267.5)",
+        "tonalRamp": [
+          "#020133",
+          "#0d1b5e",
+          "#263b81",
+          "#435ca5",
+          "#637eca",
+          "#84a2f0",
+          "#b2c8fe",
+          "#e8eeff"
+        ]
+      },
+      "plate": {
+        "role": "neutral",
+        "displayName": "Plate Black-Blue",
+        "canonical": "oklch(20.1% 0.087 267.3)",
+        "tonalRamp": [
+          "#02032f",
+          "#12214f",
+          "#2d3f70",
+          "#4b5f93",
+          "#6b81b7",
+          "#8da4dc",
+          "#b2c8fd",
+          "#e8eeff"
+        ]
+      },
+      "plate-rule": {
+        "role": "neutral",
+        "displayName": "Plate Rule",
+        "canonical": "oklch(37.3% 0.110 270.3)",
+        "tonalRamp": [
+          "#030132",
+          "#131c59",
+          "#2c3c7c",
+          "#4a5c9f",
+          "#697ec4",
+          "#8ba1ea",
+          "#b5c7ff",
+          "#e8eefe"
+        ]
+      },
+      "mist": {
+        "role": "neutral",
+        "displayName": "Mist",
+        "canonical": "oklch(97.0% 0.006 264.5)",
+        "tonalRamp": [
+          "#0a0b0e",
+          "#242528",
+          "#404245",
+          "#5f6165",
+          "#808286",
+          "#a3a5a9",
+          "#c7c9cd",
+          "#eceef2"
+        ]
+      },
+      "mist-soft": {
+        "role": "neutral",
+        "displayName": "Mist Grey",
+        "canonical": "oklch(81.9% 0.024 264.4)",
+        "tonalRamp": [
+          "#060b15",
+          "#1f2531",
+          "#3c424f",
+          "#5a616f",
+          "#7b8291",
+          "#9da5b5",
+          "#c1c9d9",
+          "#e7efff"
+        ]
+      },
+      "signal": {
+        "role": "primary",
+        "displayName": "Signal Yellow",
+        "canonical": "oklch(87.9% 0.162 90.9)",
+        "tonalRamp": [
+          "#100a00",
+          "#2f2401",
+          "#514004",
+          "#765e0b",
+          "#9d7f14",
+          "#c7a009",
+          "#f1c429",
+          "#ffeebe"
+        ]
+      },
+      "signal-ink": {
+        "role": "primary",
+        "displayName": "Signal Ink",
+        "canonical": "oklch(21.6% 0.085 268.4)",
+        "tonalRamp": [
+          "#02032e",
+          "#14214e",
+          "#2f3f6f",
+          "#4d5f92",
+          "#6d80b6",
+          "#8fa3db",
+          "#b3c8ff",
+          "#e8eeff"
+        ]
+      },
+      "shadow-ink": {
+        "role": "neutral",
+        "displayName": "Shadow Ink",
+        "canonical": "oklch(15.8% 0.055 267.3)",
+        "tonalRamp": [
+          "#030822",
+          "#192340",
+          "#354160",
+          "#536081",
+          "#7482a4",
+          "#96a5c9",
+          "#b9c9ee",
+          "#e7eeff"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Reading Paper",
+        "canonical": "oklch(97.3% 0.006 264.5)",
+        "tonalRamp": [
+          "#0a0b0e",
+          "#242528",
+          "#404245",
+          "#5f6165",
+          "#808286",
+          "#a3a5a9",
+          "#c7c9cd",
+          "#eceef2"
+        ]
+      },
+      "paper-2": {
+        "role": "neutral",
+        "displayName": "Paper Shade",
+        "canonical": "oklch(93.9% 0.012 264.5)",
+        "tonalRamp": [
+          "#090b10",
+          "#22252b",
+          "#3f4248",
+          "#5e6168",
+          "#7f828a",
+          "#a1a5ad",
+          "#c5c9d1",
+          "#ebeff7"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Ink",
+        "canonical": "oklch(26.5% 0.120 267.5)",
+        "tonalRamp": [
+          "#020133",
+          "#0d1b5e",
+          "#263b81",
+          "#435ca5",
+          "#637eca",
+          "#84a2f0",
+          "#b2c8fe",
+          "#e8eeff"
+        ]
+      },
+      "ink-soft": {
+        "role": "neutral",
+        "displayName": "Ink Soft",
+        "canonical": "oklch(41.2% 0.049 267.7)",
+        "tonalRamp": [
+          "#040920",
+          "#1b243d",
+          "#36415d",
+          "#55617e",
+          "#7582a1",
+          "#97a5c5",
+          "#bbc9ea",
+          "#e8eefe"
+        ]
+      },
+      "rule": {
+        "role": "neutral",
+        "displayName": "Paper Rule",
+        "canonical": "oklch(85.3% 0.021 264.5)",
+        "tonalRamp": [
+          "#070b14",
+          "#20252f",
+          "#3c424d",
+          "#5b616e",
+          "#7c828f",
+          "#9ea5b3",
+          "#c2c9d7",
+          "#e7effd"
+        ]
+      },
+      "h-eps": {
+        "role": "secondary",
+        "displayName": "H-epsilon Desalination Green",
+        "canonical": "oklch(78.1% 0.149 153.5)",
+        "tonalRamp": [
+          "#001004",
+          "#012e15",
+          "#045029",
+          "#0c743f",
+          "#159b56",
+          "#4abf78",
+          "#72e59b",
+          "#c8fed7"
+        ]
+      },
+      "h-eps-ink": {
+        "role": "secondary",
+        "displayName": "H-epsilon Green Ink",
+        "canonical": "oklch(48.2% 0.116 152.3)",
+        "tonalRamp": [
+          "#001004",
+          "#002e13",
+          "#085028",
+          "#1c733f",
+          "#44965f",
+          "#68ba81",
+          "#8ddfa4",
+          "#c6ffd4"
+        ]
+      },
+      "h-del": {
+        "role": "secondary",
+        "displayName": "H-delta Reforming Orange",
+        "canonical": "oklch(78.5% 0.154 60.7)",
+        "tonalRamp": [
+          "#150700",
+          "#3a1d00",
+          "#633501",
+          "#8e4f04",
+          "#bd6b09",
+          "#e98b29",
+          "#fdb980",
+          "#ffeada"
+        ]
+      },
+      "h-del-ink": {
+        "role": "secondary",
+        "displayName": "H-delta Orange Ink",
+        "canonical": "oklch(52.3% 0.133 52.7)",
+        "tonalRamp": [
+          "#170600",
+          "#3d1a01",
+          "#673104",
+          "#944a0c",
+          "#bf6829",
+          "#e58b4f",
+          "#ffb78a",
+          "#ffeadd"
+        ]
+      },
+      "h-gam": {
+        "role": "secondary",
+        "displayName": "H-gamma Droplets Ice White",
+        "canonical": "oklch(95.8% 0.009 264.5)",
+        "tonalRamp": [
+          "#090b0f",
+          "#232529",
+          "#404247",
+          "#5f6166",
+          "#808288",
+          "#a2a5ab",
+          "#c6c9cf",
+          "#ebeef4"
+        ]
+      },
+      "h-gam-ink": {
+        "role": "secondary",
+        "displayName": "H-gamma Slate Ink",
+        "canonical": "oklch(41.0% 0.059 264.1)",
+        "tonalRamp": [
+          "#020824",
+          "#162442",
+          "#324162",
+          "#506183",
+          "#7082a7",
+          "#92a5cb",
+          "#b6caf1",
+          "#e7efff"
+        ]
+      },
+      "h-bet": {
+        "role": "secondary",
+        "displayName": "H-beta Electrolysis Yellow",
+        "canonical": "oklch(87.9% 0.162 90.9)",
+        "tonalRamp": [
+          "#100a00",
+          "#2f2401",
+          "#514004",
+          "#765e0b",
+          "#9d7f14",
+          "#c7a009",
+          "#f1c429",
+          "#ffeebe"
+        ]
+      },
+      "h-bet-ink": {
+        "role": "secondary",
+        "displayName": "H-beta Yellow Ink",
+        "canonical": "oklch(48.8% 0.100 84.4)",
+        "tonalRamp": [
+          "#110a00",
+          "#312200",
+          "#553e00",
+          "#7c5b03",
+          "#9e7d33",
+          "#c2a057",
+          "#e8c47b",
+          "#ffecc8"
+        ]
+      },
+      "h-alp": {
+        "role": "secondary",
+        "displayName": "H-alpha Recovery Red",
+        "canonical": "oklch(69.1% 0.199 23.9)",
+        "tonalRamp": [
+          "#1f0001",
+          "#4d0007",
+          "#7e0a17",
+          "#b70121",
+          "#e13e43",
+          "#fe736f",
+          "#fdb3ae",
+          "#ffe9e7"
+        ]
+      },
+      "h-alp-ink": {
+        "role": "secondary",
+        "displayName": "H-alpha Red Ink",
+        "canonical": "oklch(50.1% 0.181 26.8)",
+        "tonalRamp": [
+          "#1f0001",
+          "#4b0305",
+          "#7e090f",
+          "#b11f20",
+          "#d94a43",
+          "#fe7368",
+          "#feb3ab",
+          "#ffe9e6"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "The home name only, two lines, surname in Signal Yellow."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Inner page titles in the dark page head."
+      },
+      "section": {
+        "displayName": "Section",
+        "purpose": "Section titles, followed by a 68ch lede."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Readout title of the selected work; bibliographic facts stay in the sans."
+      },
+      "item": {
+        "displayName": "Item",
+        "purpose": "Hand-lettered names of series, projects, records and nav links."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Running text at 68ch with tabular numerals."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Action labels in the hand face."
+      },
+      "measure": {
+        "displayName": "Measure",
+        "purpose": "Wavelengths, years, DOIs, identifiers, counts and TRL values only."
+      }
+    },
+    "shadows": [
+      {
+        "name": "key-dark",
+        "value": "4px 4px 0 #040a24",
+        "purpose": "Solid primary actions on dark ground; 5px on hover, 1px on active."
+      },
+      {
+        "name": "key-paper",
+        "value": "3px 3px 0 #0d1b5e",
+        "purpose": "Outlined actions on paper. Offset shadows are for actions only."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "All state transitions, slit movement and line ignition."
+      },
+      {
+        "name": "ignite",
+        "value": "0.9s ease-out, staggered 45ms per line after 200ms",
+        "purpose": "Lines emit in chronological order on load; disabled under reduced motion."
+      },
+      {
+        "name": "press",
+        "value": "0.18s",
+        "purpose": "Action lift and press feedback."
+      },
+      {
+        "name": "slit",
+        "value": "left 0.35s",
+        "purpose": "Slit cursor slides to the selected line."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "760px"
+      },
+      {
+        "name": "trl",
+        "value": "860px"
+      },
+      {
+        "name": "lg",
+        "value": "900px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Action",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Solid signal-yellow key with dark rim and offset shadow; one per view region.",
+      "html": "<div class=\"ds-dark\"><a class=\"ds-act ds-act-solid\" href=\"#\">Open code &amp; data <svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M7 17 17 7M9 7h8v8\"/></svg></a></div>",
+      "css": ".ds-dark{background:#0d1b5e;padding:28px}.ds-act{display:inline-flex;align-items:center;gap:.5em;font:600 1.05rem/1 'Playpen Sans Variable','Comic Neue',cursive;padding:.78em 1.15em;border-radius:10px;border:2px solid currentColor;text-decoration:none;transition:transform .18s cubic-bezier(.16,1,.3,1),box-shadow .18s cubic-bezier(.16,1,.3,1),background-color .2s,color .2s}.ds-act svg{width:1em;height:1em;transition:transform .3s cubic-bezier(.16,1,.3,1)}.ds-act:hover svg{transform:translate(2px,-2px)}.ds-act-solid{background:#ffd23f;color:#0a1440;border-color:#040a24;box-shadow:4px 4px 0 #040a24}.ds-act-solid:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 #040a24}.ds-act-solid:active{transform:translate(3px,3px);box-shadow:1px 1px 0 #040a24}.ds-act:focus-visible{outline:2px solid #ffd23f;outline-offset:3px}"
+    },
+    {
+      "name": "Ghost Action (dark)",
+      "kind": "button",
+      "refersTo": "button-ghost-dark",
+      "description": "Transparent rimmed action on dark ground; fills mist on hover.",
+      "html": "<div class=\"ds-dark\"><a class=\"ds-ghost\" href=\"#\">All publications</a></div>",
+      "css": ".ds-dark{background:#0d1b5e;padding:28px}.ds-ghost{display:inline-flex;align-items:center;gap:.5em;font:600 1.05rem/1 'Playpen Sans Variable','Comic Neue',cursive;padding:.78em 1.15em;border-radius:10px;border:2px solid currentColor;color:#f3f5f9;text-decoration:none;transition:background-color .2s,color .2s}.ds-ghost:hover{background:#f3f5f9;color:#06103d}.ds-ghost:focus-visible{outline:2px solid #ffd23f;outline-offset:3px}"
+    },
+    {
+      "name": "Outline Action (paper)",
+      "kind": "button",
+      "refersTo": "button-outline-paper",
+      "description": "Ink-rimmed action on paper with a 3px key shadow; fills signal yellow on hover.",
+      "html": "<div class=\"ds-paper\"><a class=\"ds-out\" href=\"#\">See every repository and record</a></div>",
+      "css": ".ds-paper{background:#f4f6fa;padding:28px}.ds-out{display:inline-flex;align-items:center;gap:.5em;font:600 1.05rem/1 'Playpen Sans Variable','Comic Neue',cursive;padding:.78em 1.15em;border-radius:10px;border:2px solid #0d1b5e;color:#0d1b5e;background:#f4f6fa;box-shadow:3px 3px 0 #0d1b5e;text-decoration:none;transition:background-color .2s,color .2s}.ds-out:hover{background:#ffd23f;color:#0a1440}.ds-out:focus-visible{outline:2px solid #0d1b5e;outline-offset:3px}"
+    },
+    {
+      "name": "Navigation",
+      "kind": "nav",
+      "description": "Sticky header with calibration ruler, hand-lettered wordmark and links, signal underline on the current page.",
+      "html": "<header class=\"ds-top\"><div class=\"ds-ruler\"><i style=\"left:12%;background:#5fd38a\"></i><i style=\"left:20%;background:#ff9f43\"></i><i style=\"left:30%;background:#eef1f7\"></i><i style=\"left:46%;background:#ffd23f\"></i><i style=\"left:88%;background:#ff5c5c\"></i></div><div class=\"ds-bar\"><a class=\"ds-mark\" href=\"#\">Emerson <span>dos Anjos</span></a><nav><a href=\"#\" aria-current=\"page\">Research</a><a href=\"#\">Publications</a><a href=\"#\">CV</a></nav></div></header>",
+      "css": ".ds-top{background:#0d1b5e;border-bottom:1px solid #2b3a7a}.ds-ruler{position:relative;height:12px;background-color:#06103d;background-image:repeating-linear-gradient(90deg,#2b3a7a 0 1px,transparent 1px 12px),repeating-linear-gradient(90deg,#bcc4d4 0 1px,transparent 1px 120px);background-size:100% 5px,100% 9px;background-repeat:no-repeat;background-position:left bottom}.ds-ruler i{position:absolute;top:0;bottom:0;width:3px;transform:translateX(-50%)}.ds-bar{display:flex;align-items:center;justify-content:space-between;gap:24px;min-height:64px;padding:0 24px}.ds-mark{font:600 1.35rem/1 'Playpen Sans Variable','Comic Neue',cursive;color:#f3f5f9;text-decoration:none}.ds-mark span{color:#ffd23f}.ds-bar nav{display:flex;gap:28px}.ds-bar nav a{position:relative;padding:8px 0;font:500 1.02rem/1 'Playpen Sans Variable','Comic Neue',cursive;color:#bcc4d4;text-decoration:none}.ds-bar nav a:hover,.ds-bar nav a[aria-current=page]{color:#f3f5f9}.ds-bar nav a[aria-current=page]::after{content:'';position:absolute;left:0;right:0;bottom:0;height:3px;background:#ffd23f;border-radius:2px}.ds-bar a:focus-visible{outline:2px solid #ffd23f;outline-offset:3px}"
+    },
+    {
+      "name": "Legend Key",
+      "kind": "chip",
+      "refersTo": "legend-key",
+      "description": "Series filter pill on dark ground; dashed and dimmed when off.",
+      "html": "<div class=\"ds-dark\"><button class=\"ds-key\" aria-pressed=\"true\" style=\"--c:#ffd23f\"><svg viewBox=\"0 0 6 20\"><path d=\"M3 1v18\"/></svg>Electrolysis <b>H&beta; <small>486.1 nm</small></b></button> <button class=\"ds-key\" aria-pressed=\"false\" style=\"--c:#ff5c5c\"><svg viewBox=\"0 0 6 20\"><path d=\"M3 1v18\"/></svg>Recovery <b>H&alpha; <small>656.3 nm</small></b></button></div>",
+      "css": ".ds-dark{background:#0d1b5e;padding:28px}.ds-key{display:inline-flex;align-items:center;gap:8px;cursor:pointer;padding:7px 14px 7px 10px;border-radius:999px;border:1.5px solid color-mix(in srgb,var(--c) 70%,transparent);background:transparent;color:#f3f5f9;font:500 .98rem/1 'Playpen Sans Variable','Comic Neue',cursive;transition:background-color .25s,opacity .25s}.ds-key svg{width:6px;height:20px}.ds-key path{stroke:var(--c);stroke-width:3;stroke-linecap:round}.ds-key b{color:var(--c);font-weight:700}.ds-key small{color:#bcc4d4;font:400 .62rem 'Martian Mono Variable',ui-monospace,monospace}.ds-key:hover{background:color-mix(in srgb,var(--c) 16%,transparent)}.ds-key[aria-pressed=false]{opacity:.45;border-style:dashed}.ds-key:focus-visible{outline:2px solid #ffd23f;outline-offset:3px}"
+    },
+    {
+      "name": "Spectral Plate",
+      "kind": "custom",
+      "refersTo": "spectral-plate",
+      "description": "Quarter-ticked year ruler over a plate band; one emission line per work, styled by series, type and stage.",
+      "html": "<div class=\"ds-dark\"><div class=\"ds-axis\"></div><div class=\"ds-plate\"><i style=\"left:14%;--c:#ff9f43\"></i><i style=\"left:30%;--c:#eef1f7\"></i><i class=\"ds-thesis\" style=\"left:58%;--c:#5fd38a\"></i><i class=\"ds-sel\" style=\"left:84%;--c:#ffd23f\"></i><i class=\"ds-rev\" style=\"left:90%;--c:#ffd23f\"></i><i class=\"ds-prep\" style=\"left:95%;--c:#ff5c5c\"></i></div></div>",
+      "css": ".ds-dark{background:#0d1b5e;padding:28px 0}.ds-axis{height:16px;margin:0 24px;background:repeating-linear-gradient(90deg,#bcc4d4 0 1px,transparent 1px 10%) left bottom/100% 14px no-repeat,repeating-linear-gradient(90deg,#2b3a7a 0 1px,transparent 1px 2.5%) left bottom/100% 6px no-repeat}.ds-plate{position:relative;height:150px;background:#06103d;border-block:1px solid #2b3a7a}.ds-plate i{position:absolute;top:0;bottom:0;width:3px;background:var(--c);transform:translateX(-50%);transition:width .3s cubic-bezier(.16,1,.3,1)}.ds-plate i.ds-thesis{width:5px}.ds-plate i.ds-sel,.ds-plate i:hover{width:7px}.ds-plate i.ds-rev{background:repeating-linear-gradient(to bottom,var(--c) 0 10px,transparent 10px 16px);opacity:.9}.ds-plate i.ds-prep{background:repeating-linear-gradient(to bottom,var(--c) 0 3px,transparent 3px 9px);opacity:.75}"
+    },
+    {
+      "name": "TRL Strip",
+      "kind": "custom",
+      "refersTo": "trl-strip",
+      "description": "Nine-level plate strip; levels a project worked through are lit lines, ends drawn wider.",
+      "html": "<div class=\"ds-paper\"><div class=\"ds-strip\" style=\"--c:#ff5c5c\"><i class=\"\" style=\"left:5.56%\"></i><i class=\"\" style=\"left:16.67%\"></i><i class=\"\" style=\"left:27.78%\"></i><i class=\"on end\" style=\"left:38.89%\"></i><i class=\"on\" style=\"left:50.00%\"></i><i class=\"on\" style=\"left:61.11%\"></i><i class=\"on end\" style=\"left:72.22%\"></i><i class=\"\" style=\"left:83.33%\"></i><i class=\"\" style=\"left:94.44%\"></i></div><p class=\"ds-range\"><span>TRL 4&ndash;7</span> Lab validation to operational prototype</p></div>",
+      "css": ".ds-paper{background:#f4f6fa;padding:28px}.ds-strip{position:relative;height:44px;background:#06103d;border-radius:4px}.ds-strip i{position:absolute;top:9px;bottom:9px;width:1px;background:#2b3a7a;transform:translateX(-50%)}.ds-strip i.on{width:3px;top:6px;bottom:6px;background:var(--c)}.ds-strip i.end{width:6px;top:3px;bottom:3px}.ds-range{margin:10px 0 0;color:#3f4a66;font:400 .92rem 'Playpen Sans Variable','Comic Neue',cursive}.ds-range span{font:600 .74rem 'Martian Mono Variable',ui-monospace,monospace;color:#b42323;margin-right:8px}"
+    },
+    {
+      "name": "Ticked Work List",
+      "kind": "custom",
+      "description": "Ruled list under a tick-scale top rule; title, venue, then stage mark styled by line.",
+      "html": "<div class=\"ds-paper\"><ul class=\"ds-ticked\"><li><b>H&beta;</b><div><p class=\"t\">Theoretical-experimental analysis of a membraneless electrolyzer for hydrogen production</p><p class=\"v\">Int J Hydrogen Energy</p></div><span class=\"ds-stage\">Published</span></li><li><b>H&beta;</b><div><p class=\"t\">Membraneless electrolyzer, flow regime study</p><p class=\"v\">Topic and status only</p></div><span class=\"ds-stage rev\">Under review</span></li></ul></div>",
+      "css": ".ds-paper{background:#f4f6fa;padding:28px}.ds-ticked{position:relative;list-style:none;margin:0;padding:14px 0 0;color:#7a5a00}.ds-ticked::before{content:'';position:absolute;left:0;right:0;top:0;height:12px;background:linear-gradient(currentColor,currentColor) left top/100% 1.5px no-repeat,repeating-linear-gradient(90deg,currentColor 0 1.5px,transparent 1.5px 80px) left top/100% 12px no-repeat,repeating-linear-gradient(90deg,currentColor 0 1px,transparent 1px 16px) left top/100% 6px no-repeat;opacity:.85}.ds-ticked li{display:grid;grid-template-columns:44px 1fr 130px;gap:16px;padding:20px 0;border-bottom:1px solid #c8cfdd}.ds-ticked b{font:600 1.25rem/1.2 'Playpen Sans Variable','Comic Neue',cursive}.ds-ticked .t{margin:0;font:600 1.08rem/1.35 'Funnel Sans Variable',system-ui,sans-serif;color:#0d1b5e}.ds-ticked .v{margin:4px 0 0;color:#3f4a66;font:400 1rem 'Funnel Sans Variable',system-ui,sans-serif}.ds-stage{display:inline-flex;align-items:center;gap:.45em;font:600 .82rem/1 'Funnel Sans Variable',system-ui,sans-serif;white-space:nowrap}.ds-stage::before{content:'';width:22px;border-top:2.5px solid currentColor}.ds-stage.rev::before{border-top-style:dashed}"
+    },
+    {
+      "name": "Citation Card",
+      "kind": "card",
+      "refersTo": "cite-card",
+      "description": "The only card: paper-shade panel with mono citation and a pill copy button.",
+      "html": "<div class=\"ds-paper\"><figure class=\"ds-cite\"><figcaption>Cite the published electrolyzer paper</figcaption><pre>dos Anjos EB, dos Reis BS, Naveira-Cotta CP.\nInt J Hydrogen Energy 182 (2025) 151751.</pre><button class=\"ds-copy\">Copy citation</button></figure></div>",
+      "css": ".ds-paper{background:#f4f6fa;padding:28px}.ds-cite{margin:0;background:#e7ebf3;border-radius:18px;padding:26px 26px 20px;color:#0d1b5e}.ds-cite figcaption{font:500 1.15rem/1 'Playpen Sans Variable','Comic Neue',cursive;margin-bottom:14px}.ds-cite pre{margin:0 0 16px;font:400 .78rem/1.75 'Martian Mono Variable',ui-monospace,monospace;white-space:pre-wrap}.ds-copy{font:500 .95rem/1 'Playpen Sans Variable','Comic Neue',cursive;color:#0d1b5e;background:none;border:1.5px solid #0d1b5e;border-radius:999px;padding:9px 14px;cursor:pointer}.ds-copy:hover{background:#0d1b5e;color:#f4f6fa}.ds-copy:focus-visible{outline:2px solid #0d1b5e;outline-offset:3px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Balmer Spectrum",
+    "overview": "The site is a spectrometer reading of a hydrogen career. Hydrogen identifies itself by its emission lines, so every paper, chapter, thesis and tool is a crisp vertical line on a dark plate, placed by year and coloured by the research series it belongs to. The plate is the timeline and the navigation at once; everything else (legend, stepper, readout, lists) is the instrument built around it.\n\nTwo materials alternate. Dark sections sit on a deep blue ground with a darker plate strip, carrying near-white text and a single signal-yellow action colour. Reading sections switch to a neutral, slightly cool paper with deep blue ink. Hand-lettered display type gives the voice a personal, drawn quality against measured, ruled structure: tick-scale rules frame every list, mono readouts carry every number, and the line style of a mark tells a work's stage. Lines are flat and crisp, with no glow and no gradients.\n\nDensity is moderate and editorial. Lists are ruled rows with generous vertical padding, never cards. Motion is limited to lines igniting in chronological order on load, a slit cursor that slides to the selected line, and small press feedback on actions; reduced motion shows the plate static.",
+    "keyCharacteristics": [
+      "Full-bleed spectral plate with a quarter-ticked year ruler as the signature structure",
+      "Deep blue ground and plate, neutral paper for reading, one signal-yellow action colour",
+      "Five Balmer series colours, each with a plate colour and a paper-safe ink",
+      "Handwritten display (Playpen Sans), plain sans body (Funnel Sans), mono only for measurements",
+      "Stage encoded by line style: solid, dashed, dotted",
+      "Ruled lists under a tick-scale top rule; no cards for list content"
+    ],
+    "rules": [
+      {
+        "name": "The No Pastel Blue Rule",
+        "body": "The blues are deep (ground, plate, ink). No periwinkle, light blue, cyan or violet anywhere, in text, accents or series colours. Secondary text is neutral grey, not tinted blue.",
+        "section": "colors"
+      },
+      {
+        "name": "The Line-Owns-Its-Colour Rule",
+        "body": "Series colours appear only to identify a series (emission lines, symbols, stage marks, series names, legend keys, filter chips). They are never decoration, section fills or button colours.",
+        "section": "colors"
+      },
+      {
+        "name": "The Paper-Ink Rule",
+        "body": "On paper, series text and marks always use the -ink variant; the bright plate colour is reserved for dark grounds and the plate strips.",
+        "section": "colors"
+      },
+      {
+        "name": "The Mono-Means-Measured Rule",
+        "body": "Martian Mono appears only on a number, identifier or physical quantity (nm, year, DOI, TRL, count). Never on prose, labels or headings.",
+        "section": "typography"
+      },
+      {
+        "name": "The Facts-in-Sans Rule",
+        "body": "Paper titles, venues and authors are set in Funnel Sans; the hand face never sets a bibliographic fact.",
+        "section": "typography"
+      },
+      {
+        "name": "The Readout Order Rule",
+        "body": "A work reads title, then venue (and authors), then a meta row of series, year and stage. Nothing sits above the title: no kicker, eyebrow or category label.",
+        "section": "typography"
+      },
+      {
+        "name": "The Ticked List Rule",
+        "body": "Every list of works, series, records or projects starts under a tick-scale top rule: a 1.5px baseline with major ticks every 80px and minor ticks every 16px, drawn in the list's current colour.",
+        "section": "layout"
+      },
+      {
+        "name": "The Keys-Only Shadow Rule",
+        "body": "Offset shadows belong to actions and nothing else. Plates, strips, cards, lists and the header stay flat.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Stage-By-Line Rule",
+        "body": "Stage is shown by line style everywhere: solid for published, dashed for under review, dotted for in preparation. The same code applies to plate lines, mini plates and the stage mark before a status label.",
+        "section": "shapes"
+      }
+    ],
+    "dos": [
+      "**Do** place every work on the plate as an emission line at its year, coloured by series and styled by stage.",
+      "**Do** frame every list with the tick-scale top rule and separate rows with 1px rules.",
+      "**Do** use Signal Yellow with Signal Ink for the primary action, the current-page underline and focus on dark ground.",
+      "**Do** use the -ink series colours for any series text or mark on paper.",
+      "**Do** set wavelengths, years, DOIs and identifiers in Martian Mono and nothing else in it.",
+      "**Do** keep lines flat and crisp; show selection by widening a line, not by glowing it.",
+      "**Do** honour reduced motion: no ignition animation and no smooth scroll."
+    ],
+    "donts": [
+      "**Don't** use light or periwinkle blue, purple or violet, or pool cyan anywhere in the palette.",
+      "**Don't** put a kicker, eyebrow or category label above a title; the readout order is title, venue, meta.",
+      "**Don't** add glow, gradients or blur to emission lines or plates.",
+      "**Don't** use series colours as decoration, section fills or button colours.",
+      "**Don't** turn list items into cards; the citation card is the only card.",
+      "**Don't** use offset shadows on anything that is not an action.",
+      "**Don't** show results, figures or data for works under review; topic and status only."
+    ]
+  }
+}

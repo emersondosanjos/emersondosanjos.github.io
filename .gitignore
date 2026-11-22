@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.astro/
+.DS_Store
+.impeccable/config.local.json
+_antigravity/
+
+.impeccable/mocks/
+.impeccable/questions/
+.impeccable/review/
+archive/
+
+# private teaching sources and credentials (only the encrypted bundle in public/teaching/ is published)
+src/teaching/thermo/
+.teaching-users

@@ -1,0 +1,195 @@
+---
+/* Fixed-size figure (16:10 frame) that opens a dark viewer with the full image, its record and numbered legend. */
+import { type Lang } from '../lib/i18n';
+
+export interface InfoRow { label: string; value: string }
+interface Props {
+  src: string;
+  alt: string;
+  title: string;
+  caption?: string;
+  info?: InfoRow[];
+  legend?: string[];
+  /** balloon centres (% of image) matching `legend`: shown as hover/tap hotspots */
+  hotspots?: { x: number; y: number }[];
+  /** full column width instead of the 300 px frame (for detailed drawings) */
+  wide?: boolean;
+  lang?: Lang;
+}
+const { src, alt, title, caption, info = [], legend = [], hotspots = [], wide = false, lang = 'en' } = Astro.props;
+const hasHot = hotspots.length > 0 && hotspots.length === legend.length;
+const hash = Math.abs([...src].reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 7));
+const id = `zf-${hash.toString(36)}`;
+const tilt = [-2.6, 1.8, -1.4, 2.4, -2][hash % 5];
+const L = lang === 'pt'
+  ? { open: 'Ampliar imagem', close: 'Fechar', legend: 'Legenda', record: 'Ficha', hint: 'Passe o mouse ou toque num número para ver o componente.' }
+  : { open: 'Enlarge image', close: 'Close', legend: 'Legend', record: 'Record', hint: 'Hover over or tap a number to see the part.' };
+---
+<figure class:list={['zf', { 'zf-full': wide }]}>
+  <button type="button" class="zf-open sticker" style={`--tilt:${tilt}deg`} data-dialog={id} aria-label={`${L.open}: ${title}`}>
+    <img src={src} alt={alt} width="300" height="188" loading="lazy" decoding="async" />
+    <span class="zf-hint" aria-hidden="true">
+      <svg viewBox="0 0 16 16"><path d="M9.5 2.5h4v4M6.5 13.5h-4v-4M13.5 2.5 9 7M2.5 13.5 7 9" /></svg>
+    </span>
+  </button>
+  {caption && <figcaption>{caption}</figcaption>}
+</figure>
+
+<dialog class:list={['zf-dlg', { 'zf-wide': hasHot }]} id={id} aria-labelledby={`${id}-t`}>
+  <form method="dialog" class="zf-x-form">
+    <button class="zf-x" type="submit" aria-label={L.close}>
+      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 3.5l9 9M12.5 3.5l-9 9" /></svg>
+    </button>
+  </form>
+  <div class="zf-sheet">
+    <div class="zf-img">
+      <div class="zf-stage">
+        <img src={src} alt={alt} loading="lazy" decoding="async" />
+        {hasHot && hotspots.map((h, i) => (
+          <button type="button" class:list={['hs', { 'hs-l': h.x < 22, 'hs-r': h.x > 74, 'hs-down': h.y < 24 }]} style={`left:${h.x}%;top:${h.y}%`} aria-label={`${i + 1}: ${legend[i]}`}>
+            <span class="hs-tip" role="tooltip"><b class="mono">{i + 1}</b>{legend[i]}</span>
+          </button>
+        ))}
+      </div>
+    </div>
+    <div class="zf-meta">
+      <p class="zf-kicker mono">{L.record}</p>
+      <h3 id={`${id}-t`}>{title}</h3>
+      {caption && caption !== title && <p class="zf-cap">{caption}</p>}
+      {info.length > 0 && (
+        <dl>
+          {info.map((r) => (
+            <div><dt class="mono">{r.label}</dt><dd>{r.value}</dd></div>
+          ))}
+        </dl>
+      )}
+      {hasHot && <p class="zf-hint-text">{L.hint}</p>}
+      {legend.length > 0 && (
+        <>
+          <p class:list={['zf-kicker mono', { 'visually-hidden': hasHot }]}>{L.legend}</p>
+          <ol class:list={['zf-legend', { 'visually-hidden': hasHot }]}>
+            {legend.map((item, i) => <li><b class="mono">{i + 1}</b><span>{item}</span></li>)}
+          </ol>
+        </>
+      )}
+    </div>
+  </div>
+</dialog>
+
+<style>
+  .zf { margin: 0; width: min(100%, 300px); }
+  .zf-full { width: 100%; }
+  .zf-full .zf-open { aspect-ratio: auto; }
+  .zf-full .zf-open img { height: auto; }
+  /* thumbnail as a sticker: white die-cut rim, tilt, tape (see .sticker in global.css) */
+  .zf-open {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    padding: 8px;
+    border: 0;
+    cursor: zoom-in;
+  }
+  .zf-open img { display: block; width: 100%; height: 100%; object-fit: contain; border-radius: 8px; }
+  .zf-hint {
+    position: absolute; right: 7px; bottom: 7px; width: 26px; height: 26px;
+    display: grid; place-items: center; border-radius: 50%;
+    background: var(--ink); color: var(--on-ink, var(--signal));
+    transition: transform 0.2s var(--ease-out);
+  }
+  .zf-open:hover .zf-hint { transform: scale(1.1); }
+  .zf-hint svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .zf figcaption { margin-top: 14px; font-size: 0.8rem; line-height: 1.4; color: var(--ink-soft); }
+
+  /* ---------- viewer: the site's night plate, image first ---------- */
+  .zf-dlg {
+    width: min(1280px, calc(100vw - 32px));
+    max-height: calc(100dvh - 32px);
+    padding: 0;
+    border: 1px solid var(--plate-rule);
+    border-radius: 16px;
+    background: var(--plate);
+    color: var(--mist);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+    overflow: hidden;
+  }
+  .zf-dlg[open] { animation: zf-in 0.28s var(--ease-out); }
+  @keyframes zf-in { from { opacity: 0; transform: translateY(10px) scale(0.985); } }
+  @media (prefers-reduced-motion: reduce) { .zf-dlg[open] { animation: none; } }
+  .zf-dlg::backdrop { background: rgba(4, 10, 36, 0.78); backdrop-filter: blur(6px); }
+  .zf-sheet { display: grid; grid-template-columns: minmax(0, 1.85fr) minmax(280px, 1fr); max-height: calc(100dvh - 34px); }
+  .zf-img { display: grid; place-items: center; padding: 20px; background: var(--ground); }
+  .zf-img img { display: block; max-width: 100%; max-height: calc(100dvh - 76px); object-fit: contain; border-radius: 10px; background: #fff; }
+  .zf-meta { padding: 28px 26px 26px; display: flex; flex-direction: column; gap: 12px; overflow-y: auto; }
+  .zf-kicker { margin: 6px 0 0; font-size: 0.66rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+  .zf-meta h3 { font: 500 1.55rem/1.15 var(--hand); color: var(--mist); padding-right: 36px; }
+  .zf-cap { margin: 0; color: var(--mist-soft); font-size: 0.95rem; }
+  .zf-meta dl { margin: 4px 0 0; }
+  .zf-meta dl div { display: grid; grid-template-columns: 108px minmax(0, 1fr); gap: 12px; padding: 9px 0; border-top: 1px solid var(--plate-rule); }
+  .zf-meta dt { font-size: 0.64rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--mist-soft); padding-top: 3px; }
+  .zf-meta dd { margin: 0; font-size: 0.94rem; color: var(--mist); }
+  .zf-legend { list-style: none; margin: 0; padding: 0; display: grid; gap: 7px; }
+  .zf-legend li { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 10px; align-items: start; font-size: 0.9rem; color: var(--mist); }
+  .zf-legend b { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; background: var(--signal); color: var(--signal-ink); font-size: 0.66rem; font-weight: 700; }
+  /* wide viewer for images with numbered callouts: the image is the content */
+  .zf-wide { width: min(1560px, calc(100vw - 24px)); }
+  .zf-wide .zf-sheet { grid-template-columns: minmax(0, 3.2fr) minmax(250px, 1fr); }
+  .zf-wide .zf-img { padding: 14px; }
+  .zf-stage { position: relative; display: inline-block; max-width: 100%; }
+  .zf-wide .zf-img img { max-height: calc(100dvh - 60px); }
+  .zf-hint-text { margin: 0; padding: 10px 12px; border: 1.5px dashed var(--plate-rule); border-radius: 10px; color: var(--mist-soft); font-size: 0.88rem; }
+  .hs {
+    position: absolute; width: 4.2%; aspect-ratio: 1; transform: translate(-50%, -50%);
+    border-radius: 50%; border: 0; padding: 0; background: transparent; cursor: help;
+  }
+  .hs:hover, .hs:focus-visible, .hs.on { outline: 3px solid var(--signal); outline-offset: 2px; }
+  .hs-tip {
+    position: absolute; left: 50%; bottom: calc(100% + 10px); transform: translateX(-50%) translateY(4px);
+    width: max-content; max-width: 260px; padding: 8px 12px 9px;
+    display: flex; gap: 8px; align-items: baseline; text-align: left;
+    background: var(--plate); color: var(--mist); border: 1.5px solid var(--accent); border-radius: 10px;
+    font: 500 0.9rem/1.3 var(--sans); box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.6);
+    opacity: 0; pointer-events: none; transition: opacity 0.16s var(--ease-out), transform 0.16s var(--ease-out); z-index: 3;
+  }
+  .hs-tip b { color: var(--accent); font-size: 0.72rem; }
+  .hs:hover .hs-tip, .hs:focus-visible .hs-tip, .hs.on .hs-tip { opacity: 1; transform: translateX(-50%) translateY(0); }
+  /* keep tips inside the image near its edges */
+  .hs-down .hs-tip { bottom: auto; top: calc(100% + 10px); }
+  .hs-l .hs-tip { left: 0; transform: translateY(4px); }
+  .hs-r .hs-tip { left: auto; right: 0; transform: translateY(4px); }
+  .hs-l:hover .hs-tip, .hs-l:focus-visible .hs-tip, .hs-l.on .hs-tip,
+  .hs-r:hover .hs-tip, .hs-r:focus-visible .hs-tip, .hs-r.on .hs-tip { transform: translateY(0); }
+  .zf-x-form { position: absolute; top: 14px; right: 14px; z-index: 2; margin: 0; }
+  .zf-x {
+    width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; cursor: pointer;
+    background: var(--signal); color: var(--signal-ink); border: 2px solid var(--shadow-ink);
+    box-shadow: 3px 3px 0 var(--shadow-ink);
+    transition: transform 0.18s var(--ease-out), box-shadow 0.18s var(--ease-out);
+  }
+  .zf-x:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--shadow-ink); }
+  .zf-x svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; }
+  @media (max-width: 820px) {
+    .zf-sheet { grid-template-columns: 1fr; overflow-y: auto; }
+    .zf-img { padding: 12px; }
+    .zf-img img { max-height: 52dvh; }
+    .zf-meta { overflow: visible; }
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('.zf-open').forEach((b) => {
+    if (b.dataset.bound) return;
+    b.dataset.bound = '1';
+    b.addEventListener('click', () => (document.getElementById(b.dataset.dialog!) as HTMLDialogElement | null)?.showModal());
+  });
+  document.querySelectorAll<HTMLButtonElement>('.hs').forEach((h) =>
+    h.addEventListener('click', () => {
+      const was = h.classList.contains('on');
+      h.closest('.zf-stage')?.querySelectorAll('.hs.on').forEach((x) => x.classList.remove('on'));
+      if (!was) h.classList.add('on');
+    }),
+  );
+  document.querySelectorAll<HTMLDialogElement>('.zf-dlg').forEach((dlg) =>
+    dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); }),
+  );
+</script>

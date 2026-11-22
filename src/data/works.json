@@ -1,0 +1,621 @@
+{
+ "_howto": "Single source of truth for the site. To update a paper: change status (in-preparation | under-review | published), add doi, zenodo and github when they exist. Never put results of papers under review here, only topic and status. TRL ranges confirmed by the author on 2026-11-22.",
+ "lines": [
+  {
+   "id": "reforming",
+   "name": "Hydrogen from reforming reactors",
+   "name_pt": "Hidrogênio em reatores de reforma",
+   "span": "2016–2021",
+   "summary": "Mathematical modelling and simulation of fixed-bed, trickle-bed, membrane and solar thermochemical reactors for hydrogen production by steam reforming, solved with the Coupled Integral Equation Approach.",
+   "summary_pt": "Modelagem matemática e simulação de reatores de leito fixo, leito gotejante, com membrana e termoquímicos solares para produção de hidrogênio por reforma a vapor, com resolução pela Técnica das Equações Integrais Acopladas (CIEA).",
+   "gallery": [
+    {
+     "src": "/images/reactor-fbr.svg",
+     "alt": "Schematic of the fixed-bed catalytic reactor with Ni2Mg4Al1.8Ce0.2 catalyst, flue-gas heating and multi-component feed (C7H8, CO, H2O, sweep gas, H2, CO2, CH4)",
+     "alt_pt": "Esquema do reator catalítico de leito fixo com catalisador Ni2Mg4Al1.8Ce0.2, aquecimento por gases de combustão e alimentação multicomponente (C7H8, CO, H2O, gás de arraste, H2, CO2, CH4)",
+     "caption": "Fixed-bed catalytic reactor for toluene steam reforming",
+     "caption_pt": "Reator catalítico de leito fixo para reforma a vapor do tolueno",
+     "wide": false,
+     "project": "Reactor modelling for hydrogen production (PIBIC/PIBEC)",
+     "ref": "J. Braz. Soc. Mech. Sci. Eng. 42 (2020) 114"
+    }
+   ]
+  },
+  {
+   "id": "droplets",
+   "name": "Droplets and solidification",
+   "name_pt": "Gotas e solidificação",
+   "span": "2020–2025",
+   "summary": "Freezing of supercooled water droplets, suspended in an air stream and on superhydrophobic substrates, with improved lumped and hybrid numerical–analytical models validated against experiments, including in-flight icing.",
+   "summary_pt": "Congelamento de gotas de água super-resfriadas, suspensas em corrente de ar e sobre substratos super-hidrofóbicos, com modelos concentrados aprimorados e métodos híbridos numérico-analíticos validados experimentalmente, incluindo formação de gelo em voo.",
+   "gallery": [
+    {
+     "src": "/images/line-droplets-rig.jpg",
+     "alt": "3D cutaway render of the droplet-freezing rig: thermal enclosure with thermoelectric stages 1 and 2, heat spreader, sample holder, substrate and droplet, imaging window with lens and camera, thermocouples TC 1 and TC 2 wired to a data logger",
+     "alt_pt": "Render 3D em corte da bancada de congelamento de gotas: câmara térmica com estágios termoelétricos 1 e 2, espalhador de calor, porta-amostra, substrato e gota, janela de imagem com lente e câmera, termopares TC 1 e TC 2 ligados a um data logger",
+     "caption": "Droplet-freezing rig · 3D model after the published setup, Phil. Trans. R. Soc. A (2025)",
+     "caption_pt": "Bancada de congelamento de gotas · modelo 3D a partir do aparato publicado, Phil. Trans. R. Soc. A (2025)",
+     "wide": false,
+     "ref": "Phil. Trans. R. Soc. A 383 (2025) 20240363",
+     "legend": [
+      "Machine-vision camera (Basler ace class)",
+      "Telecentric lens, C-mount",
+      "Double-glazed imaging window (anti-frost)",
+      "Insulated enclosure: Al skin + closed-cell foam + PTFE liner",
+      "Heat spreader (anodized Al, ceiling)",
+      "Thermoelectric stage 2: Peltier + finned heat sink",
+      "TC 2 · type K, air temperature below the spreader",
+      "LED backlight for silhouette imaging",
+      "Sample holder (anodized Al)",
+      "Cold plate on the Peltier spacer",
+      "Thermoelectric stage 1: Peltier + finned heat sink",
+      "Pico Technology USB TC-08 · 8-channel thermocouple data logger (TC 1 → ch 1, TC 2 → ch 2)",
+      "Optical breadboard, M6 grid",
+      "Droplet · 40 µL, contact angle ≈ 150°",
+      "Superhydrophobic Si wafer (substrate)",
+      "TC 1 · type K bead, Kapton-bonded to the substrate"
+     ],
+     "legend_pt": [
+      "Câmera de visão de máquina (classe Basler ace)",
+      "Lente telecêntrica, rosca C",
+      "Janela de imagem com vidro duplo (antiembaçante)",
+      "Câmara isolada: pele de Al + espuma de célula fechada + revestimento de PTFE",
+      "Espalhador de calor (Al anodizado, no teto)",
+      "Estágio termoelétrico 2: Peltier + dissipador aletado",
+      "TC 2 · tipo K, temperatura do ar sob o espalhador",
+      "Backlight LED para imagem em silhueta",
+      "Porta-amostra (Al anodizado)",
+      "Placa fria sobre o espaçador do Peltier",
+      "Estágio termoelétrico 1: Peltier + dissipador aletado",
+      "Pico Technology USB TC-08 · data logger de termopares de 8 canais (TC 1 → canal 1, TC 2 → canal 2)",
+      "Mesa óptica, furação M6",
+      "Gota · 40 µL, ângulo de contato ≈ 150°",
+      "Wafer de Si super-hidrofóbico (substrato)",
+      "TC 1 · termopar tipo K, fixado com Kapton no substrato"
+     ],
+     "hotspots": [
+      {
+       "x": 20.0,
+       "y": 70.0
+      },
+      {
+       "x": 33.0,
+       "y": 68.0
+      },
+      {
+       "x": 42.0,
+       "y": 42.0
+      },
+      {
+       "x": 42.0,
+       "y": 25.0
+      },
+      {
+       "x": 50.0,
+       "y": 8.0
+      },
+      {
+       "x": 80.0,
+       "y": 6.0
+      },
+      {
+       "x": 88.0,
+       "y": 18.0
+      },
+      {
+       "x": 90.0,
+       "y": 33.0
+      },
+      {
+       "x": 48.0,
+       "y": 74.0
+      },
+      {
+       "x": 53.0,
+       "y": 83.0
+      },
+      {
+       "x": 64.0,
+       "y": 93.0
+      },
+      {
+       "x": 94.0,
+       "y": 86.0
+      },
+      {
+       "x": 10.0,
+       "y": 85.0
+      },
+      {
+       "x": 11.2,
+       "y": 13.25
+      },
+      {
+       "x": 11.2,
+       "y": 38.75
+      },
+      {
+       "x": 21.28,
+       "y": 17.75
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "desalination",
+   "name": "Desalination and membrane distillation",
+   "name_pt": "Dessalinização e destilação por membranas",
+   "span": "2020–2024",
+   "summary": "Direct-contact and air-gap membrane distillation at module scale, heat recovery, multi-objective optimisation and a cost-comparison tool for desalination technologies.",
+   "summary_pt": "Destilação por membranas em contato direto e com gap de ar em escala de módulo, recuperação térmica, otimização multiobjetivo e ferramenta de análise de custos entre tecnologias de dessalinização."
+  },
+  {
+   "id": "electrolysis",
+   "name": "Membraneless alkaline electrolysis",
+   "name_pt": "Eletrólise alcalina sem membrana",
+   "span": "2022–2026",
+   "summary": "Design, construction and theoretical–experimental analysis of a modular membraneless flow-by electrolyzer with nickel foam electrodes: stabilization, two-phase CFD, outlet-gas analysis and chloride-containing electrolyte.",
+   "summary_pt": "Projeto, construção e análise teórico-experimental de um eletrolisador alcalino modular sem membrana em escoamento paralelo (flow-by) com eletrodos de espuma de níquel: estabilização, CFD bifásico, análise dos gases de saída e operação em eletrólito com cloreto.",
+   "gallery": [
+    {
+     "src": "/images/electrolyzer-single-channel.jpg",
+     "alt": "Assembled single-channel membraneless alkaline flow-by electrolyzer (CAD render)",
+     "alt_pt": "Eletrolisador alcalino flow-by sem membrana de canal único montado (render CAD)",
+     "caption": "Single-channel cell · Paper 01 (IJHE, 2025)",
+     "caption_pt": "Célula de canal único · Artigo 01 (IJHE, 2025)",
+     "project": "EnerGente: distributed polygeneration of electricity, desalinated water and hydrogen",
+     "ref": "Int. J. Hydrogen Energy 182 (2025) 151751",
+     "wide": false
+    },
+    {
+     "src": "/images/electrolyzer-stack.jpg",
+     "alt": "Assembled membraneless electrolyzer stack (CAD render)",
+     "alt_pt": "Stack de eletrolisador sem membrana montado (render CAD)",
+     "caption": "Modular membraneless stack",
+     "caption_pt": "Stack modular sem membrana",
+     "project": "EnerGente: distributed polygeneration of electricity, desalinated water and hydrogen",
+     "wide": false
+    }
+   ]
+  },
+  {
+   "id": "recovery",
+   "name": "Hydrogen recovery and digital twins",
+   "name_pt": "Recuperação de hidrogênio e gêmeos digitais",
+   "span": "2025–",
+   "summary": "Construction and operation of a pilot plant that recovers hydrogen from refinery off-gas by pressure swing adsorption and membranes, and interactive simulation of engineering plants in virtual reality.",
+   "summary_pt": "Construção e operação de planta piloto para recuperação de hidrogênio de gás residual de refinaria por adsorção com modulação de pressão (PSA) e membranas, além de simulação interativa de plantas de engenharia em realidade virtual."
+  }
+ ],
+ "works": [
+  {
+   "year": 2017,
+   "line": "reforming",
+   "type": "conference",
+   "status": "published",
+   "title": "Dynamic analysis of a three-phase reactor of fixed bed for petroleum and petrochemical industry",
+   "venue": "24th ABCM International Congress of Mechanical Engineering (COBEM 2017)",
+   "authors": "E.B. dos Anjos, J.D. Silva, J.D.C.G. Carvalho",
+   "doi": "10.26678/abcm.cobem2017.cob17-1008"
+  },
+  {
+   "year": 2018,
+   "line": "reforming",
+   "type": "conference",
+   "status": "published",
+   "title": "Numerical analysis of the steam reforming of toluene to produce hydrogen in a fixed bed catalytic reactor",
+   "venue": "17th Brazilian Congress of Thermal Sciences and Engineering (ENCIT 2018)",
+   "authors": "E.B. dos Anjos, J.D.C.G. Carvalho, C. Oliveira, A.M. Silva Filho, J.D. Silva",
+   "doi": "10.26678/abcm.encit2018.cit18-0518"
+  },
+  {
+   "year": 2018,
+   "line": "reforming",
+   "type": "conference",
+   "status": "published",
+   "title": "Simulation of the autothermal reforming of methane in a fixed bed membrane reactor for H2 production",
+   "venue": "17th Brazilian Congress of Thermal Sciences and Engineering (ENCIT 2018)",
+   "authors": "J.D.C.G. Carvalho, E.B. dos Anjos, A.M. Silva Filho, J.D. Silva",
+   "doi": "10.26678/abcm.encit2018.cit18-0537"
+  },
+  {
+   "year": 2019,
+   "line": "reforming",
+   "type": "journal",
+   "status": "published",
+   "title": "Numerical simulation of the heat transfer for a three-phase reactor of fixed bed",
+   "venue": "IEEE Latin America Transactions 17 (2019) 788–795",
+   "authors": "E.B. Anjos, J.D. Silva",
+   "doi": "10.1109/TLA.2019.8891947"
+  },
+  {
+   "year": 2019,
+   "line": "reforming",
+   "type": "journal",
+   "status": "published",
+   "title": "Dynamic analysis to produce hydrogen in a fixed bed catalytic reactor by the steam reforming of toluene",
+   "venue": "Chemical Engineering Transactions 74 (2019) 553–558",
+   "authors": "E.B. Anjos, C.C.B. Oliveira, J.D. Silva",
+   "doi": "10.3303/CET1974093"
+  },
+  {
+   "year": 2019,
+   "line": "reforming",
+   "type": "journal",
+   "status": "published",
+   "title": "Modelling of the aromatic aldehyde production by catalytic oxidation of lignin in a three-phase fluidized bed reactor",
+   "venue": "Chemical Engineering Transactions 74 (2019) 205–210",
+   "authors": "C.C.B. Oliveira, E.B. Anjos, J.D. Silva, C.A.M. Abreu",
+   "doi": "10.3303/CET1974035"
+  },
+  {
+   "year": 2019,
+   "line": "reforming",
+   "type": "conference",
+   "status": "published",
+   "title": "Mathematical modelling to thermal performance analysis of a solar thermochemical reactor",
+   "venue": "25th International Congress of Mechanical Engineering (COBEM 2019)",
+   "authors": "E.B. dos Anjos, C. Oliveira, J.D. Silva",
+   "doi": "10.26678/abcm.cobem2019.cob2019-0307"
+  },
+  {
+   "year": 2019,
+   "line": "reforming",
+   "type": "conference",
+   "status": "published",
+   "title": "Numerical simulation for hydrogen production from the steam reforming of toluene in a fixed bed membrane reactor",
+   "venue": "25th International Congress of Mechanical Engineering (COBEM 2019)",
+   "authors": "E.B. dos Anjos, C. Oliveira, J.D. Silva",
+   "doi": "10.26678/abcm.cobem2019.cob2019-1402"
+  },
+  {
+   "year": 2019,
+   "line": "reforming",
+   "type": "conference",
+   "status": "published",
+   "title": "Mathematical model for hydrogen production in a solar thermochemical reactor via steam reforming of toluene",
+   "venue": "25th International Congress of Mechanical Engineering (COBEM 2019)",
+   "authors": "M.C. Souza, E.B. dos Anjos, C. Oliveira, J.D. Silva",
+   "doi": "10.26678/abcm.cobem2019.cob2019-0330"
+  },
+  {
+   "year": 2020,
+   "line": "reforming",
+   "type": "journal",
+   "status": "published",
+   "title": "Numerical simulation of the steam reforming of toluene in a fixed-bed catalytic reactor to produce hydrogen",
+   "venue": "Journal of the Brazilian Society of Mechanical Sciences and Engineering 42 (2020) 114",
+   "authors": "E.B. dos Anjos, A.M. da Silva Filho, J.D. da Silva",
+   "doi": "10.1007/s40430-020-2195-8"
+  },
+  {
+   "year": 2020,
+   "line": "droplets",
+   "type": "conference",
+   "status": "published",
+   "title": "Improved lumped-differential analysis of the freezing process in a supercooled water droplet",
+   "venue": "18th Brazilian Congress of Thermal Sciences and Engineering (ENCIT 2020)",
+   "authors": "E.B. Anjos, C.P. Naveira-Cotta, R.M. Cotta, I.S. Carvalho, M.K. Tiwari"
+  },
+  {
+   "year": 2021,
+   "line": "reforming",
+   "type": "journal",
+   "status": "published",
+   "title": "Modelagem matemática para produção de hidrogênio em um reator termoquímico solar de membrana a partir da reforma a vapor do metanol",
+   "venue": "Revista de Engenharia e Pesquisa Aplicada 6 (2021) 37–45",
+   "authors": "J.D. Silva, E. Barbosa dos Anjos"
+  },
+  {
+   "year": 2021,
+   "line": "droplets",
+   "type": "journal",
+   "status": "published",
+   "title": "An improved lumped model for freezing of a freely suspended supercooled water droplet in air stream",
+   "venue": "Journal of Engineering Mathematics 130 (2021) 9",
+   "authors": "E.B. dos Anjos, C.P. Naveira-Cotta, M.K. Tiwari, R.M. Cotta, I.S. Carvalho",
+   "doi": "10.1007/s10665-021-10161-z"
+  },
+  {
+   "year": 2022,
+   "line": "desalination",
+   "type": "conference",
+   "status": "published",
+   "title": "Enhancing DCMD efficiency for desalination at module scale through dual heat recovery and retentate recirculation",
+   "venue": "CONV-22: Int. Symp. on Convective Heat and Mass Transfer, İzmir",
+   "authors": "E.B. dos Anjos, A.O. Cárdenas Gómez, L.E. Peñaranda Chenche, J.A. Lima, C.P. Naveira-Cotta, R.M. Cotta, K.M. Lisbôa",
+   "doi": "10.1615/ICHMT.2022.CONV22.690"
+  },
+  {
+   "year": 2022,
+   "line": "droplets",
+   "type": "thesis",
+   "status": "published",
+   "title": "Reduced models for the solidification of supercooled water droplets, suspended and on superhydrophobic substrates (MSc thesis, in Portuguese)",
+   "venue": "COPPE/UFRJ, Mechanical Engineering",
+   "authors": "E.B. dos Anjos; advisors C.P. Naveira-Cotta, R.M. Cotta"
+  },
+  {
+   "year": 2023,
+   "line": "droplets",
+   "type": "chapter",
+   "status": "published",
+   "title": "Numerical simulation of supercooled droplets freezing during in-flight icing via a hybrid numerical-analytical method",
+   "venue": "Handbook of Numerical Simulation of In-Flight Icing, Springer, 2023",
+   "authors": "E.B. Anjos, I.S. Carvalho, C.P. Naveira-Cotta, M.K. Tiwari, R.M. Cotta"
+  },
+  {
+   "year": 2023,
+   "line": "electrolysis",
+   "type": "conference",
+   "status": "published",
+   "title": "Electrochemical analysis of a membraneless electrolyzer for green hydrogen production",
+   "venue": "27th International Congress of Mechanical Engineering (COBEM 2023), Florianópolis",
+   "authors": "E.B. Anjos, B.S. Reis, S.S. Garcia, C.M.C. Farolfe, D.B. Morais, C.P. Naveira-Cotta"
+  },
+  {
+   "year": 2025,
+   "line": "droplets",
+   "type": "journal",
+   "status": "published",
+   "title": "Experimental–theoretical analysis of cooling and freezing of a droplet in contact with a cold substrate: influence of substrate wettability",
+   "venue": "Philosophical Transactions of the Royal Society A 383 (2025) 20240363",
+   "authors": "P. Kabi, S. Bahal, M.K. Tiwari, E.B. Anjos, C.P. Naveira-Cotta, R.M. Cotta",
+   "doi": "10.1098/rsta.2024.0363"
+  },
+  {
+   "year": 2025,
+   "line": "electrolysis",
+   "type": "journal",
+   "status": "published",
+   "series": "01",
+   "title": "Theoretical-experimental analysis of a membraneless electrolyzer for hydrogen production",
+   "venue": "International Journal of Hydrogen Energy 182 (2025) 151751",
+   "authors": "E.B. dos Anjos, B.S. dos Reis, C.P. Naveira-Cotta",
+   "doi": "10.1016/j.ijhydene.2025.151751",
+   "github": "https://github.com/emersondosanjos/Membraneless-Electrolyzer"
+  },
+  {
+   "year": 2026,
+   "line": "electrolysis",
+   "type": "thesis",
+   "status": "published",
+   "title": "Development and theoretical-experimental analysis of a membraneless electrolyzer for hydrogen production (DSc thesis)",
+   "venue": "COPPE/UFRJ, Mechanical Engineering",
+   "authors": "E.B. dos Anjos; advisor C.P. Naveira-Cotta"
+  },
+  {
+   "year": 2026,
+   "line": "electrolysis",
+   "type": "journal",
+   "status": "under-review",
+   "series": "02",
+   "title": "Electrochemical stabilization protocol of the modular membraneless electrolyzer",
+   "venue": "Paper 02 of the membraneless electrolyzer series"
+  },
+  {
+   "year": 2026,
+   "line": "electrolysis",
+   "type": "journal",
+   "status": "under-review",
+   "series": "03",
+   "title": "Two-phase modeling of the membraneless alkaline flow-by electrolyzer",
+   "venue": "Paper 03 of the membraneless electrolyzer series"
+  },
+  {
+   "year": 2026,
+   "line": "electrolysis",
+   "type": "journal",
+   "status": "under-review",
+   "series": "04",
+   "title": "Design-of-experiments study of hydrogen in the outlet streams",
+   "venue": "Paper 04 of the membraneless electrolyzer series"
+  },
+  {
+   "year": 2026,
+   "line": "electrolysis",
+   "type": "journal",
+   "status": "in-preparation",
+   "series": "05",
+   "title": "Load cycling in chloride-containing electrolyte",
+   "venue": "Paper 05 of the membraneless electrolyzer series"
+  }
+ ],
+ "projects": [
+  {
+   "span": "2026–",
+   "name": "New materials for H₂ recovery from refinery off-gas",
+   "name_pt": "Novos materiais para recuperação de H₂ de gás residual de refinaria",
+   "role": "R&D Researcher, pilot plant (PSA and membranes)",
+   "role_pt": "Pesquisador de P&D, planta piloto (PSA e membranas)",
+   "org": "LabPAM and NUCAT, COPPE/UFRJ, with Petrobras",
+   "line": "recovery",
+   "trl": [
+    4,
+    7
+   ],
+   "trl_note": "Polymeric membranes, carbon membranes and adsorbents for recovering hydrogen from refinery off-gas, with a pilot plant for PSA and membrane separation.",
+   "trl_note_pt": "Membranas poliméricas, membranas de carbono e adsorventes para recuperação de hidrogênio de gás residual de refinaria, com planta piloto para separação por PSA e membranas.",
+   "trl_confirmed": true,
+   "sponsor": "Petrobras",
+   "org_pt": "LabPAM e NUCAT, COPPE/UFRJ, com Petrobras"
+  },
+  {
+   "span": "2024–2027",
+   "name": "EnerGente: distributed polygeneration of electricity, desalinated water and hydrogen",
+   "name_pt": "EnerGente: poligeração distribuída de eletricidade, água dessalinizada e hidrogênio",
+   "role": "Researcher, membraneless electrolysis and desalination economics",
+   "role_pt": "Pesquisador, eletrólise sem membrana e análise econômica de dessalinização",
+   "org": "LabMEMS, COPPE/UFRJ, with Petrogal Brasil (Galp)",
+   "line": "electrolysis",
+   "trl": [
+    4,
+    7
+   ],
+   "trl_note": "Integrated polygeneration of electricity, desalinated water and hydrogen, including the modular membraneless alkaline electrolyzer of the doctorate.",
+   "trl_note_pt": "Poligeração integrada de eletricidade, água dessalinizada e hidrogênio, incluindo o eletrolisador alcalino modular sem membrana desenvolvido no doutorado.",
+   "trl_confirmed": true,
+   "image": "/images/project-energente-site.jpg",
+   "image_alt": "EnerGente demonstration site: flat-plate solar collectors and concentrated solar array next to the polygeneration container",
+   "image_alt_pt": "Área de demonstração do EnerGente: coletores solares planos e arranjo solar concentrado ao lado do contêiner de poligeração",
+   "image_caption": "EnerGente demonstration site · LabMEMS / Petrogal Brasil (Galp)",
+   "image_caption_pt": "Área de demonstração do EnerGente · LabMEMS / Petrogal Brasil (Galp)",
+   "sponsor": "Petrogal Brasil (Galp)",
+   "org_pt": "LabMEMS, COPPE/UFRJ, com Petrogal Brasil (Galp)"
+  },
+  {
+   "span": "2020–2024",
+   "name": "Microchannel heat sinks for high-concentration PV with heat recovery for desalination",
+   "name_pt": "Dissipadores em microcanais para fotovoltaica de alta concentração com recuperação térmica para dessalinização",
+   "role": "Researcher",
+   "role_pt": "Pesquisador",
+   "org": "LabMEMS, COPPE/UFRJ, with Petrogal Brasil (Galp)",
+   "line": "desalination",
+   "trl": [
+    4,
+    6
+   ],
+   "trl_note": "Microchannel heat sinks for high-concentration photovoltaic cells, with the rejected heat recovered for desalination.",
+   "trl_note_pt": "Dissipadores de calor em microcanais para células fotovoltaicas de alta concentração, com aproveitamento do calor rejeitado para dessalinização.",
+   "trl_confirmed": true,
+   "image": "/images/project-dcmd-loop.svg",
+   "image_alt": "Process diagram of the direct-contact membrane distillation (DCMD) system: brackish-water feed loop with heat exchangers, heat source and mixing tank, and the cold distillate loop with heat sink",
+   "image_alt_pt": "Diagrama do sistema de destilação por membranas de contato direto (DCMD): circuito de alimentação de água salobra com trocadores de calor, fonte de calor e tanque de mistura, e circuito frio de destilado com dissipador",
+   "image_caption": "DCMD desalination loop driven by recovered heat",
+   "image_caption_pt": "Circuito de dessalinização DCMD acionado por calor recuperado",
+   "sponsor": "Petrogal Brasil (Galp)",
+   "org_pt": "LabMEMS, COPPE/UFRJ, com Petrogal Brasil (Galp)"
+  },
+  {
+   "span": "2016–2019",
+   "name": "Reactor modelling for hydrogen production (PIBIC/PIBEC)",
+   "name_pt": "Modelagem de reatores para produção de hidrogênio (PIBIC/PIBEC)",
+   "role": "Undergraduate researcher",
+   "role_pt": "Pesquisador de iniciação científica",
+   "org": "POLI/UPE",
+   "line": "reforming",
+   "trl": [
+    1,
+    3
+   ],
+   "trl_note": "Mathematical modelling and simulation of reforming reactors for hydrogen production.",
+   "trl_note_pt": "Modelagem matemática e simulação de reatores de reforma para produção de hidrogênio.",
+   "trl_confirmed": true,
+   "image": "/images/reactor-fbr.svg",
+   "image_alt": "Schematic of the fixed-bed catalytic reactor for toluene steam reforming: multi-component feed manifold, flue-gas heating through the reactor wall and Ni2Mg4Al1.8Ce0.2 catalytic bed",
+   "image_alt_pt": "Esquema do reator catalítico de leito fixo para reforma a vapor do tolueno: manifold de alimentação multicomponente, aquecimento por gases de combustão pela parede e leito catalítico de Ni2Mg4Al1.8Ce0.2",
+   "image_caption": "Fixed-bed catalytic reactor modelled in the project",
+   "image_caption_pt": "Reator catalítico de leito fixo modelado no projeto",
+   "org_pt": "POLI/UPE"
+  }
+ ],
+ "awards": [
+  {
+   "year": 2025,
+   "name": "Nota 10 FAPERJ",
+   "name_pt": "Bolsa Nota 10 FAPERJ"
+  },
+  {
+   "year": 2024,
+   "name": "ANP Award for Technological Innovation",
+   "name_pt": "Prêmio ANP de Inovação Tecnológica"
+  },
+  {
+   "year": 2022,
+   "name": "X CREA-RJ Award for Scientific and Technological Works",
+   "name_pt": "X Prêmio CREA-RJ de Trabalhos Científicos e Tecnológicos"
+  },
+  {
+   "year": 2019,
+   "name": "Academic excellence scholarship, POLI/UPE",
+   "name_pt": "Bolsa de excelência acadêmica, POLI/UPE"
+  }
+ ],
+ "education": [
+  {
+   "span": "2022–2026",
+   "degree": "DSc, Mechanical Engineering",
+   "degree_pt": "Doutorado em Engenharia Mecânica",
+   "org": "COPPE/UFRJ",
+   "note": "FAPERJ scholarship. Advisor: Carolina P. Naveira-Cotta",
+   "note_pt": "Bolsista FAPERJ. Orientadora: Carolina P. Naveira-Cotta"
+  },
+  {
+   "span": "2020–2022",
+   "degree": "MSc, Mechanical Engineering",
+   "degree_pt": "Mestrado em Engenharia Mecânica",
+   "org": "COPPE/UFRJ",
+   "note": "CNPq scholarship. Advisors: Carolina P. Naveira-Cotta, Renato M. Cotta",
+   "note_pt": "Bolsista CNPq. Orientadores: Carolina P. Naveira-Cotta, Renato M. Cotta"
+  },
+  {
+   "span": "2015–2019",
+   "degree": "BSc, Civil Engineering",
+   "degree_pt": "Graduação em Engenharia Civil",
+   "org": "Escola Politécnica de Pernambuco (UPE)",
+   "note": "CNPq scholarship. Advisor: Jornandes Dias da Silva",
+   "note_pt": "Bolsista CNPq. Orientador: Jornandes Dias da Silva"
+  }
+ ],
+ "reviewer": [
+  "International Journal of Hydrogen Energy",
+  "Journal of the Brazilian Society of Mechanical Sciences and Engineering",
+  "IEEE Latin America Transactions"
+ ],
+ "links": {
+  "orcid": "https://orcid.org/0000-0002-9401-5099",
+  "lattes": "http://lattes.cnpq.br/3753408008148421",
+  "github": "https://github.com/emersondosanjos",
+  "zenodo": "https://zenodo.org/communities/dosanjos-membraneless-electrolyzer",
+  "email": "emersonbanjos@coppe.ufrj.br",
+  "emails": [
+   "emersonbanjos@coppe.ufrj.br",
+   "emersonbanjos@mecanica.coppe.ufrj.br",
+   "emersonbanjos@peq.coppe.ufrj.br"
+  ],
+  "linkedin": "https://www.linkedin.com/in/emerson-barbosa-47718512a/"
+ },
+ "tools": [
+  {
+   "year": 2026,
+   "line": "recovery",
+   "name": "Pilot-plant simulator in virtual and augmented reality",
+   "name_pt": "Simulador de planta piloto em realidade virtual e aumentada",
+   "note": "Interactive 3D model of the LabPAM hydrogen skids (web, phone and VR). Private development.",
+   "note_pt": "Modelo 3D interativo dos skids de hidrogênio do LabPAM (web, celular e VR). Desenvolvimento privado."
+  },
+  {
+   "year": 2026,
+   "line": "electrolysis",
+   "name": "Face-centred response-surface design for three factors",
+   "name_pt": "Planejamento composto central de face centrada para três fatores",
+   "note": "Python software for the DoE study of the outlet streams. To be released on Zenodo.",
+   "note_pt": "Software em Python para o estudo DoE das correntes de saída. A ser publicado no Zenodo."
+  },
+  {
+   "year": 2023,
+   "line": "desalination",
+   "name": "Desalination cost dashboard (R/Shiny)",
+   "name_pt": "Painel de custos de dessalinização (R/Shiny)",
+   "note": "Economic comparison of membrane distillation with other desalination technologies, built for the EnerGente project.",
+   "note_pt": "Comparação econômica entre destilação por membranas e outras tecnologias de dessalinização, desenvolvido no projeto EnerGente."
+  },
+  {
+   "year": 2022,
+   "line": "desalination",
+   "name": "Reduced model of air-gap membrane distillation (Wolfram Mathematica)",
+   "name_pt": "Modelo reduzido de destilação por membranas com gap de ar (Wolfram Mathematica)",
+   "note": "Lumped-differential model used for module-scale analysis.",
+   "note_pt": "Modelo diferencial-concentrado aplicado à análise em escala de módulo."
+  },
+  {
+   "year": 2025,
+   "line": "droplets",
+   "name": "Droplet cooling and freezing code (Mathematica)",
+   "name_pt": "Código de resfriamento e congelamento de gotas (Mathematica)",
+   "note": "Code of the Phil. Trans. R. Soc. A 2025 paper. Private repository, release to be decided.",
+   "note_pt": "Código do artigo na Phil. Trans. R. Soc. A (2025). Repositório privado, liberação a definir."
+  }
+ ]
+}

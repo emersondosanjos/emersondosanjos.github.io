@@ -1,0 +1,128 @@
+---
+import Base from '../layouts/Base.astro';
+import PageHead from '../components/PageHead.astro';
+import WorkItem from '../components/WorkItem.astro';
+import { works, SERIES, SERIES_ORDER, seriesLabel, typeLabel, statusLabel } from '../lib/works';
+import { UI, type Lang } from '../lib/i18n';
+
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'en' } = Astro.props;
+const t = UI[lang].publications;
+
+const years = [...new Set(works.map((w) => w.year))].sort((a, b) => b - a);
+const types = ['journal', 'conference', 'chapter', 'thesis'] as const;
+const statuses = ['published', 'under-review', 'in-preparation'] as const;
+const yMin = Math.min(...years), yMax = Math.max(...years);
+---
+<Base title={t.title} current="/publications/" lang={lang}>
+  <PageHead title={t.title} lede={t.lede} />
+  <section class="paper pubs">
+    <div class="wrap">
+      <div class="filters" role="search" aria-label={t.filterLabel}>
+        <div class="frow">
+          <span class="fl mono">{t.fTheme}</span>
+          {SERIES_ORDER.map((id) => (
+            <button type="button" class="f" data-line={id} data-kind="line" aria-pressed="false"><i aria-hidden="true"></i>{SERIES[id].symbol} {seriesLabel(id, lang)}</button>
+          ))}
+        </div>
+        <div class="frow">
+          <span class="fl mono">{t.fType}</span>
+          {types.map((tp) => (
+            <button type="button" class="f type" data-type={tp} data-kind="type" aria-pressed="false">{typeLabel(tp, lang)}</button>
+          ))}
+          <span class="fl mono fl-gap">{t.fStatus}</span>
+          {statuses.map((st) => (
+            <button type="button" class="f type" data-status={st} data-kind="status" aria-pressed="false">{statusLabel(st, lang)}</button>
+          ))}
+        </div>
+        <div class="frow">
+          <span class="fl mono">{t.fYears}</span>
+          <label class="yrsel">{t.fFrom}
+            <select id="yFrom">{years.slice().reverse().map((y) => <option value={y} selected={y === yMin}>{y}</option>)}</select>
+          </label>
+          <label class="yrsel">{t.fTo}
+            <select id="yTo">{years.slice().reverse().map((y) => <option value={y} selected={y === yMax}>{y}</option>)}</select>
+          </label>
+          <input id="q" class="q" type="search" placeholder={t.fSearch} aria-label={t.fSearch} />
+          <button type="button" class="clear" id="clear">{t.fClear}</button>
+        </div>
+        <p class="count" aria-live="polite"><span id="n" class="mono">{works.length}</span> {t.shownOf} <span class="mono">{works.length}</span> {t.shownSuffix}</p>
+      </div>
+      {years.map((y) => (
+        <section class="yr" data-year={y}>
+          <h2>{y}</h2>
+          <ul class="ticked">{works.filter((w) => w.year === y).map((w) => <WorkItem w={w} lang={lang} />)}</ul>
+        </section>
+      ))}
+      <p class="empty" hidden>{t.empty}</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .pubs { padding-block: 48px 112px; }
+  .filters { position: sticky; top: 70px; z-index: 2; background: var(--paper); padding: 16px 0; border-bottom: 1.5px solid var(--ink); display: flex; flex-direction: column; gap: 10px; }
+  .frow { display: flex; flex-wrap: wrap; gap: 8px; }
+  .f { display: inline-flex; align-items: center; gap: 8px; font: 500 0.95rem/1 var(--hand); padding: 7px 13px 7px 11px; border-radius: 999px; border: 1.5px solid color-mix(in srgb, var(--c-ink, var(--ink)) 45%, transparent); color: var(--ink); background: transparent; cursor: pointer; transition: background-color .2s var(--ease-out); }
+  .f i { width: 3px; height: 16px; border-radius: 2px; background: var(--c-ink, var(--ink)); }
+  .f.type i { display: none; }
+    .f { --chip: #0b2d6b; }
+  .f[data-line] { --chip: var(--c-ink); }
+  .f[aria-pressed='true'] { border-color: var(--chip); color: #fff; background-color: var(--chip); box-shadow: 0 0 0 2px #ff7a59; }
+  .f[aria-pressed='true'] i { background: #fff; }
+  .f:hover { background: color-mix(in srgb, var(--c-ink, var(--ink)) 18%, var(--paper)); }
+  .fl { font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); align-self: center; min-width: 54px; }
+  .fl-gap { margin-left: 14px; }
+  .yrsel { display: inline-flex; align-items: center; gap: 6px; font: 500 0.9rem/1 var(--hand); color: var(--ink-soft); }
+  .yrsel select, .q { font: 500 0.95rem/1 var(--sans); color: var(--ink); background: #fff; border: 1.5px solid var(--plate-rule); border-radius: 10px; padding: 7px 10px; }
+  .q { flex: 1 1 220px; min-width: 180px; }
+  .q:focus, .yrsel select:focus { outline: 2px solid #ff7a59; outline-offset: 1px; }
+  .clear { font: 600 0.88rem/1 var(--hand); color: var(--ink); background: transparent; border: 0; text-decoration: underline; text-underline-offset: 0.2em; cursor: pointer; }
+  .yr[hidden], .yr :global(.wi[hidden]) { display: none; }
+  .count { margin: 0; color: var(--ink-soft); font-size: 0.9rem; }
+  .count .mono { font-size: 0.75rem; }
+  .yr { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 24px; padding-block: 18px 6px; }
+  .yr ul { color: var(--ink); list-style: none; margin: 0; padding: 0; }
+  .yr h2 { font: 400 2.4rem/1 var(--hand); padding-top: 18px; position: sticky; top: 200px; align-self: start; }
+  .yr ul > :global(li:last-child) { border-bottom: 0; }
+  .empty { padding: 48px 0; font: 500 1.2rem/1.4 var(--hand); }
+  @media (max-width: 760px) {
+    .filters { position: static; }
+    .yr { grid-template-columns: 1fr; gap: 0; }
+    .yr h2 { position: static; font-size: 2rem; }
+  }
+</style>
+
+<script>
+  /* filters: nothing selected in a group = everything in that group */
+  const fs = [...document.querySelectorAll<HTMLButtonElement>('.f')];
+  const items = [...document.querySelectorAll<HTMLElement>('.wi')];
+  const yFrom = document.getElementById('yFrom') as HTMLSelectElement;
+  const yTo = document.getElementById('yTo') as HTMLSelectElement;
+  const q = document.getElementById('q') as HTMLInputElement;
+  const sel = (k: string) => new Set(fs.filter((f) => f.dataset.kind === k && f.getAttribute('aria-pressed') === 'true').map((f) => f.dataset[k]!));
+  function apply() {
+    const lines = sel('line'), types = sel('type'), sts = sel('status');
+    const a = Math.min(+yFrom.value, +yTo.value), b = Math.max(+yFrom.value, +yTo.value);
+    const term = q.value.trim().toLowerCase();
+    let n = 0;
+    items.forEach((i) => {
+      const y = +(i.closest<HTMLElement>('.yr')!.dataset.year!);
+      const show = (!lines.size || lines.has(i.dataset.line!)) && (!types.size || types.has(i.dataset.type!)) && (!sts.size || sts.has(i.dataset.status!))
+        && y >= a && y <= b && (!term || i.textContent!.toLowerCase().includes(term));
+      i.hidden = !show; if (show) n++;
+    });
+    document.querySelectorAll<HTMLElement>('.yr').forEach((s) => { s.hidden = !s.querySelector('.wi:not([hidden])'); });
+    document.getElementById('n')!.textContent = String(n);
+    (document.querySelector('.empty') as HTMLElement).hidden = n > 0;
+  }
+  fs.forEach((f) => f.addEventListener('click', () => { f.setAttribute('aria-pressed', String(f.getAttribute('aria-pressed') !== 'true')); apply(); }));
+  [yFrom, yTo].forEach((s) => s.addEventListener('change', apply));
+  q.addEventListener('input', apply);
+  document.getElementById('clear')!.addEventListener('click', () => {
+    fs.forEach((f) => f.setAttribute('aria-pressed', 'false'));
+    yFrom.selectedIndex = 0; yTo.selectedIndex = yTo.options.length - 1; q.value = ''; apply();
+  });
+</script>

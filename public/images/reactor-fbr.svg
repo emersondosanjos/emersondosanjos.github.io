@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="60 10 1480 880" width="1480" height="880" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif" fill="#0d1b5e">
+  <title>Fixed-bed catalytic reactor for toluene steam reforming</title>
+  <!-- Redrawn from E.B. dos Anjos et al., J. Braz. Soc. Mech. Sci. Eng. 42 (2020) 114 -->
+  <defs>
+    <pattern id="cat" width="13" height="13" patternUnits="userSpaceOnUse">
+      <rect width="13" height="13" fill="#e7ebf3"/>
+      <circle cx="6.5" cy="6.5" r="4.6" fill="#1b2550"/>
+      <circle cx="5.2" cy="5.1" r="1.4" fill="#8f9bc4"/>
+    </pattern>
+    <marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#0d1b5e"/>
+    </marker>
+    <g id="valve">
+      <path d="M-15 -10 L15 10 L15 -10 L-15 10 Z" fill="#0d1b5e"/>
+      <line x1="0" y1="0" x2="0" y2="-16" stroke="#0d1b5e" stroke-width="2.4"/>
+      <circle cx="0" cy="-19" r="5" fill="#0d1b5e"/>
+    </g>
+    <g id="flueDown">
+      <path d="M-24 0 H24 V138 H46 L0 182 L-46 138 H-24 Z" fill="#fff" stroke="#0d1b5e" stroke-width="3" stroke-linejoin="round"/>
+      <text transform="translate(6 70) rotate(-90)" text-anchor="middle" font-size="17" font-style="italic">Flue gas heating</text>
+    </g>
+    <g id="flueUp">
+      <path d="M-24 0 H24 V-138 H46 L0 -182 L-46 -138 H-24 Z" fill="#fff" stroke="#0d1b5e" stroke-width="3" stroke-linejoin="round"/>
+      <text transform="translate(-6 -70) rotate(90)" text-anchor="middle" font-size="17" font-style="italic">Flue gas heating</text>
+    </g>
+  </defs>
+
+  <!-- ===== flue-gas heating, top and bottom ===== -->
+  <g>
+    <use href="#flueDown" x="500" y="30"/>
+    <use href="#flueDown" x="720" y="30"/>
+    <use href="#flueDown" x="905" y="30"/>
+    <use href="#flueDown" x="1080" y="30"/>
+    <use href="#flueUp" x="500" y="790"/>
+    <use href="#flueUp" x="720" y="790"/>
+    <use href="#flueUp" x="905" y="790"/>
+    <use href="#flueUp" x="1080" y="790"/>
+  </g>
+
+  <!-- ===== reactor wall bands ===== -->
+  <rect x="455" y="214" width="660" height="14" fill="#eef1f7" stroke="#0d1b5e" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <rect x="455" y="592" width="660" height="14" fill="#eef1f7" stroke="#0d1b5e" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <line x1="610" y1="214" x2="610" y2="196" stroke="#0d1b5e" stroke-width="1.5"/>
+  <text transform="translate(617 190) rotate(-90)" font-size="24" font-weight="600">FBR wall</text>
+  <line x1="990" y1="606" x2="990" y2="624" stroke="#0d1b5e" stroke-width="1.5"/>
+  <text transform="translate(997 630) rotate(90)" font-size="24" font-weight="600">FBR wall</text>
+
+  <!-- ===== catalytic fixed bed (two halves, cut-away) ===== -->
+  <path d="M722 230 C 752 262, 696 340, 716 402 L1112 402 L1112 230 Z" fill="url(#cat)"/>
+  <path d="M716 418 C 698 482, 768 556, 752 590 L1112 590 L1112 418 Z" fill="url(#cat)"/>
+  <path d="M698 228 C 740 262, 670 345, 694 410 S 748 560, 732 592" fill="none" stroke="#0d1b5e" stroke-width="3.2"/>
+  <!-- tube outline -->
+  <line x1="470" y1="228" x2="1115" y2="228" stroke="#0d1b5e" stroke-width="3.5"/>
+  <line x1="470" y1="592" x2="1115" y2="592" stroke="#0d1b5e" stroke-width="3.5"/>
+
+  <!-- ===== inlet flange (front ring) ===== -->
+  <ellipse cx="488" cy="410" rx="76" ry="184" fill="#0d1b5e"/>
+  <ellipse cx="468" cy="410" rx="76" ry="184" fill="#c8cfdd" stroke="#0d1b5e" stroke-width="3.5"/>
+  <ellipse cx="474" cy="410" rx="48" ry="136" fill="#fff" stroke="#0d1b5e" stroke-width="3.5"/>
+
+  <!-- ===== axis, radius ===== -->
+  <line x1="470" y1="410" x2="1190" y2="410" stroke="#0d1b5e" stroke-width="3.5" stroke-dasharray="20 11" marker-end="url(#ah)"/>
+  <text x="1182" y="396" font-size="26" font-style="italic">z</text>
+  <line x1="1136" y1="404" x2="1136" y2="236" stroke="#0d1b5e" stroke-width="2" marker-start="url(#ah)" marker-end="url(#ah)"/>
+  <text x="1146" y="330" font-size="26" font-style="italic">R</text>
+
+  <!-- ===== feed manifold ===== -->
+  <g stroke="#0d1b5e" stroke-width="2.6" fill="none">
+    <path d="M286 190 H378 V300 H452" marker-end="url(#ah)"/>
+    <path d="M286 240 H330 V352"/>
+    <path d="M286 352 H452" marker-end="url(#ah)"/>
+    <path d="M286 410 H452" marker-end="url(#ah)"/>
+    <path d="M286 464 H452" marker-end="url(#ah)"/>
+    <path d="M286 552 H334 V464"/>
+    <path d="M286 614 H384 V520 H452" marker-end="url(#ah)"/>
+    <line x1="456" y1="290" x2="456" y2="530" stroke-width="3.2"/>
+  </g>
+  <use href="#valve" x="262" y="190"/>
+  <use href="#valve" x="262" y="240"/>
+  <use href="#valve" x="262" y="352"/>
+  <use href="#valve" x="262" y="410"/>
+  <use href="#valve" x="262" y="464"/>
+  <use href="#valve" x="262" y="552"/>
+  <use href="#valve" x="262" y="614"/>
+  <use href="#valve" x="484" y="410"/>
+  <g font-size="25" font-weight="600" text-anchor="end">
+    <text x="232" y="199">C<tspan font-size="17" dy="7">7</tspan><tspan dy="-7">H</tspan><tspan font-size="17" dy="7">8(g)</tspan></text>
+    <text x="232" y="249">CO<tspan font-size="17" dy="7">(g)</tspan></text>
+    <text x="232" y="361">H<tspan font-size="17" dy="7">2</tspan><tspan dy="-7">O</tspan><tspan font-size="17" dy="7">(g)</tspan></text>
+    <text x="232" y="402">Sweep</text>
+    <text x="232" y="430">gas</text>
+    <text x="232" y="473">H<tspan font-size="17" dy="7">2(g)</tspan></text>
+    <text x="232" y="561">CO<tspan font-size="17" dy="7">2(g)</tspan></text>
+    <text x="232" y="623">CH<tspan font-size="17" dy="7">4(g)</tspan></text>
+  </g>
+
+  <!-- ===== callouts ===== -->
+  <text x="300" y="92" font-size="25" font-weight="600">Gas mixture</text>
+  <line x1="380" y1="102" x2="476" y2="398" stroke="#0d1b5e" stroke-width="1.8" marker-end="url(#ah)"/>
+
+  <text x="1338" y="196" font-size="25" text-anchor="middle">Output gas mixture</text>
+  <text x="1338" y="230" font-size="22" text-anchor="middle">(C<tspan font-size="15" dy="6">7</tspan><tspan dy="-6">H</tspan><tspan font-size="15" dy="6">8</tspan><tspan dy="-6">, H</tspan><tspan font-size="15" dy="6">2</tspan><tspan dy="-6">O, CO</tspan><tspan font-size="15" dy="6">2</tspan><tspan dy="-6">, CO, CH</tspan><tspan font-size="15" dy="6">4</tspan><tspan dy="-6">, H</tspan><tspan font-size="15" dy="6">2</tspan><tspan dy="-6">)</tspan></text>
+  <line x1="1290" y1="248" x2="1060" y2="404" stroke="#0d1b5e" stroke-width="1.8" marker-end="url(#ah)"/>
+
+  <text x="1300" y="482" font-size="25" text-anchor="middle">Ni<tspan font-size="17" dy="7">2</tspan><tspan dy="-7">Mg</tspan><tspan font-size="17" dy="7">4</tspan><tspan dy="-7">Al</tspan><tspan font-size="17" dy="7">1.8</tspan><tspan dy="-7">Ce</tspan><tspan font-size="17" dy="7">0.2</tspan></text>
+  <line x1="1250" y1="500" x2="1066" y2="566" stroke="#0d1b5e" stroke-width="1.8" marker-end="url(#ah)"/>
+
+  <!-- ===== legend ===== -->
+  <rect x="1170" y="672" width="350" height="62" fill="#fff" stroke="#0d1b5e" stroke-width="3"/>
+  <rect x="1188" y="688" width="76" height="30" fill="url(#cat)"/>
+  <text x="1282" y="712" font-size="23" font-weight="600">Catalytic fixed bed</text>
+</svg>

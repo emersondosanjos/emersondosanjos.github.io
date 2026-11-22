@@ -1,0 +1,383 @@
+---
+import Base from '../layouts/Base.astro';
+import Spectrum from '../components/Spectrum.astro';
+import DoiLogo from '../components/DoiLogo.astro';
+import Icon from '../components/Icon.astro';
+import TrlScale from '../components/TrlScale.astro';
+import Flags from '../components/Flags.astro';
+import { lines, SERIES, worksOf, works, statusLabel, doiUrl, links, tools } from '../lib/works';
+import { UI, localePath, type Lang } from '../lib/i18n';
+
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'en' } = Astro.props;
+const t = UI[lang].home;
+
+const series = works.filter((w) => w.series).sort((a, b) => (a.series! < b.series! ? -1 : 1));
+const domainColors = ['var(--h-del)', 'var(--h-gam)', 'var(--h-eps)', 'var(--mist-soft)', 'var(--h-bet)', 'var(--h-alp)'];
+const paper01 = series.find((w) => w.series === '01');
+---
+<Base current="/" lang={lang}>
+  <section class="hero on-dark">
+    <div class="wrap">
+      <div class="hero-id">
+        <div class="id-row">
+          <button type="button" class="portrait sticker" style="--tilt:-4deg" data-portrait aria-label={lang === 'pt' ? 'Ampliar retrato' : 'Enlarge portrait'}><img src="/portrait-face.jpg" alt={lang === 'pt' ? 'Retrato de Emerson Barbosa dos Anjos' : 'Portrait of Emerson Barbosa dos Anjos'} width="132" height="132" /></button>
+          <h1 class="name">Emerson Barbosa<br /><span>dos Anjos</span><Flags lang={lang} /></h1>
+        </div>
+        <ul class="domains" aria-label={lang === 'pt' ? 'Áreas de atuação' : 'Core domains'}>
+          {t.disciplines.map((d, idx) => (
+            <li style={`--dc:${domainColors[idx % domainColors.length]}`}>{d}</li>
+          ))}
+        </ul>
+      </div>
+      <div class="intro">
+        <p class="lede">{t.lede}</p>
+        <p class="role">{t.role}</p>
+        <div class="acts">
+          <a class="act solid" href={localePath('/open-science/', lang)}>{t.ctaOpenScience} <Icon name="arrow" /></a>
+          <a class="act ghost" href={localePath('/ai/', lang)}>{t.ctaAi}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="on-dark spec-sec" aria-labelledby="spec-title">
+    <div class="wrap">
+      <div class="spec-head">
+        <h2 id="spec-title" class="section-title">{t.specTitle}</h2>
+        <details class="spec-info">
+          <summary aria-label={t.specInfoLabel} title={t.specInfoLabel}><span aria-hidden="true">i</span></summary>
+          <div class="spec-info-panel">
+            <p class="spec-info-title">{t.specInfoLabel}</p>
+            <ol>{t.specInfo.map((p) => <li>{p}</li>)}</ol>
+          </div>
+        </details>
+      </div>
+      <p class="section-lede">{t.specLede}</p>
+      <Spectrum lang={lang} />
+    </div>
+  </section>
+
+  <dialog class="portrait-dlg" aria-label={lang === 'pt' ? 'Retrato de Emerson Barbosa dos Anjos' : 'Portrait of Emerson Barbosa dos Anjos'}>
+    <form method="dialog"><button class="pd-x" aria-label={lang === 'pt' ? 'Fechar' : 'Close'}>×</button></form>
+    <span class="sticker pd-sticker" style="--tilt:2deg"><img src="/portrait.jpg" alt="" width="960" height="1280" loading="lazy" decoding="async" /></span>
+    <p class="pd-cap">Emerson Barbosa <b>dos Anjos</b> · DSc, COPPE/UFRJ</p>
+  </dialog>
+
+  <section class="paper rnd" aria-labelledby="rnd-title">
+    <div class="wrap">
+      <h2 id="rnd-title" class="section-title">{t.rndTitle}</h2>
+      <p class="section-lede">{t.rndLede}</p>
+      <TrlScale lang={lang} />
+    </div>
+  </section>
+
+  <section class="paper series-sec" aria-labelledby="lines-title">
+    <div class="wrap">
+      <h2 id="lines-title" class="section-title">{t.linesTitle}</h2>
+      <p class="section-lede">{t.linesLede}</p>
+      <ol class="lines-list ticked">
+        {lines.map((l) => {
+          const n = worksOf(l.id).length + tools.filter((tool) => tool.line === l.id).length;
+          const lName = lang === 'pt' && l.name_pt ? l.name_pt : l.name;
+          const lSummary = lang === 'pt' && l.summary_pt ? l.summary_pt : l.summary;
+          return (
+            <li data-line={l.id}>
+              <a href={`${localePath('/research/', lang)}#${l.id}`}>
+                <svg class="emit" viewBox="0 0 12 80" aria-hidden="true"><path d="M6 2 C 5 22, 7 40, 6 78" /></svg>
+                <span class="ln-sym">{SERIES[l.id].symbol}<small class="mono">{SERIES[l.id].nm.toFixed(1)} nm</small></span>
+                <span class="ln-body">
+                  <span class="ln-name">{lName}</span>
+                  <span class="ln-sum">{lSummary}</span>
+                </span>
+                <span class="ln-meta mono">{l.span}<br />{n} {n === 1 ? t.entrySingle : t.entryPlural}</span>
+              </a>
+            </li>
+          );
+        })}
+      </ol>
+    </div>
+  </section>
+
+  <section class="paper ai-home" aria-labelledby="ai-title">
+    <div class="wrap">
+      <div class="ai-head">
+        <div>
+          <h2 id="ai-title" class="section-title">{t.aiTitle}</h2>
+          <p class="section-lede">{t.aiLede}</p>
+        </div>
+        <a class="act" href={localePath('/ai/', lang)}>{t.aiCta} <Icon name="arrow" /></a>
+      </div>
+      <ol class="ai-list ticked">
+        {t.aiCards.map((c, idx) => (
+          <li>
+            <span class="ai-no mono">{String(idx + 1).padStart(2, '0')}</span>
+            <span class="ai-name">{c.title}</span>
+            <span class="ai-body">{c.body}</span>
+            <span class="ai-tag mono">{c.tag}</span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="on-dark membraneless" aria-labelledby="mle-title" data-line="electrolysis">
+    <div class="wrap">
+      <div class="mle-head">
+        <div>
+          <h2 id="mle-title" class="section-title">{t.mleTitle}</h2>
+          <p class="section-lede">{t.mleLede}</p>
+        </div>
+        <a class="act solid" href={localePath('/electrolyzers/', lang)}>{UI[lang].electrolyzers.homeCta} <Icon name="arrow" /></a>
+      </div>
+      <ol class="mle ticked">
+        {series.map((w) => (
+          <li>
+            <span class="mle-no mono">{w.series}</span>
+            <span class="mle-title">{w.title}</span>
+            <span class="mle-venue">{w.status === 'published' ? w.venue : ''}</span>
+            <span class="stage" data-status={w.status} title={w.status === 'under-review' ? (lang === 'pt' ? 'Em sigilo até a publicação' : 'Confidential until publication') : undefined}>{statusLabel(w.status, lang)}</span>
+            <span class="mle-links">
+              {w.doi && <a class="doi-link" href={doiUrl(w.doi)} aria-label="DOI"><DoiLogo size={22} /></a>}
+              {w.github && <a href={w.github}>GitHub</a>}
+              {!w.doi && <span class="pending">{t.mlePending}</span>}
+            </span>
+          </li>
+        ))}
+      </ol>
+      <p class="mle-acts">
+        {paper01?.github && <a class="act ghost" href={paper01.github}><Icon name="github" /> {t.mleFigureLink}</a>}
+        <a class="act ghost" href={links.zenodo}>{t.mleZenodoCta} <Icon name="arrow" /></a>
+      </p>
+    </div>
+  </section>
+
+  <section class="paper open" aria-labelledby="open-title">
+    <div class="wrap open-grid">
+      <div>
+        <h2 id="open-title" class="section-title">{t.openTitle}</h2>
+        <p class="section-lede">{t.openLede}</p>
+        <p class="open-acts"><a class="act" href={localePath('/open-science/', lang)}>{t.openCta} <Icon name="arrow" /></a></p>
+      </div>
+      <figure class="cite brush">
+        <figcaption>{t.citeCaption}</figcaption>
+        <pre id="cite-01">dos Anjos EB, dos Reis BS, Naveira-Cotta CP.
+Theoretical-experimental analysis of a membraneless
+electrolyzer for hydrogen production.
+Int J Hydrogen Energy 182 (2025) 151751.
+doi:10.1016/j.ijhydene.2025.151751</pre>
+        <button
+          type="button"
+          class="copy"
+          data-copy="cite-01"
+          data-label-default={t.citeCopy}
+          data-label-copied={t.citeCopied}
+          data-label-fallback={t.citeFallback}
+        >
+          <Icon name="copy" /> <span>{t.citeCopy}</span>
+        </button>
+      </figure>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero { padding-block: clamp(16px, 3vh, 44px) clamp(40px, 6vw, 72px); }
+  .hero .wrap { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 24px 56px; align-items: start; }
+  .hero-id { display: flex; flex-direction: column; }
+  .name { font: 300 clamp(2.2rem, min(4.9vw, 8.5vh), 4.1rem)/0.98 var(--hand); white-space: nowrap; letter-spacing: -0.03em; color: var(--mist); }
+  .name span { color: var(--name-color, var(--accent)); text-shadow: var(--name-outline, none); background: var(--name-hl, none); background-repeat: no-repeat; background-size: var(--name-hl-size, 100% 46%); background-position: 0 88%; padding: 0 0.08em; margin: 0 -0.04em; border-radius: 0.3em 0.6em 0.4em 0.7em; -webkit-box-decoration-break: clone; box-decoration-break: clone; font-weight: 500; }
+  .id-row { display: flex; align-items: center; gap: clamp(16px, 2.4vw, 28px); }
+  .portrait { flex: none; width: clamp(96px, 9.5vw, 136px); padding: 6px; }
+  .portrait img { width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; }
+
+  /* domains: a spectral reading, not controls: hand-lettered names each led by its emission line */
+  .domains {
+    list-style: none;
+    margin: 22px 0 0;
+    padding: 16px 0 0;
+    border-top: 1px solid var(--plate-rule);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 26px;
+  }
+  .domains li {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font: 500 1.02rem/1.15 var(--hand);
+    color: var(--mist);
+    white-space: nowrap;
+  }
+  .domains li::before {
+    content: '';
+    width: 3px;
+    height: 1.15em;
+    border-radius: 2px;
+    background: var(--dc);
+    flex: none;
+  }
+
+  .intro { padding-top: 4px; padding-bottom: 8px; }
+  .lede { font-size: clamp(1.1rem, 1.6vw, 1.3rem); line-height: 1.5; margin: 0 0 14px; color: var(--mist); max-width: 46ch; }
+  .role { color: var(--mist-soft); margin: 0 0 24px; max-width: 46ch; }
+  .acts { display: flex; flex-wrap: wrap; gap: 12px; }
+  /* spectrum: its own section, separated from the hero by a plate rule */
+  .spec-sec { padding-block: clamp(48px, 6vw, 80px) clamp(40px, 5vw, 64px); border-top: 1px solid var(--plate-rule); border-bottom: 2px solid var(--plate-rule); }
+  .spec-sec .section-title { color: var(--mist); }
+  .spec-sec :global(.spectrum) { margin-top: clamp(24px, 3vw, 36px); }
+  .spec-head { display: flex; align-items: center; gap: 16px; position: relative; }
+  .spec-info summary {
+    list-style: none;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    color: var(--accent);
+    display: grid;
+    place-items: center;
+    font: 700 1.05rem/1 var(--hand);
+    cursor: pointer;
+    transition: background-color 0.2s var(--ease-out), color 0.2s;
+  }
+  .spec-info summary::-webkit-details-marker { display: none; }
+  .spec-info summary:hover, .spec-info[open] summary { background: var(--signal); color: var(--signal-ink); }
+  .spec-info-panel {
+    position: absolute;
+    z-index: 5;
+    left: 0;
+    top: calc(100% + 12px);
+    width: min(640px, 100%);
+    padding: 18px 22px;
+    background: var(--paper);
+    color: var(--ink);
+    border: 2px solid var(--shadow-ink);
+    border-radius: 10px;
+    box-shadow: 4px 4px 0 var(--shadow-ink);
+  }
+  .spec-info-title { margin: 0 0 8px; font: 600 1.15rem/1.2 var(--hand); }
+  .spec-info-panel ol { margin: 0; padding-left: 1.2em; display: grid; gap: 8px; font-size: 0.95rem; color: var(--ink-soft); }
+  @media (max-width: 900px) { .hero .wrap { grid-template-columns: minmax(0, 1fr); } }
+  @media (max-width: 640px) {
+    .hero { padding-top: 18px; }
+    .name { font-size: 2.2rem; }
+    .portrait { width: 82px; padding: 4px; }
+    .domains { margin-top: 14px; padding-top: 12px; }
+    .domains { gap: 8px 18px; }
+    .domains li { font-size: 0.9rem; }
+    .lede { font-size: 1.02rem; margin-bottom: 14px; }
+    .role { display: none; }
+    .acts .act { font-size: 0.95rem; padding: 0.65em 1em; }
+  }
+
+  .series-sec, .open, .rnd, .ai-home { padding-block: clamp(72px, 10vw, 128px); }
+  .rnd { padding-bottom: 24px; }
+  .series-sec { padding-top: clamp(48px, 6vw, 80px); padding-bottom: clamp(48px, 6vw, 80px); border-top: 2px solid var(--plate-rule); }
+  button.portrait { border: 0; cursor: zoom-in; }
+  .portrait-dlg { padding: 34px 34px 22px; border: 0; border-radius: 18px; background: var(--paper); color: var(--ink); box-shadow: 0 30px 80px rgba(11, 45, 107, 0.35); text-align: center; overflow: visible; }
+  .portrait-dlg::backdrop { background: rgba(11, 45, 107, 0.5); backdrop-filter: blur(6px); }
+  .portrait-dlg[open] { animation: pd-in 0.3s var(--ease-out); }
+  @keyframes pd-in { from { opacity: 0; transform: scale(0.96); } }
+  .pd-sticker { padding: 9px; }
+  .pd-sticker img { width: auto; height: min(74vh, 720px); max-width: 80vw; aspect-ratio: 3 / 4; object-fit: cover; }
+  .pd-cap { margin: 22px 0 0; font: 500 1.2rem/1.2 var(--hand); }
+  .pd-x { position: absolute; top: -14px; right: -14px; width: 40px; height: 40px; border-radius: 50%; border: 2px solid #ff7a59; background: var(--ink); color: #fff; font: 700 1.3rem/1 var(--sans); cursor: pointer; }
+  .ai-home { padding-top: clamp(48px, 6vw, 80px); border-top: 2px solid var(--plate-rule); }
+
+  .lines-list { list-style: none; margin: clamp(36px, 5vw, 56px) 0 0; padding: 0; color: var(--ink); }
+  .lines-list li { border-bottom: 1px solid var(--rule); }
+  .lines-list a { display: grid; grid-template-columns: 22px 116px minmax(0, 1fr) 124px; gap: 20px; align-items: center; padding: 24px 0; text-decoration: none; }
+  .emit { width: 12px; height: 72px; }
+  .emit path { fill: none; stroke: var(--c-ink); stroke-width: 4; stroke-linecap: round; transition: stroke-width .3s var(--ease-out); }
+  .lines-list a:hover .emit path { stroke-width: 7; }
+  .ln-sym { font: 600 2rem/1 var(--hand); color: var(--c-ink); display: flex; flex-direction: column; gap: 8px; }
+  .ln-sym small { font-size: 0.66rem; font-weight: 400; color: var(--ink-soft); }
+  .ln-body { display: flex; flex-direction: column; gap: 8px; }
+  .ln-name { font: 500 clamp(1.35rem, 2.1vw, 1.75rem)/1.15 var(--hand); color: var(--ink); }
+  .lines-list a:hover .ln-name { text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 0.18em; text-decoration-color: var(--c-ink); }
+  .ln-sum { color: var(--ink-soft); max-width: var(--measure); }
+  .ln-meta { color: var(--ink-soft); text-align: right; line-height: 1.9; }
+  @media (max-width: 960px) {
+    .lines-list a { grid-template-columns: 18px 96px minmax(0, 1fr) 110px; gap: 16px; }
+  }
+  @media (max-width: 760px) {
+    .lines-list a { grid-template-columns: 14px minmax(0, 1fr); gap: 8px 14px; align-items: start; }
+    .emit { grid-row: span 4; order: 1; }
+    .ln-body { order: 2; }
+    .ln-sym { order: 4; flex-direction: row; align-items: baseline; font-size: 1.2rem; }
+    .ln-meta { order: 5; text-align: left; line-height: 1.6; }
+  }
+
+  .ai-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; }
+  .ai-list { list-style: none; margin: clamp(32px, 4.5vw, 48px) 0 0; padding: 0; color: var(--ink); }
+  .ai-list li {
+    display: grid;
+    grid-template-columns: 52px minmax(0, 1.15fr) minmax(0, 1.45fr) 170px;
+    gap: 18px;
+    align-items: baseline;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .ai-no { color: var(--ink); font-size: 0.92rem; font-weight: 600; }
+  .ai-name { font: 500 1.25rem/1.25 var(--hand); color: var(--ink); }
+  .ai-body { color: var(--ink-soft); max-width: var(--measure); }
+  .ai-tag { color: var(--ink-soft); text-align: right; font-size: 0.7rem; }
+  @media (max-width: 900px) {
+    .ai-list li { grid-template-columns: 40px minmax(0, 1fr); gap: 6px 14px; }
+    .ai-list li > :not(.ai-no) { grid-column: 2; }
+    .ai-tag { text-align: left; }
+  }
+
+  .membraneless { background: var(--plate); padding-block: clamp(72px, 10vw, 128px); border-block: 1px solid var(--plate-rule); }
+  .membraneless .section-title { color: var(--mist); }
+  .mle-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px 48px; flex-wrap: wrap; }
+  .mle-acts { display: flex; flex-wrap: wrap; gap: 12px; margin: 0; }
+
+  .mle { list-style: none; margin: 40px 0 36px; padding: 0; color: var(--h-bet); }
+  .mle li { display: grid; grid-template-columns: 56px minmax(0, 1.6fr) minmax(0, 1fr) 150px 190px; gap: 18px; align-items: baseline; padding: 20px 0; border-bottom: 1px solid var(--plate-rule); }
+  .mle-no { color: var(--h-bet); font-size: 0.95rem; }
+  .mle-title { font: 500 1.2rem/1.3 var(--hand); color: var(--mist); }
+  .mle-venue { color: var(--mist-soft); font-size: 0.95rem; }
+  .mle .stage { color: var(--h-bet); }
+  .mle-links { display: flex; gap: 14px; font-size: 0.95rem; }
+  .mle-links a { color: var(--mist); }
+  .pending { color: var(--mist-soft); font-size: 0.85rem; }
+  @media (max-width: 900px) {
+    .mle li { grid-template-columns: 40px minmax(0, 1fr); gap: 6px 14px; }
+    .mle li > :not(.mle-no) { grid-column: 2; }
+  }
+
+  .open-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr); gap: 48px; align-items: center; }
+  .open-acts { margin: 28px 0 0; }
+  .cite { margin: 0; }
+  .cite figcaption { font: 500 1.15rem/1 var(--hand); margin-bottom: 14px; }
+  .cite pre { margin: 0 0 16px; font: 400 0.78rem/1.75 var(--mono); white-space: pre-wrap; color: var(--ink); }
+  .copy { display: inline-flex; align-items: center; gap: 8px; font: 500 0.95rem/1 var(--hand); color: var(--ink); background: none; border: 1.5px solid var(--ink); border-radius: 999px; padding: 9px 14px; cursor: pointer; }
+  .copy :global(svg) { width: 16px; height: 16px; flex: none; }
+  .copy:hover { background: var(--ink); color: var(--on-ink, var(--signal)); }
+  @media (max-width: 900px) { .open-grid { grid-template-columns: 1fr; } }
+</style>
+
+<script>
+  const pd = document.querySelector<HTMLDialogElement>('.portrait-dlg');
+  document.querySelector('[data-portrait]')?.addEventListener('click', () => pd?.showModal());
+  pd?.addEventListener('click', (e) => { if (e.target === pd) pd.close(); });
+  document.querySelectorAll<HTMLButtonElement>('.copy').forEach((b) =>
+    b.addEventListener('click', async () => {
+      const text = document.getElementById(b.dataset.copy!)?.textContent ?? '';
+      const label = b.querySelector('span')!;
+      const def = b.dataset.labelDefault ?? 'Copy citation';
+      const copied = b.dataset.labelCopied ?? 'Copied';
+      const fallback = b.dataset.labelFallback ?? 'Select the text to copy';
+      try {
+        await navigator.clipboard.writeText(text);
+        label.textContent = copied;
+      } catch {
+        label.textContent = fallback;
+      }
+      setTimeout(() => (label.textContent = def), 2200);
+    }),
+  );
+</script>

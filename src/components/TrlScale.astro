@@ -1,0 +1,243 @@
+---
+import { projects, lines } from '../lib/works';
+import { TRL_LEVELS, UI, type Lang } from '../lib/i18n';
+
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'en' } = Astro.props;
+const LEVELS = TRL_LEVELS[lang];
+const trlUi = UI[lang].trl;
+
+const rows = projects
+  .filter((p) => p.trl && p.trl.length === 2)
+  .sort((a, b) => b.trl![1] - a.trl![1] || b.trl![0] - a.trl![0]);
+
+/* centre of a level cell on a 0–100 track */
+const center = (level: number) => ((level - 0.5) / 9) * 100;
+
+const usedLines = lines.filter((l) => rows.some((p) => p.line === l.id));
+---
+<figure class="trl" aria-label={trlUi.mapLabel}>
+  <div class="head" aria-hidden="true">
+    <div class="head-key"></div>
+    <div class="head-scale">
+      <div class="phases">
+        {trlUi.stages.map((stage, i) => (
+          <span class="phase mono" data-phase={i}>{stage}</span>
+        ))}
+      </div>
+      <ol class="levels">
+        {LEVELS.map((name, i) => (
+          <li data-phase={Math.floor(i / 3)}>
+            <b class="mono">{i + 1}</b>
+            <span>{name}</span>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </div>
+
+  <ol class="rows">
+    {rows.map((p) => {
+      const [from, to] = p.trl!;
+      const pName = lang === 'pt' && p.name_pt ? p.name_pt : p.name;
+      const pRole = lang === 'pt' && p.role_pt ? p.role_pt : p.role;
+      const pNote = lang === 'pt' && p.trl_note_pt ? p.trl_note_pt : p.trl_note;
+      return (
+        <li data-line={p.line}>
+          <div class="who">
+            <p class="pmeta"><span class="mono">{p.span}</span> · {lang === 'pt' && p.org_pt ? p.org_pt : p.org}</p>
+            <p class="pname">{pName}</p>
+            <p class="prole">{pRole}</p>
+          </div>
+          <div class="lane">
+            <div
+              class="track"
+              role="img"
+              aria-label={`TRL ${from} (${LEVELS[from - 1]}) ${trlUi.to} TRL ${to} (${LEVELS[to - 1]})`}
+            >
+              <span class="nums" aria-hidden="true">
+                {LEVELS.map((_, i) => (
+                  <span class:list={['n mono', { on: i + 1 >= from && i + 1 <= to }]} style={`left:${center(i + 1)}%`}>{i + 1}</span>
+                ))}
+              </span>
+              {to > from && (
+                <span class="bar" style={`left:${center(from)}%;width:${center(to) - center(from)}%`} aria-hidden="true"></span>
+              )}
+              <span class="pt start mono" style={`left:${center(from)}%`} aria-hidden="true">{from}</span>
+              {to > from && (
+                <span class="pt end mono" style={`left:${center(to)}%`} title={`${trlUi.reached}: TRL ${to}`} aria-hidden="true">{to}</span>
+              )}
+            </div>
+            <p class="range">
+              <span class="trl-badge mono">TRL {from}–{to}</span>
+              <span class="range-names">{LEVELS[from - 1]} → {LEVELS[to - 1].toLowerCase()}</span>
+            </p>
+            {pNote && <p class="note">{pNote}</p>}
+          </div>
+        </li>
+      );
+    })}
+  </ol>
+
+  <figcaption class="lines-key">
+    {usedLines.map((l) => (
+      <span class="line-key" data-line={l.id}><i aria-hidden="true"></i>{lang === 'pt' && l.name_pt ? l.name_pt : l.name}</span>
+    ))}
+  </figcaption>
+</figure>
+
+<style>
+  .trl {
+    margin: clamp(32px, 4vw, 48px) 0 0;
+    --who-w: 30%;
+    --col-gap: 32px;
+    /* phase tints and faint level guides shared by the header and every lane */
+    --ph0: transparent;
+    --ph1: color-mix(in srgb, var(--ink) 3%, transparent);
+    --ph2: color-mix(in srgb, var(--ink) 6%, transparent);
+    --guide: color-mix(in srgb, var(--rule) 40%, transparent);
+    --cols:
+      linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--ink) 3%, transparent) 40%, color-mix(in srgb, var(--accent) 9%, transparent) 100%),
+      repeating-linear-gradient(90deg, var(--guide) 0 1px, transparent 1px calc(100% / 9));
+  }
+
+  /* ---------- header ---------- */
+  .head { display: grid; grid-template-columns: var(--who-w) minmax(0, 1fr); column-gap: var(--col-gap); align-items: end; }
+
+
+  .head-scale { border-right: 1px solid var(--guide); }
+  .phases { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .phase {
+    padding: 7px 10px;
+    font-size: 0.62rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink);
+    border-left: 1.5px solid color-mix(in srgb, var(--ink) 55%, transparent);
+    border-top: 1.5px solid color-mix(in srgb, var(--ink) 55%, transparent);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .phase[data-phase='1'] { background: var(--ph1); }
+  .phase[data-phase='2'] { background: var(--ph2); }
+
+  .levels { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(9, 1fr); border-bottom: 1.5px solid var(--ink); }
+  .levels li {
+    padding: 8px 7px 10px;
+    border-left: 1px solid var(--guide);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+  }
+  .levels li:nth-child(3n + 1) { border-left: 1.5px solid color-mix(in srgb, var(--ink) 55%, transparent); }
+  .levels li[data-phase='1'] { background: var(--ph1); }
+  .levels li[data-phase='2'] { background: var(--ph2); }
+  .levels b { font-size: 0.95rem; font-weight: 600; color: var(--ink); }
+  .levels span { font: 500 0.74rem/1.15 var(--hand); color: var(--ink-soft); hyphens: auto; }
+
+  /* ---------- rows ---------- */
+  /* ruled list, as in Research Lines: projects separated by rules and space, not boxes */
+  .rows { list-style: none; margin: 0; padding: 0; color: var(--ink); }
+  .rows li {
+    position: relative;
+    display: grid;
+    grid-template-columns: var(--who-w) minmax(0, 1fr);
+    column-gap: var(--col-gap);
+    padding-top: 12px;
+  }
+  /* the spectrometer tick-ruler marks every break between projects, as on every list of the site */
+  .rows li::before {
+    content: ''; position: absolute; left: 0; right: 0; top: 0; height: 12px; pointer-events: none;
+    background:
+      linear-gradient(currentColor, currentColor) left top / 100% 1.5px no-repeat,
+      repeating-linear-gradient(90deg, currentColor 0 1.5px, transparent 1.5px 80px) left top / 100% 12px no-repeat,
+      repeating-linear-gradient(90deg, currentColor 0 1px, transparent 1px 16px) left top / 100% 6px no-repeat;
+    opacity: 0.85;
+  }
+  .rows li:first-child { margin-top: 18px; }
+  .rows li:last-child { border-bottom: 1.5px solid var(--ink); }
+  .who { position: relative; padding: 30px 0 30px 22px; }
+  .who::before { content: ''; position: absolute; left: 0; top: 32px; width: 4px; height: 3.2em; border-radius: 2px; background: var(--c-ink); }
+  .pmeta { margin: 0 0 6px; color: var(--ink-soft); font-size: 0.84rem; line-height: 1.4; }
+  .pmeta .mono { font-size: 0.72rem; color: var(--c-ink); font-weight: 600; }
+  .pname { margin: 0; font: 500 1.2rem/1.25 var(--hand); color: var(--ink); }
+  .prole { margin: 6px 0 0; color: var(--ink-soft); font-size: 0.9rem; line-height: 1.45; }
+
+  .lane { padding: 30px 0; background: var(--cols); }
+  .lane > :not(.track) { padding-inline: 14px; }
+
+  .track { position: relative; height: 46px; }
+  .nums { display: none; }
+  /* readiness bar: light-to-deep gradient of the line colour, glossy top edge, coloured glow, fills in from the left */
+  .bar {
+    position: absolute;
+    top: 50%;
+    height: 14px;
+    transform: translateY(-50%);
+    border-radius: 999px;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--c) 35%, #fff) 0%, var(--c) 50%, var(--c-ink) 100%);
+    box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.5), inset 0 -2px 0 rgba(0, 0, 0, 0.12), 0 8px 16px -8px var(--c-ink);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .bar { animation: fill 1.1s var(--ease-out) both; }
+    @keyframes fill { from { clip-path: inset(0 100% 0 0 round 999px); } to { clip-path: inset(0 0 0 0 round 999px); } }
+  }
+  /* circles sit above the bar, centred on whole pixels so the rim never shows a seam */
+  .pt {
+    position: absolute;
+    z-index: 2;
+    box-sizing: border-box;
+    margin: -15px 0 0 -15px;
+    top: 50%;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 0.78rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+  /* start and end markers share one plain style: white disc, coloured rim */
+  .pt.start, .pt.end { background: #fff; color: var(--c-ink); border: 2.5px solid color-mix(in srgb, var(--c) 55%, var(--c-ink)); }
+
+  .range { margin: 10px 0 0; display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; color: var(--ink-soft); font-size: 0.9rem; }
+  .trl-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #fff;
+    background: linear-gradient(100deg, var(--c-ink), color-mix(in srgb, var(--c) 70%, var(--c-ink)));
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+    padding: 4px 10px;
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+  }
+  .range-names { font-family: var(--hand); }
+  .note { margin: 6px 0 0; color: var(--ink-soft); font-size: 0.92rem; max-width: var(--measure); }
+
+  /* ---------- line key ---------- */
+  .lines-key { display: flex; flex-wrap: wrap; gap: 8px 24px; margin-top: 16px; color: var(--ink-soft); font: 500 0.92rem/1.2 var(--hand); }
+  .line-key { display: inline-flex; align-items: center; gap: 8px; }
+  .line-key i { width: 18px; height: 8px; border-radius: 999px; background: var(--c); border: 1.5px solid var(--c-ink); flex: none; }
+
+  /* ---------- narrow: project above its lane, header keeps only numbers ---------- */
+  @media (max-width: 860px) {
+    .head, .rows li { grid-template-columns: minmax(0, 1fr); }
+    .head-key { display: none; }
+    .head-scale { display: none; }
+    .who { padding: 22px 0 10px 18px; }
+    .who::before { top: 24px; }
+    .lane { padding: 6px 0 18px; margin-bottom: 18px; }
+    .lane > :not(.track) { padding-inline: 10px; }
+    .track { height: 58px; }
+    .nums { display: block; position: absolute; inset: auto 0 0 0; height: 14px; }
+    .n { position: absolute; bottom: 0; transform: translateX(-50%); font-size: 0.6rem; color: var(--ink-soft); opacity: 0.6; }
+    .n.on { color: var(--c-ink); opacity: 1; font-weight: 700; }
+    .bar, .pt { top: 40%; }
+    .pt { width: 26px; height: 26px; margin: -13px 0 0 -13px; font-size: 0.7rem; }
+  }
+</style>

@@ -1,0 +1,319 @@
+---
+import '../styles/global.css';
+import { SERIES, SERIES_ORDER, nmToPct, links, emails } from '../lib/works';
+import { UI, localePath, counterpartPath, type Lang } from '../lib/i18n';
+import Icon from '../components/Icon.astro';
+import BrandLogo from '../components/BrandLogo.astro';
+import ProfileLogo from '../components/ProfileLogo.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  current?: string;
+  lang?: Lang;
+}
+
+const { title, description, current = '/', lang = 'en' } = Astro.props;
+const t = UI[lang];
+const desc = description ?? t.siteDescriptionDefault;
+const pageTitle = title ? `${title} · Emerson Barbosa dos Anjos` : t.siteTitleDefault;
+
+const enUrl = new URL(counterpartPath(current, 'en'), Astro.site);
+const ptUrl = new URL(counterpartPath(current, 'pt'), Astro.site);
+const canonicalUrl = new URL(localePath(current, lang), Astro.site);
+const year = new Date().getFullYear();
+const [primaryEmail, ...extraEmails] = emails;
+---
+<!doctype html>
+<html lang={lang === 'pt' ? 'pt-BR' : 'en'} data-theme="white">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={desc} />
+    <meta name="theme-color" content="#dbe7f6" />
+    <link rel="icon" href="/favicon-eba.svg?v=4" type="image/svg+xml" />
+    <link rel="icon" href="/favicon-32.png?v=4" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=4" />
+    <link rel="shortcut icon" href="/favicon-32.png?v=4" />
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="alternate" hreflang="en" href={enUrl} />
+    <link rel="alternate" hreflang="pt-BR" href={ptUrl} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={desc} />
+    <meta property="og:type" content="website" />
+  </head>
+  <body>
+    <a class="skip" href="#main">{t.skipToContent}</a>
+    <header class="top">
+      <div class="ruler" aria-hidden="true">
+        {SERIES_ORDER.map((id) => (
+          <i data-line={id} style={`left:${nmToPct(SERIES[id].nm)}%`}></i>
+        ))}
+      </div>
+      <div class="wrap bar">
+        <a class="mark" href={localePath('/', lang)} aria-label="Emerson Barbosa dos Anjos">
+          <BrandLogo />
+          <span class="mark-name">Emerson Barbosa <span>dos Anjos</span></span>
+        </a>
+        <div class="nav-cluster">
+          <nav aria-label={t.navLabel}>
+            <ul>
+              {t.nav.map((n) => (
+                <li>
+                  <a
+                    href={localePath(n.href, lang)}
+                    aria-current={current === n.href ? 'page' : undefined}
+                  >
+                    {n.label}
+                  </a>
+                </li>
+              ))}
+              <li>
+                <a class="nav-teach" href={localePath(t.navTeach.href, lang)} aria-current={current === t.navTeach.href ? 'page' : undefined}>
+                  <svg viewBox="0 0 16 16" aria-hidden="true"><rect x="3" y="7" width="10" height="7.5" rx="1.6" /><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" /></svg>{t.navTeach.label}
+                </a>
+              </li>
+            </ul>
+          </nav>
+          <a
+            class="nav-feature"
+            href={localePath(t.navFeature.href, lang)}
+            aria-current={current === t.navFeature.href ? 'page' : undefined}
+          >
+            {t.navFeature.label}
+          </a>
+          <a class="nav-feature alt" href={localePath(t.navFeature2.href, lang)} style="--tilt:-1.5deg">
+            {t.navFeature2.label}
+          </a>
+          <div class="lang-switch" role="group" aria-label={t.langLabel}>
+            <a
+              href={counterpartPath(current, 'en')}
+              hreflang="en"
+              aria-current={lang === 'en' ? 'true' : undefined}
+              title="English"
+            >
+              <svg class="flag" viewBox="0 0 18 12" aria-hidden="true">
+                <rect width="18" height="12" rx="1.5" fill="#b22234" />
+                <path d="M0 2.5h18M0 5.5h18M0 8.5h18M0 11h18" stroke="#fff" stroke-width="1.2" />
+                <rect width="8.5" height="6.5" rx="0.5" fill="#3c3b6e" />
+                <circle cx="2.2" cy="1.8" r="0.6" fill="#fff" />
+                <circle cx="4.3" cy="1.8" r="0.6" fill="#fff" />
+                <circle cx="6.4" cy="1.8" r="0.6" fill="#fff" />
+                <circle cx="3.2" cy="3.4" r="0.6" fill="#fff" />
+                <circle cx="5.4" cy="3.4" r="0.6" fill="#fff" />
+                <circle cx="2.2" cy="4.9" r="0.6" fill="#fff" />
+                <circle cx="4.3" cy="4.9" r="0.6" fill="#fff" />
+                <circle cx="6.4" cy="4.9" r="0.6" fill="#fff" />
+              </svg>
+              <span>EN</span>
+            </a>
+            <a
+              href={counterpartPath(current, 'pt')}
+              hreflang="pt-BR"
+              aria-current={lang === 'pt' ? 'true' : undefined}
+              title="Português"
+            >
+              <svg class="flag" viewBox="0 0 18 12" aria-hidden="true">
+                <rect width="18" height="12" rx="1.5" fill="#009c3b" />
+                <polygon points="9,1.4 16.4,6 9,10.6 1.6,6" fill="#ffdf00" />
+                <circle cx="9" cy="6" r="2.6" fill="#002776" />
+                <path d="M6.6 5.8a4.2 4.2 0 0 1 4.8.6" fill="none" stroke="#fff" stroke-width="0.65" />
+              </svg>
+              <span>PT</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main id="main"><slot /></main>
+
+    <footer class="foot on-dark">
+      <div class="wrap foot-grid">
+        <div>
+          <p class="foot-hand">{t.footer.heading}</p>
+          <p class="foot-note">{t.footer.note}</p>
+          <div class="foot-emails">
+            {primaryEmail && (
+              <a class="act solid" href={`mailto:${primaryEmail}`}>
+                <Icon name="mail" /> {primaryEmail}
+              </a>
+            )}
+            {extraEmails.map((email) => (
+              <a class="act ghost foot-mail-sec" href={`mailto:${email}`}>
+                <Icon name="mail" /> {email}
+              </a>
+            ))}
+          </div>
+        </div>
+        <ul class="foot-links">
+          <li><a href={links.orcid}><span class="fl-name"><ProfileLogo name="orcid" />ORCID</span> <span class="mono">0000-0002-9401-5099</span></a></li>
+          <li><a href={links.lattes}><span class="fl-name"><ProfileLogo name="lattes" />Lattes CV</span> <span class="mono">3753408008148421</span></a></li>
+          <li><a href={links.linkedin}><span class="fl-name"><ProfileLogo name="linkedin" />LinkedIn</span> <span class="sub">emerson-barbosa</span></a></li>
+          <li><a href={links.github}><span class="fl-name"><ProfileLogo name="github" />GitHub</span> <span class="sub">emersondosanjos</span></a></li>
+          <li><a href={links.zenodo}><span class="fl-name"><ProfileLogo name="zenodo" />Zenodo</span> <span class="sub">{t.footer.zenodoSub}</span></a></li>
+        </ul>
+        <p class="foot-legal">© {year} Emerson Barbosa dos Anjos · {t.footer.location} · {t.footer.legal}</p>
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style>
+  .top {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: color-mix(in srgb, var(--ground) 92%, transparent);
+    backdrop-filter: saturate(1.2) blur(8px);
+    -webkit-backdrop-filter: saturate(1.2) blur(8px);
+    border-bottom: 1px solid var(--plate-rule);
+  }
+  .ruler {
+    position: relative;
+    height: 12px;
+    background-color: var(--plate);
+    background-image:
+      repeating-linear-gradient(90deg, var(--plate-rule) 0 1px, transparent 1px 12px),
+      repeating-linear-gradient(90deg, var(--mist-soft) 0 1px, transparent 1px 120px);
+    background-size: 100% 5px, 100% 9px;
+    background-repeat: no-repeat;
+    background-position: left bottom;
+  }
+  .ruler i { position: absolute; top: 0; bottom: 0; width: 3px; background: var(--c); transform: translateX(-50%); }
+
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 64px; }
+  .mark { display: inline-flex; align-items: center; gap: 10px; font: 600 1.15rem/1 var(--hand); text-decoration: none; color: var(--mist); white-space: nowrap; flex-shrink: 0; }
+  .mark-name span { color: var(--name-color, var(--accent)); text-shadow: var(--name-outline-sm, none); }
+
+  .nav-cluster { display: flex; align-items: center; gap: clamp(14px, 2vw, 28px); min-width: 0; }
+  nav ul { display: flex; gap: clamp(12px, 1.9vw, 28px); list-style: none; margin: 0; padding: 0; }
+  nav a { font: 500 0.98rem/1 var(--hand); text-decoration: none; color: var(--mist-soft); padding: 8px 0; position: relative; white-space: nowrap; }
+  nav a:hover, nav a[aria-current='page'] { color: var(--mist); }
+  .nav-teach { display: inline-flex; align-items: center; gap: 5px; }
+  .nav-teach svg { width: 13px; height: 13px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; }
+  nav a[aria-current='page']::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--signal); border-radius: 2px; }
+
+  /* feature button: marker-on-paper, hand-cut edges, a strip of tape on the corner */
+  .nav-feature {
+    --tilt: 1.5deg;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    font: 700 0.95rem/1 var(--hand);
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+    text-decoration: none;
+    color: var(--signal-ink);
+    background: var(--signal);
+    border: 2.5px solid var(--shadow-ink);
+    border-radius: 255px 15px 225px 15px / 15px 225px 15px 255px;
+    padding: 0.62rem 1.05rem 0.58rem;
+    transform: rotate(var(--tilt));
+    box-shadow: 0 10px 16px -9px rgba(0, 0, 0, 0.75), 0 2px 0 rgba(4, 10, 36, 0.35);
+    transition: transform 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out);
+  }
+  .nav-feature::before {
+    content: '';
+    position: absolute;
+    top: -0.62rem;
+    right: -0.9rem;
+    width: 2.9rem;
+    height: 1.05rem;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(255, 255, 255, 0.25) 45%, rgba(214, 220, 232, 0.4));
+    transform: rotate(28deg);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    -webkit-mask:
+      linear-gradient(#000 0 0) center / calc(100% - 8px) 100% no-repeat,
+      conic-gradient(from 45deg at left, #000 90deg, #0000 0) left / 4px 6px repeat-y,
+      conic-gradient(from -135deg at right, #000 90deg, #0000 0) right / 4px 6px repeat-y;
+    mask:
+      linear-gradient(#000 0 0) center / calc(100% - 8px) 100% no-repeat,
+      conic-gradient(from 45deg at left, #000 90deg, #0000 0) left / 4px 6px repeat-y,
+      conic-gradient(from -135deg at right, #000 90deg, #0000 0) right / 4px 6px repeat-y;
+  }
+  .nav-feature.alt { background: var(--alt-btn, #fff); color: var(--alt-btn-ink, #0b2d6b); margin-left: -6px; }
+  .nav-feature.alt::before { left: -0.8rem; right: auto; transform: rotate(-24deg); }
+  .nav-feature:hover { transform: rotate(calc(var(--tilt) * -1)) translateY(-2px); box-shadow: 0 16px 22px -12px rgba(0, 0, 0, 0.8), 0 2px 0 rgba(4, 10, 36, 0.35); }
+  .nav-feature:active { transform: rotate(0) translateY(1px); box-shadow: 0 4px 8px -6px rgba(0, 0, 0, 0.8); }
+  .nav-feature[aria-current='page'] { transform: rotate(0); }
+
+  .lang-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    padding: 3px;
+    border-radius: 9px;
+    background: var(--plate);
+    border: 1.5px solid var(--plate-rule);
+    flex-shrink: 0;
+  }
+  .lang-switch a {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font: 600 0.82rem/1 var(--hand);
+    text-decoration: none;
+    color: var(--mist-soft);
+    padding: 5px 8px;
+    border-radius: 6px;
+    transition: background-color 0.18s var(--ease-out), color 0.18s var(--ease-out);
+  }
+  .lang-switch a:hover { color: var(--mist); }
+  .lang-switch a[aria-current='true'] {
+    background: var(--signal);
+    color: var(--signal-ink);
+  }
+  .flag { width: 17px; height: 11px; flex: none; display: block; border-radius: 2px; }
+
+  @media (max-width: 1480px) {
+    .bar { gap: 28px; }
+    .nav-cluster { gap: 14px; }
+    nav ul { gap: 16px; }
+    nav a { font-size: 0.92rem; }
+    .nav-feature { font-size: 0.86rem; padding: 0.55rem 0.8rem 0.5rem; }
+  }
+  @media (max-width: 1200px) and (min-width: 981px) {
+    .nav-feature.alt { display: none; }
+  }
+  @media (max-width: 980px) {
+    .bar { flex-wrap: wrap; row-gap: 6px; padding-block: 10px; }
+    .nav-cluster { display: contents; }
+    .mark { order: 1; font-size: 1.08rem; }
+    .nav-feature { order: 2; margin-left: auto; font-size: 0.86rem; padding: 0.5rem 0.85rem 0.46rem; }
+    .nav-feature.alt { margin-left: 2px; }
+    .lang-switch { order: 2; }
+    nav { order: 3; flex: 0 0 100%; width: 100%; }
+    nav ul { gap: 18px; overflow-x: auto; max-width: 100%; scrollbar-width: none; padding-bottom: 2px; }
+    nav ul::-webkit-scrollbar { display: none; }
+    nav a { font-size: 0.94rem; }
+  }
+  @media (max-width: 640px) { .nav-feature.alt { display: none; } }
+  @media (max-width: 440px) {
+    .mark { font-size: 0.96rem; }
+    .lang-switch a { padding: 4px 6px; font-size: 0.76rem; }
+    .lang-switch .flag { display: none; }
+  }
+
+  .foot { background: var(--plate); border-top: 1px solid var(--plate-rule); padding-block: clamp(56px, 8vw, 96px) 32px; }
+  .foot-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px 64px; }
+  .foot-hand { font: 500 clamp(2.4rem, 5vw, 4rem)/1 var(--hand); color: var(--mist); margin: 0 0 16px; }
+  .foot-note { color: var(--mist-soft); max-width: 48ch; margin: 0 0 24px; }
+  .foot-emails { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .foot-mail-sec { font-size: 0.9rem; padding: 0.65em 0.95em; }
+  .foot-links { list-style: none; margin: 0; padding: 0; align-self: end; }
+  .foot-links li { border-top: 1px solid var(--plate-rule); }
+  .foot-links li:last-child { border-bottom: 1px solid var(--plate-rule); }
+  .foot-links a { display: flex; justify-content: space-between; gap: 16px; padding: 14px 0; text-decoration: none; font: 500 1.15rem/1.2 var(--hand); }
+  .foot-links a:hover { color: var(--accent); }
+  .fl-name { display: inline-flex; align-items: center; gap: 12px; }
+  .foot-links .mono, .foot-links .sub { color: var(--mist-soft); align-self: center; }
+  .foot-links .sub { font: 400 0.92rem/1 var(--sans); }
+  .foot-legal { grid-column: 1 / -1; margin: 16px 0 0; color: var(--mist-soft); opacity: 0.85; }
+  @media (max-width: 820px) {
+    .foot-grid { grid-template-columns: 1fr; }
+    .act.solid, .foot-mail-sec { font-size: 0.86rem; }
+  }
+</style>

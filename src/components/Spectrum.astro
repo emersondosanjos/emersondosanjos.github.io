@@ -1,0 +1,348 @@
+---
+import DoiLogo from './DoiLogo.astro';
+import {
+  placedWorks,
+  SERIES,
+  SERIES_ORDER,
+  yearToPct,
+  yearToPctW,
+  YEAR_MIN,
+  YEAR_MAX,
+  seriesLabel,
+  statusLabel,
+  typeLabel,
+  doiUrl,
+  lines,
+  workLogo,
+} from '../lib/works';
+import { UI, type Lang } from '../lib/i18n';
+import Icon from './Icon.astro';
+
+interface Props {
+  lang?: Lang;
+}
+const { lang = 'en' } = Astro.props;
+const t = UI[lang].spectrum;
+
+const placed = placedWorks(lang);
+const initial = placed.find((w) => w.doi === '10.1016/j.ijhydene.2025.151751') ?? placed[placed.length - 1];
+const years = Array.from({ length: YEAR_MAX - YEAR_MIN }, (_, i) => YEAR_MIN + i);
+const quarters = Array.from({ length: (YEAR_MAX - YEAR_MIN) * 4 + 1 }, (_, i) => YEAR_MIN + i / 4);
+const lineName = Object.fromEntries(lines.map((l) => [l.id, lang === 'pt' && l.name_pt ? l.name_pt : l.name]));
+---
+<section class="spectrum" aria-labelledby="spectrum-title">
+  <h2 id="spectrum-title" class="visually-hidden">{t.hiddenTitle}</h2>
+
+  <div class="legend" role="group" aria-label={t.legendLabel}>
+    {SERIES_ORDER.map((id) => (
+      <button type="button" class="key" data-line={id} aria-pressed="true">
+        <svg viewBox="0 0 6 20" aria-hidden="true"><path d="M3 1v18" /></svg>
+        <span class="key-name">{seriesLabel(id, lang)}</span>
+        <span class="key-sym">{SERIES[id].symbol} <span class="mono">{SERIES[id].nm.toFixed(1)} nm</span></span>
+      </button>
+    ))}
+  </div>
+
+  <div class="instrument">
+    <div class="axis" aria-hidden="true">
+      {quarters.map((q) => (
+        <span class:list={['tick', { major: Number.isInteger(q) }]} style={`--x:${yearToPct(q)}%;--xw:${yearToPctW(q)}%`}></span>
+      ))}
+      {years.map((y) => (
+        <b class:list={['yl mono', { narrow: y !== YEAR_MIN && y !== YEAR_MAX - 1 && yearToPctW(y + 1) - yearToPctW(y) < 6 }]} style={`--x:${yearToPct(y)}%;--xw:${yearToPctW(y + 0.5)}%`}><span class="full">{y}</span><span class="short">’{String(y).slice(2)}</span></b>
+      ))}
+    </div>
+
+    <div class="plate">
+      <div class="track" role="group" aria-label={t.trackLabel}>
+        <div class="slit" aria-hidden="true" style={`--x:${initial.pct}%;--xw:${initial.pctW}%`}></div>
+        {placed.map((w, i) => (
+          <button
+            type="button"
+            class="line"
+            id={`b-${w.id}`}
+            data-id={w.id}
+            data-line={w.line}
+            data-status={w.status}
+            data-type={w.type}
+            style={`--x:${w.pct}%;--xw:${w.pctW}%;--i:${i}`}
+            tabindex={w.id === initial.id ? 0 : -1}
+            aria-pressed={w.id === initial.id ? 'true' : 'false'}
+            aria-label={`${w.year}, ${typeLabel(w.type, lang)}, ${statusLabel(w.status, lang)}: ${w.title}`}
+          ><span></span></button>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <div class="stepper" role="group" aria-label={t.stepperLabel}>
+    <button type="button" class="step" data-dir="-1" aria-label={t.prevLabel}><Icon name="arrow" /></button>
+    <span class="step-count"><span class="mono" data-pos>{placed.findIndex((w) => w.id === initial.id) + 1}</span> {t.of} <span class="mono">{placed.length}</span></span>
+    <button type="button" class="step" data-dir="1" aria-label={t.nextLabel}><Icon name="arrow" /></button>
+    <button type="button" class="play" aria-pressed="true" data-pause={t.pauseLabel} data-play={t.playLabel} aria-label={t.pauseLabel} hidden>
+      <svg class="i-pause" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.5v9M11 3.5v9" /></svg>
+      <svg class="i-play" viewBox="0 0 16 16" aria-hidden="true"><path d="M5 3.5l7 4.5-7 4.5z" /></svg>
+    </button>
+  </div>
+
+  <div class="readouts" aria-live="polite">
+    {placed.map((w) => (
+      <article class="readout" id={`r-${w.id}`} data-line={w.line} hidden={w.id !== initial.id}>
+        {(() => { const lg = workLogo(w); return <span class="ro-logo" title={lg.name}><img src={lg.src} alt={lg.name} height="120" loading="lazy" decoding="async" /></span>; })()}
+        <h3 class="ro-title">{w.title}</h3>
+        <p class="ro-venue">{typeLabel(w.type, lang)} · {w.venue}{w.authors && <><br /><span class="ro-authors">{w.authors}</span></>}</p>
+        <p class="ro-meta">
+          <span class="ro-series">{lineName[w.line]} <span class="mono">{SERIES[w.line].symbol} {SERIES[w.line].nm.toFixed(1)} nm</span></span>
+          <span class="mono">{w.year}</span>
+          <span class="stage" data-status={w.status} title={w.status === 'under-review' ? (lang === 'pt' ? 'Em sigilo até a publicação' : 'Confidential until publication') : undefined}>{statusLabel(w.status, lang)}</span>
+        </p>
+        {(w.doi || w.github || w.zenodo) && (
+          <p class="ro-links">
+            {w.doi && <a class="act ghost" href={doiUrl(w.doi)}><DoiLogo size={20} /> <span class="mono">{w.doi}</span></a>}
+            {w.github && <a class="act ghost" href={w.github}><Icon name="github" /> {t.designFiles}</a>}
+            {w.zenodo && <a class="act ghost" href={w.zenodo}><Icon name="data" /> {t.zenodoData}</a>}
+          </p>
+        )}
+        {w.status !== 'published' && <p class="ro-note">{t.embargoNote}</p>}
+      </article>
+    ))}
+  </div>
+</section>
+
+<style>
+  .spectrum { --plate-h: clamp(104px, 13vh, 150px); --inset: 14px; }
+
+  /* instrument sits inside the content column; axis and track share one inner width */
+  /* the instrument is a sticker laid on the page: white die-cut rim, hand-cut corners, two strips of tape */
+  .instrument {
+    position: relative;
+    width: 100%;
+    padding: 16px 20px 12px;
+    background: var(--plate);
+    border-radius: 26px 14px 30px 16px / 16px 30px 14px 26px;
+    box-shadow: 0 0 0 7px #fff, 0 26px 44px -20px rgba(0, 0, 0, 0.65), 0 2px 0 7px rgba(4, 10, 36, 0.12);
+    transform: rotate(-0.6deg);
+    margin: 18px 0 8px;
+  }
+  .instrument::before, .instrument::after {
+    content: ''; position: absolute; z-index: 3; top: -20px; width: 5.2rem; height: 1.4rem;
+    background: linear-gradient(180deg, rgba(240, 232, 205, 0.95), rgba(220, 206, 168, 0.85));
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    -webkit-mask:
+      linear-gradient(#000 0 0) center / calc(100% - 8px) 100% no-repeat,
+      conic-gradient(from 45deg at left, #000 90deg, #0000 0) left / 4px 6px repeat-y,
+      conic-gradient(from -135deg at right, #000 90deg, #0000 0) right / 4px 6px repeat-y;
+    mask:
+      linear-gradient(#000 0 0) center / calc(100% - 8px) 100% no-repeat,
+      conic-gradient(from 45deg at left, #000 90deg, #0000 0) left / 4px 6px repeat-y,
+      conic-gradient(from -135deg at right, #000 90deg, #0000 0) right / 4px 6px repeat-y;
+  }
+  .instrument::before { left: 6%; transform: rotate(-6deg); }
+  .instrument::after { right: 6%; transform: rotate(5deg); }
+  .axis, .track { margin-inline: var(--inset); }
+  .axis { position: relative; height: 34px; }
+  .tick, .yl, .slit, .line { left: var(--x); }
+  .tick { position: absolute; bottom: 0; width: 1px; height: 6px; background: var(--plate-rule); }
+  .tick.major { height: 14px; background: var(--mist-soft); }
+  .yl { position: absolute; bottom: 17px; transform: translateX(-50%); font-size: 0.68rem; font-weight: 400; color: var(--mist-soft); }
+  .yl .short { display: none; }
+
+  /* no box: a soft band of light that dissolves at its edges, lines floating in it */
+  .plate { position: relative; height: var(--plate-h); }
+  .plate::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(60% 50% at 50% 50%, color-mix(in srgb, var(--plate) 92%, transparent) 0%, color-mix(in srgb, var(--plate) 55%, transparent) 55%, transparent 100%);
+    filter: blur(6px);
+  }
+  .plate::after {
+    content: ''; position: absolute; left: 0; right: 0; bottom: 6px; height: 1px; pointer-events: none;
+    background: linear-gradient(90deg, transparent, var(--plate-rule) 12%, var(--plate-rule) 88%, transparent);
+  }
+  .track { -webkit-mask: linear-gradient(90deg, transparent 0, #000 3%, #000 97%, transparent 100%); mask: linear-gradient(90deg, transparent 0, #000 3%, #000 97%, transparent 100%); }
+  .track { position: absolute; inset: 0 var(--inset); cursor: crosshair; }
+  .slit { position: absolute; top: -10px; bottom: -10px; width: 1px; background: var(--mist); opacity: 0.4; pointer-events: none; transition: left .35s var(--ease-out), opacity .2s; }
+  .track:hover .slit { opacity: 0.7; transition: opacity .2s; }
+
+  .line { position: absolute; top: 0; bottom: 0; width: 16px; margin-left: -8px; padding: 0; background: none; border: 0; cursor: pointer; display: grid; place-items: center; }
+  .line span { display: block; width: 3px; height: 82%; border-radius: 999px; background: var(--c); box-shadow: 0 0 10px color-mix(in srgb, var(--c) 55%, transparent); transition: width .3s var(--ease-out), opacity .3s; }
+  .line[data-type='conference'] span { width: 2px; height: 60%; }
+  .line[data-type='chapter'] span { width: 2px; height: 70%; }
+  .line[data-type='thesis'] span { width: 5px; }
+  .line[data-type='tool'] span { width: 1.5px; height: 40%; opacity: 0.85; }
+  .line[data-status='under-review'] span { background: repeating-linear-gradient(to bottom, var(--c) 0 10px, transparent 10px 16px); opacity: 0.9; }
+  .line[data-status='in-preparation'] span { background: repeating-linear-gradient(to bottom, var(--c) 0 3px, transparent 3px 9px); opacity: 0.75; }
+  .line:hover span, .line[aria-pressed='true'] span { width: 7px; }
+  .line:focus-visible { outline-offset: -2px; }
+  .line.dim span { opacity: 0.12; }
+  @media (prefers-reduced-motion: no-preference) {
+    .line span { animation: ignite 0.9s var(--ease-out) backwards; animation-delay: calc(var(--i) * 45ms + 200ms); }
+    @keyframes ignite { from { opacity: 0.05; transform: scaleY(0.15); } }
+  }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 8px 10px; margin-bottom: 14px; }
+  .key { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; padding: 7px 14px 7px 10px; border-radius: 999px; border: 1.5px solid color-mix(in srgb, var(--c) 70%, transparent); background: transparent; color: var(--mist); font: 500 0.98rem/1 var(--hand); transition: background-color .25s var(--ease-out), opacity .25s; }
+  .key svg { width: 6px; height: 20px; }
+  .key svg path { stroke: var(--c); stroke-width: 3; stroke-linecap: round; }
+  .key-sym { color: var(--c); font-weight: 700; }
+  .key-sym .mono { color: var(--mist-soft); font-weight: 400; font-size: 0.62rem; }
+  .key:hover { background: color-mix(in srgb, var(--c) 16%, transparent); }
+  .key[aria-pressed='false'] { opacity: 0.45; border-style: dashed; }
+
+  .stepper { display: flex; align-items: center; gap: 12px; margin-top: 16px; color: var(--mist-soft); font-size: 0.9rem; }
+  .stepper .mono { font-size: 0.72rem; color: var(--mist); }
+  .step { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 999px; border: 1.5px solid var(--plate-rule); background: transparent; color: var(--mist); cursor: pointer; transition: background-color .2s var(--ease-out), border-color .2s; }
+  .step:hover { background: var(--plate); border-color: var(--mist-soft); }
+  .step :global(svg) { width: 18px; height: 18px; }
+  .step[data-dir='-1'] :global(svg) { transform: rotate(-135deg); }
+  .step[data-dir='1'] :global(svg) { transform: rotate(45deg); }
+  .step:disabled { opacity: 0.35; cursor: default; }
+  .readouts { margin-top: 10px; min-height: 190px; }
+  .readout { max-width: none; }
+  /* the title runs the full width of the spectrum box */
+  .ro-title { font: 600 clamp(1.3rem, 2.4vw, 1.9rem)/1.2 var(--sans); letter-spacing: -0.01em; color: var(--mist); max-width: none; }
+  .ro-venue { max-width: none !important; }
+  .readout { position: relative; }
+  .readout:has(.ro-logo) { display: grid; grid-template-columns: minmax(0, 1fr) auto; column-gap: clamp(24px, 4vw, 56px); align-items: center; }
+  .readout:has(.ro-logo) > * { grid-column: 1; }
+  .readout[hidden] { display: none !important; }
+  .readout:has(.ro-logo) > .ro-links, .readout:has(.ro-logo) > .ro-note { grid-column: 1 / -1; }
+  .readout:has(.ro-logo) > .ro-logo { grid-column: 2; grid-row: 1 / span 3; align-self: center; }
+  .ro-logo { display: inline-flex; align-items: center; justify-content: center; width: clamp(170px, 19vw, 260px); height: clamp(120px, 12vw, 160px); padding: 14px 18px; background: #fff; border-radius: 10px; box-shadow: 0 0 0 2px #ff7a59, 0 8px 14px -8px rgba(11, 45, 107, 0.5); transform: rotate(-1.5deg); }
+  .ro-logo img { width: 100%; height: 100%; object-fit: contain; display: block; }
+  .play { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 999px; border: 1.5px solid var(--plate-rule); background: transparent; color: var(--mist); cursor: pointer; }
+  .play[hidden] { display: none; }
+  .play svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  .play .i-play { fill: currentColor; }
+  .play[aria-pressed='true'] .i-play, .play[aria-pressed='false'] .i-pause { display: none; }
+  .ro-venue { color: var(--mist-soft); margin: 10px 0 0; max-width: var(--measure); }
+  .ro-authors { font-size: 0.95rem; }
+  .ro-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; margin: 12px 0 0; color: var(--mist-soft); font-size: 0.9rem; }
+  .ro-meta .mono { font-size: 0.72rem; }
+  .ro-series { color: var(--c); }
+  .ro-series .mono { color: var(--mist-soft); }
+  .ro-meta .stage { color: var(--mist); }
+  .ro-links { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0 0; }
+  .ro-links .act { font-size: 0.95rem; padding: 0.6em 1em; }
+  .ro-links .mono { font-size: 0.72rem; }
+  .ro-note { color: var(--mist-soft); font-size: 0.92rem; margin: 14px 0 0; }
+
+  @media (max-width: 640px) {
+    .readout:has(.ro-logo) { display: block; }
+    .ro-logo { width: 150px; height: 90px; margin-bottom: 12px; }
+    .instrument { padding: 12px 10px 8px; box-shadow: 0 0 0 5px #fff, 0 18px 30px -16px rgba(0, 0, 0, 0.6); }
+    .instrument::before, .instrument::after { width: 3.6rem; height: 1.1rem; top: -16px; }
+    .spectrum { --plate-h: 130px; --inset: 8px; }
+    .tick, .slit, .line { left: var(--xw); }
+    .yl { left: var(--xw); }
+    .tick:not(.major) { display: none; }
+    .yl .full { display: none; }
+    .yl.narrow { display: none; }
+    .yl .short { display: inline; }
+    .line { width: 10px; margin-left: -5px; }
+    .line span { width: 2px; }
+    .line[data-type='thesis'] span { width: 3px; }
+    .line:hover span, .line[aria-pressed='true'] span { width: 5px; }
+    .legend { flex-wrap: nowrap; overflow-x: auto; margin-inline: calc(var(--gutter) * -1); padding: 2px var(--gutter) 6px; scrollbar-width: none; }
+    .key { flex: none; }
+  }
+</style>
+
+<script>
+  function init(root: HTMLElement) {
+    const track = root.querySelector<HTMLElement>('.track')!;
+    const slit = root.querySelector<HTMLElement>('.slit')!;
+    const btns = [...root.querySelectorAll<HTMLButtonElement>('.line')];
+    const keys = [...root.querySelectorAll<HTMLButtonElement>('.key')];
+    let current = btns.find((b) => b.getAttribute('aria-pressed') === 'true') ?? btns[0];
+    const visible = () => btns.filter((b) => !b.classList.contains('dim'));
+
+    function select(b: HTMLButtonElement, focus = false) {
+      slit.style.setProperty('--x', b.style.getPropertyValue('--x'));
+      slit.style.setProperty('--xw', b.style.getPropertyValue('--xw'));
+      if (b === current) { if (focus) b.focus(); return; }
+      current.setAttribute('aria-pressed', 'false'); current.tabIndex = -1;
+      root.querySelector<HTMLElement>(`#r-${current.dataset.id}`)!.hidden = true;
+      current = b;
+      b.setAttribute('aria-pressed', 'true'); b.tabIndex = 0;
+      root.querySelector<HTMLElement>(`#r-${b.dataset.id}`)!.hidden = false;
+      if (focus) b.focus();
+      sync();
+    }
+    const pos = root.querySelector<HTMLElement>('[data-pos]')!;
+    const steps = [...root.querySelectorAll<HTMLButtonElement>('.step')];
+    function sync() {
+      const list = visible(); const i = list.indexOf(current);
+      pos.textContent = String(btns.indexOf(current) + 1);
+      steps[0].disabled = i <= 0; steps[1].disabled = i >= list.length - 1;
+    }
+    steps.forEach((s) => s.addEventListener('click', () => {
+      const list = visible(); const i = list.indexOf(current);
+      const n = list[i + Number(s.dataset.dir)]; if (n) select(n);
+    }));
+    sync();
+
+    track.addEventListener('pointermove', (e) => {
+      if (e.pointerType !== 'mouse') return;
+      const r = track.getBoundingClientRect();
+      const x = e.clientX - r.left;
+      let best: HTMLButtonElement | null = null, dist = Infinity;
+      for (const b of visible()) {
+        const d = Math.abs(b.offsetLeft + b.offsetWidth / 2 - x);
+        if (d < dist) { dist = d; best = b; }
+      }
+      if (best && dist < 40) select(best);
+    });
+    btns.forEach((b) => b.addEventListener('click', () => select(b, true)));
+    track.addEventListener('keydown', (e) => {
+      const list = visible();
+      const i = list.indexOf(current);
+      let n: HTMLButtonElement | undefined;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') n = list[Math.min(i + 1, list.length - 1)];
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') n = list[Math.max(i - 1, 0)];
+      if (e.key === 'Home') n = list[0];
+      if (e.key === 'End') n = list[list.length - 1];
+      if (n) { e.preventDefault(); select(n, true); }
+    });
+
+    /* ---- automatic tour: steps through the works; pauses on hover/focus/off-screen, stops on any user choice ---- */
+    const play = root.querySelector<HTMLButtonElement>('.play')!;
+    const live = root.querySelector<HTMLElement>('.readouts')!;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let auto = !reduce, hovering = false, onScreen = false, timer = 0;
+    function setAuto(on: boolean) {
+      auto = on;
+      play.setAttribute('aria-pressed', String(on));
+      play.setAttribute('aria-label', on ? play.dataset.pause! : play.dataset.play!);
+      live.setAttribute('aria-live', on ? 'off' : 'polite');
+    }
+    function tick() {
+      if (!auto || hovering || !onScreen || document.hidden) return;
+      const list = visible(); if (!list.length) return;
+      const i = list.indexOf(current);
+      select(list[(i + 1) % list.length]);
+    }
+    if (!reduce) {
+      play.hidden = false;
+      setAuto(true);
+      timer = window.setInterval(tick, 120_000);   // 2 minutes per work
+      new IntersectionObserver((es) => { onScreen = es[0].isIntersecting; }, { threshold: 0.4 }).observe(root.querySelector('.instrument')!);
+      root.addEventListener('pointerenter', () => { hovering = true; });
+      root.addEventListener('pointerleave', () => { hovering = false; });
+      root.addEventListener('focusin', (e) => { if (e.target !== play) hovering = true; });
+      root.addEventListener('focusout', () => { hovering = false; });
+      play.addEventListener('click', () => setAuto(!auto));
+      const stop = () => setAuto(false);
+      btns.forEach((b) => b.addEventListener('click', stop));
+      steps.forEach((s) => s.addEventListener('click', stop));
+      track.addEventListener('keydown', stop);
+    }
+
+    keys.forEach((k) => k.addEventListener('click', () => {
+      k.setAttribute('aria-pressed', String(k.getAttribute('aria-pressed') !== 'true'));
+      const active = new Set(keys.filter((x) => x.getAttribute('aria-pressed') === 'true').map((x) => x.dataset.line));
+      btns.forEach((b) => b.classList.toggle('dim', !active.has(b.dataset.line)));
+      if (current.classList.contains('dim')) { const v = visible(); if (v.length) select(v[v.length - 1]); }
+    }));
+  }
+  document.querySelectorAll<HTMLElement>('.spectrum').forEach(init);
+</script>

@@ -172,8 +172,8 @@ export const cols = (a: string, b: string, ratio = '1fr 1fr') => `<div class="s-
 /** definition card (organic taped / hand-cut tactile frame) */
 export const def = (term: string, text: string) =>
   `<div class="k-def"><b>${term}</b>${/^\s*<(?:div|p|ul|ol|table)\b/i.test(text) ? text : `<p>${text}</p>`}</div>`;
-/** key idea (highlighter) */
-export const idea = (text: string) => `<p class="k-idea">${text}</p>`;
+/** key idea: tick ruler + solid highlighter stroke, never a boxed callout */
+export const idea = (text: string) => `<p class="k-idea"><span class="k-mark">${text}</span></p>`;
 /** common mistake / attention */
 export const warn = (text: string) => `<div class="k-warn"><b>Atenção</b><p>${text}</p></div>`;
 /** question to the class (native dry-brush navy stroke) */

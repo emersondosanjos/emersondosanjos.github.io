@@ -207,6 +207,8 @@ interface SimRender {
   kpis: SimKpi[];
   insight: string;
   trace?: (phase: number) => { x: number; y: number; tag?: string } | null;
+  /** optional per-frame hook to animate parts of the SVG (piston, molecules, live readouts) */
+  onPhase?: (phase: number, svg: SVGSVGElement) => void;
 }
 interface SimSpec {
   id: string;
@@ -214,6 +216,8 @@ interface SimSpec {
   subtitle: string;
   modes?: { id: string; label: string }[];
   params: SimParam[];
+  /** start the animation automatically when the simulator is mounted */
+  autoplay?: boolean;
   render: (s: Record<string, number>, mode: string) => SimRender;
 }
 
@@ -311,8 +315,9 @@ const SIM_SPECS: SimSpec[] = [
   /* 2. first-law-closed */
   {
     id: 'first-law-closed',
-    defaultTitle: 'I Lei em Sistema Fechado: Pistão + Trabalho Politrópico P Vⁿ = C',
-    subtitle: 'Observe a área ∫ P dV no diagrama P–V enquanto o pistão se desloca.',
+    defaultTitle: 'Fronteira Móvel em Sistema Fechado: Processo Politrópico PVⁿ = C',
+    subtitle: 'Visualize a área ∫ P dV no diagrama P–V enquanto o pistão desloca e o calor Q₁₂ fecha ΔU.',
+    autoplay: true,
     params: [
       { key: 'n', label: 'Expoente politrópico n', unit: '', min: 0, max: 1.6, step: 0.1, initial: 1.3 },
       { key: 'ratio', label: 'Razão volumétrica V₂/V₁', unit: '', min: 0.3, max: 2.5, step: 0.1, initial: 1.8 },
@@ -325,12 +330,15 @@ const SIM_SPECS: SimSpec[] = [
       const P2 = p1 * ratio ** -n;
       const kAir = 1.4;
       const W = Math.abs(n - 1) < 1e-4 ? p1 * V1 * Math.log(ratio) : (p1 * V1 - P2 * V2) / (n - 1);
-      const dU = (p1 * V1 / (kAir - 1)) * (ratio ** (1 - n) - 1);
+      const dU = ((p1 * V1) / (kAir - 1)) * (ratio ** (1 - n) - 1);
       const Q = dU + W;
 
-      const x0 = 56, x1 = 270, y0 = 185, y1 = 26;
+      const x0 = 52;
+      const x1 = 266;
+      const y0 = 186;
+      const y1 = 24;
       const X = (v: number) => x0 + ((v - 0.04) / (0.54 - 0.04)) * (x1 - x0);
-      const pMax = Math.max(700, p1 * 1.1, P2 * 1.1);
+      const pMax = Math.max(700, p1 * 1.15, P2 * 1.15);
       const Y = (p: number) => clamp(y0 - (p / pMax) * (y0 - y1), y1, y0);
       const pathPts: [number, number][] = [];
       const stepsN = 20;
@@ -340,29 +348,45 @@ const SIM_SPECS: SimSpec[] = [
         pathPts.push([X(v), Y(p)]);
       }
       const polyLine = pathPts.map((pt) => `${pt[0].toFixed(1)},${pt[1].toFixed(1)}`).join(' ');
-      const areaPath = `M ${X(V1).toFixed(1)},${y0} L ${pathPts.map((pt) => `${pt[0].toFixed(1)},${pt[1].toFixed(1)}`).join(' L ')} L ${X(V2).toFixed(1)},${y0} Z`;
+      const gasOf = (v: number) => clamp(44 * (v / V1), 20, 96);
+      const gas0 = gasOf(V1);
+      const molSeeds: [number, number][] = [[0.12, 0.3], [0.38, 0.72], [0.62, 0.22], [0.85, 0.6], [0.25, 0.55], [0.72, 0.85], [0.5, 0.45]];
+      const pingPong = (ph: number) => 0.5 - 0.5 * Math.cos(ph * Math.PI * 2);
+      const qDir = Q >= 0.05 ? 'entra' : Q <= -0.05 ? 'sai' : 'nulo';
+      const qArrow =
+        qDir === 'entra'
+          ? `<path d="M276,104 H296" stroke="${COL.coral}" stroke-width="2.6" marker-end="url(#s2c)"/><text x="275" y="96" font-size="10" font-weight="700" fill="${COL.coral}">Q</text>`
+          : qDir === 'sai'
+            ? `<path d="M298,104 H276" stroke="${COL.coral}" stroke-width="2.6" marker-end="url(#s2c)"/><text x="278" y="96" font-size="10" font-weight="700" fill="${COL.coral}">Q</text>`
+            : `<text x="276" y="106" font-size="9.5" font-weight="700" fill="${COL.muted}">Q≈0</text>`;
+      const wArrow =
+        ratio > 1.02
+          ? `<path d="M92,-4 V-28" stroke="${COL.navy}" stroke-width="2.6" marker-end="url(#s2n)"/><text x="100" y="-12" font-size="11" font-weight="700" fill="${COL.navy}">W &gt; 0</text>`
+          : ratio < 0.98
+            ? `<path d="M92,-28 V-4" stroke="${COL.navy}" stroke-width="2.6" marker-end="url(#s2n)"/><text x="100" y="-12" font-size="11" font-weight="700" fill="${COL.navy}">W &lt; 0</text>`
+            : '';
 
       return {
-        svg: `<svg viewBox="0 0 440 220" role="img" aria-label="Diagrama P-V e cilindro-pistão sincronizados">
+        svg: `<svg viewBox="0 0 448 225" role="img" aria-label="Diagrama P-V e cilindro-pistão sincronizados">
           ${mkDefs('s2')}
-          <!-- P-V plot -->
           <polygon points="${X(V1).toFixed(1)},${y0} ${polyLine} ${X(V2).toFixed(1)},${y0}" fill="${COL.coralSoft}" opacity="0.65"/>
-          <path d="${areaPath}" fill="${COL.coralSoft}" opacity="0.35"/>
           <line x1="${x0}" y1="${y0}" x2="${x1 + 10}" y2="${y0}" stroke="${COL.navy}" stroke-width="2" marker-end="url(#s2n)"/>
           <line x1="${x0}" y1="${y0}" x2="${x0}" y2="${y1 - 8}" stroke="${COL.navy}" stroke-width="2" marker-end="url(#s2n)"/>
           <polyline points="${polyLine}" fill="none" stroke="${COL.coral}" stroke-width="3.2"/>
-          <circle cx="${X(V1)}" cy="${Y(p1)}" r="5" fill="${COL.navy}"/><text x="${X(V1) - 14}" y="${Y(p1) - 6}" font-size="11" font-weight="700" fill="${COL.navy}">1</text>
-          <circle cx="${X(V2)}" cy="${Y(P2)}" r="5" fill="${COL.coral}"/><text x="${X(V2) + 7}" y="${Y(P2) - 4}" font-size="11" font-weight="700" fill="${COL.coral}">2</text>
-          <text x="${x1}" y="${y0 + 18}" font-size="11" fill="${COL.navy}" font-style="italic">V</text>
-          <text x="20" y="${y1 + 4}" font-size="11" fill="${COL.navy}" font-style="italic">P</text>
-          <!-- Piston visual -->
-          <g transform="translate(298,42)">
-            <rect x="0" y="0" width="124" height="126" rx="8" fill="${COL.paper}" stroke="${COL.navy}" stroke-width="2.5"/>
-            <rect x="4" y="${122 - clamp(42 * ratio, 18, 96)}" width="116" height="${clamp(42 * ratio, 18, 96)}" fill="${COL.ice}"/>
-            <rect x="3" y="${110 - clamp(42 * ratio, 18, 96)}" width="118" height="12" fill="${COL.navy}"/>
-            <line x1="62" y1="${110 - clamp(42 * ratio, 18, 96)}" x2="62" y2="-12" stroke="${COL.navy}" stroke-width="5"/>
-            <text x="62" y="146" font-size="11" text-anchor="middle" font-weight="700" fill="${COL.navy}">${ratio >= 1 ? 'Expansão (W > 0)' : 'Compressão (W < 0)'}</text>
-            <text x="62" y="162" font-size="10.5" text-anchor="middle" fill="${COL.muted}">V₁ = 0,20 → V₂ = ${fmt(V2, 2)} m³</text>
+          <circle cx="${X(V1)}" cy="${Y(p1)}" r="5" fill="${COL.navy}"/><text x="${X(V1) - 14}" y="${Y(p1) - 7}" font-size="11" font-weight="700" fill="${COL.navy}">1</text>
+          <circle cx="${X(V2)}" cy="${Y(P2)}" r="5" fill="${COL.coral}"/><text x="${X(V2) + (ratio >= 1 ? 8 : -16)}" y="${Y(P2) - 7}" font-size="11" font-weight="700" fill="${COL.coral}">2</text>
+          <text x="${x1}" y="${y0 + 18}" font-size="11" fill="${COL.navy}" font-style="italic">V (m³)</text>
+          <text x="${x0 + 8}" y="${y1 + 2}" font-size="11" fill="${COL.navy}" font-style="italic">P (kPa)</text>
+          ${qArrow}
+          <g transform="translate(302,38)">
+            <rect x="0" y="0" width="126" height="126" rx="8" fill="${COL.paper}" stroke="${COL.navy}" stroke-width="2.5"/>
+            <rect class="fl-gas" x="4" y="${122 - gas0}" width="118" height="${gas0}" fill="${COL.ice}"/>
+            ${molSeeds.map(([fx, fy], i) => `<circle class="fl-mol" data-fx="${fx}" data-fy="${fy}" cx="${(8 + fx * 110).toFixed(1)}" cy="${(122 - fy * gas0).toFixed(1)}" r="2.6" fill="${i % 2 ? COL.coral : COL.blue}"/>`).join('')}
+            <rect class="fl-pis" x="3" y="${110 - gas0}" width="120" height="12" fill="${COL.navy}"/>
+            <line class="fl-rod" x1="63" y1="${110 - gas0}" x2="63" y2="-10" stroke="${COL.navy}" stroke-width="4.5"/>
+            ${wArrow}
+            <text x="63" y="146" font-size="11" text-anchor="middle" font-weight="700" fill="${COL.navy}">${ratio >= 1 ? 'Expansão (W > 0)' : 'Compressão (W < 0)'}</text>
+            <text class="fl-read" x="63" y="162" font-size="10.5" text-anchor="middle" fill="${COL.muted}">V = 0,20 m³ · P = ${fmt(p1, 0)} kPa</text>
           </g>
         </svg>`,
         kpis: [
@@ -371,14 +395,37 @@ const SIM_SPECS: SimSpec[] = [
           { label: 'Variação ΔU (ar)', value: `${fmt(dU, 2)} kJ` },
           { label: 'Calor Q₁₂', value: `${fmt(Q, 2)} kJ` },
         ],
-        insight: Math.abs(n - kAir) < 0.05
-          ? 'Com n ≈ k = 1,4 (ar), Q₁₂ ≈ 0: o trabalho de expansão vem integralmente da energia interna (processo adiabático reversível).'
-          : n === 0
-            ? 'Processo isobárico (n = 0): W = P(V₂ − V₁) e Q = ΔH.'
-            : `Para n = ${fmt(n, 1)}, o sinal de Q (${Q >= 0 ? 'entra' : 'sai'}) fecha o balanço ΔU = Q − W.`,
+        insight:
+          Math.abs(n - kAir) < 0.05
+            ? `Com ${texInline('n \\approx k = 1{,}4')} (ar), ${texInline('Q_{12} \\approx 0')}: o trabalho provém integralmente da energia interna (${texInline('W_{12} \\approx -\\Delta U')}).`
+            : n === 0
+              ? `Processo isobárico (${texInline('n = 0')}): ${texInline('W_{12} = P(V_2 - V_1)')} e o calor iguala a variação de entalpia (${texInline('Q = \\Delta H')}).`
+              : `Para ${texInline(`n = ${tnum(n, 1)}`)}, o trabalho corresponde à área sob a curva (${texInline(`${tnum(W, 2)}\\ \\mathrm{kJ}`)}) e o calor fecha ${texInline(`Q_{12} = \\Delta U + W_{12} = ${tnum(Q, 2)}\\ \\mathrm{kJ}`)}.`,
         trace: (phase) => {
-          const [x, y] = samplePolyline(pathPts, phase);
-          return { x, y, tag: '1→2' };
+          const v = V1 + (V2 - V1) * pingPong(phase);
+          return { x: X(v), y: Y(p1 * (V1 / v) ** n), tag: '1→2' };
+        },
+        onPhase: (phase, svg) => {
+          const v = V1 + (V2 - V1) * pingPong(phase);
+          const P = p1 * (V1 / v) ** n;
+          const gh = gasOf(v);
+          const gas = svg.querySelector('.fl-gas');
+          const pis = svg.querySelector('.fl-pis');
+          const rod = svg.querySelector('.fl-rod');
+          const read = svg.querySelector('.fl-read');
+          gas?.setAttribute('y', (122 - gh).toFixed(1));
+          gas?.setAttribute('height', gh.toFixed(1));
+          pis?.setAttribute('y', (110 - gh).toFixed(1));
+          rod?.setAttribute('y1', (110 - gh).toFixed(1));
+          svg.querySelectorAll<SVGCircleElement>('.fl-mol').forEach((c, i) => {
+            const fx = Number(c.dataset.fx);
+            const fy = Number(c.dataset.fy);
+            const jx = 3.5 * Math.sin(phase * Math.PI * 2 * (5 + i) + i);
+            const jy = 3 * Math.cos(phase * Math.PI * 2 * (4 + i) + 2 * i);
+            c.setAttribute('cx', clamp(8 + fx * 110 + jx, 7, 119).toFixed(1));
+            c.setAttribute('cy', clamp(122 - fy * (gh - 6) + jy, 124 - gh, 119).toFixed(1));
+          });
+          if (read) read.textContent = `V = ${fmt(v, 2)} m³ · P = ${fmt(P, 0)} kPa`;
         },
       };
     },
@@ -388,7 +435,8 @@ const SIM_SPECS: SimSpec[] = [
   {
     id: 'control-volume-steady',
     defaultTitle: 'Volume de Controle em Regime Permanente (Dispositivos)',
-    subtitle: 'Selecione o equipamento e teste como h, V e Q̇/Ẇ se equilibram na 1ª Lei.',
+    subtitle: `Escolha o equipamento e veja como ${texInline('\\dot m')}, ${texInline('\\Delta h')}, ${texInline('\\dot Q')} e ${texInline('\\dot W')} fecham a 1ª Lei.`,
+    autoplay: true,
     modes: [
       { id: 'turbina', label: 'Turbina' },
       { id: 'compressor', label: 'Compressor' },
@@ -397,67 +445,103 @@ const SIM_SPECS: SimSpec[] = [
       { id: 'eletrolisador', label: 'Eletrolisador' },
     ],
     params: [
-      { key: 'mdot', label: 'Vazão mássica ṁ (ou taxa H₂)', unit: 'kg/s', min: 0.5, max: 12, step: 0.5, initial: 5.0 },
-      { key: 'dh', label: 'Salto Δh (ou U célula ×100)', unit: 'kJ/kg', min: 50, max: 900, step: 25, initial: 500 },
-      { key: 'qloss', label: 'Perda térmica Q̇_sai', unit: 'kW', min: 0, max: 200, step: 10, initial: 20 },
+      { key: 'mdot', label: 'Vazão mássica ṁ', unit: 'kg/s', min: 0.5, max: 12, step: 0.5, initial: 5.0 },
+      { key: 'dh', label: 'Variação de entalpia |Δh| (no eletrolisador ajusta U)', unit: 'kJ/kg', min: 50, max: 900, step: 25, initial: 500 },
+      { key: 'qloss', label: 'Perda de calor Q̇ (sai)', unit: 'kW', min: 0, max: 200, step: 10, initial: 20 },
     ],
     render: (s, mode) => {
       const { mdot, dh, qloss } = s;
-      let W = 0, extraLabel = 'Potência útil Ẇ', extraVal = '', msg = '', iconPath = '';
+      const cx = 205;
+      const cy = 105;
+      const flowDur = clamp(7 / mdot, 0.55, 4.5);
+      let W = 0;
+      let extraLabel = 'Potência Ẇ (sai)';
+      let extraVal = '';
+      let msg = '';
+      let icon = '';
+      let shaft = '';
+      let accel = false;
+      let showQ = qloss > 0;
       if (mode === 'turbina') {
         W = mdot * dh - qloss;
         extraVal = `${fmt(W, 1)} kW`;
-        msg = 'Turbina entrega trabalho reduzindo entalpia; perda térmica diminui diretamente Ẇ.';
-        iconPath = `<path d="M130 70 L280 44 L280 166 L130 140 Z" fill="${COL.ice}" stroke="${COL.navy}" stroke-width="3"/>`;
+        msg = `Turbina adiabática ideal entregaria ${texInline(`\\dot m\\,\\Delta h = ${tnum(mdot * dh, 1)}\\ \\mathrm{kW}`)}; a perda térmica reduz a potência: ${texInline(`\\dot W = \\dot m(h_1 - h_2) - \\dot Q_{\\text{sai}} = ${tnum(W, 1)}\\ \\mathrm{kW}`)}.`;
+        icon = `<path d="M150 74 L262 52 L262 158 L150 136 Z" fill="${COL.ice}" stroke="${COL.navy}" stroke-width="3"/>`;
       } else if (mode === 'compressor') {
-        W = -(mdot * (dh * 0.4) + qloss);
+        W = -(mdot * dh + qloss);
         extraLabel = 'Potência consumida |Ẇ|';
         extraVal = `${fmt(Math.abs(W), 1)} kW`;
-        msg = 'Compressor exige trabalho no eixo (Ẇ < 0) para elevar pressão e entalpia do gás.';
-        iconPath = `<path d="M130 44 L280 70 L280 140 L130 166 Z" fill="${COL.ice}" stroke="${COL.navy}" stroke-width="3"/>`;
+        msg = `O compressor recebe trabalho (${texInline('\\dot W < 0')}): ${texInline(`|\\dot W| = \\dot m(h_2 - h_1) + \\dot Q_{\\text{sai}} = ${tnum(Math.abs(W), 1)}\\ \\mathrm{kW}`)}. Resfriar o gás durante a compressão diminui ${texInline('h_2')} e o trabalho exigido.`;
+        icon = `<path d="M150 52 L262 74 L262 136 L150 158 Z" fill="${COL.ice}" stroke="${COL.navy}" stroke-width="3"/>`;
       } else if (mode === 'bocal') {
-        const V2 = Math.sqrt(40 * 40 + 2000 * (dh * 0.2));
+        const V2 = Math.sqrt(40 * 40 + 2000 * dh);
         extraLabel = 'Velocidade de saída V₂';
-        extraVal = `${fmt(V2, 1)} m/s`;
-        msg = 'No bocal (Ẇ = 0), queda de entalpia converte-se em energia cinética: V₂ = √(V₁² + 2Δh).';
-        iconPath = `<path d="M130 56 L280 86 L280 124 L130 154 Z" fill="${COL.coralSoft}" stroke="${COL.coral}" stroke-width="3"/>`;
+        extraVal = `${fmt(V2, 0)} m/s`;
+        accel = true;
+        showQ = false;
+        msg = `Bocal adiabático (${texInline('\\dot W = 0,\\ \\dot Q \\approx 0')}): a queda de entalpia vira energia cinética, ${texInline(`V_2 = \\sqrt{V_1^2 + 2\\,\\Delta h} = \\sqrt{40^2 + 2(${Math.round(dh)}\\,000)} = ${tnum(V2, 0)}\\ \\mathrm{m/s}`)}.`;
+        icon = `<path d="M150 58 L262 92 L262 118 L150 152 Z" fill="${COL.coralSoft}" stroke="${COL.coral}" stroke-width="3"/>`;
       } else if (mode === 'valvula') {
         extraLabel = 'Entalpia de saída';
-        extraVal = 'h₂ = h₁ (Δh = 0)';
-        msg = 'Válvula de estrangulamento: Ẇ = 0, Q̇ ≈ 0, Δec ≈ 0 ⇒ processo isentálpico (h₁ = h₂).';
-        iconPath = `<path d="M150 66 L260 144 M150 144 L260 66 M150 66 H260 M150 144 H260" stroke="${COL.navy}" stroke-width="3" fill="none"/>`;
+        extraVal = 'h₂ = h₁';
+        showQ = false;
+        msg = `Válvula de estrangulamento: ${texInline('\\dot W = 0')}, ${texInline('\\dot Q \\approx 0')} e ${texInline('\\Delta ec \\approx 0')}, logo ${texInline('h_2 = h_1')} (processo isentálpico). A pressão cai e, num líquido saturado, parte vaporiza (flash).`;
+        icon = `<path d="M160 70 L250 140 M160 140 L250 70" stroke="${COL.navy}" stroke-width="3.5" fill="none"/><rect x="196" y="40" width="18" height="30" fill="${COL.navy}"/><line x1="174" y1="40" x2="236" y2="40" stroke="${COL.navy}" stroke-width="4"/>`;
       } else {
         const U = clamp(1.25 + (dh / 900) * 0.95, 1.25, 2.2);
         const Wel = -(2 * 96485 * U) / 1000;
         const Qmol = Wel + 285.8;
-        extraLabel = `U = ${fmt(U, 2)} V · Q térmico`;
+        extraLabel = `U = ${fmt(U, 2)} V · calor`;
         extraVal = `${fmt(Qmol, 1)} kJ/mol H₂`;
-        msg = Math.abs(U - 1.48) < 0.04
-          ? 'Tensão termoneutra (1,48 V): Q ≈ 0.'
-          : U > 1.48
-            ? `Acima de 1,48 V: célula exotérmica (rejeita ${fmt(Math.abs(Qmol), 1)} kJ/mol).`
-            : `Abaixo de 1,48 V: célula endotérmica (absorve ${fmt(Qmol, 1)} kJ/mol).`;
-        iconPath = `<rect x="135" y="54" width="140" height="102" rx="12" fill="${COL.paper}" stroke="${COL.navy}" stroke-width="3"/><rect x="155" y="70" width="14" height="70" fill="${COL.coral}"/><rect x="241" y="70" width="14" height="70" fill="${COL.navy}"/>`;
+        showQ = Math.abs(U - 1.48) > 0.04;
+        msg = `${texInline(`\\dot W_{\\text{el}} = -2FU = ${tnum(Wel, 1)}\\ \\mathrm{kJ/mol}`)} e ${texInline('\\Delta \\bar h_R = +285{,}8\\ \\mathrm{kJ/mol}')}. ` +
+          (Math.abs(U - 1.48) < 0.04
+            ? 'Tensão termoneutra (1,48 V): o calor trocado é praticamente nulo.'
+            : U > 1.48
+              ? `Acima de 1,48 V a célula é exotérmica e rejeita ${texInline(`${tnum(Math.abs(Qmol), 1)}\\ \\mathrm{kJ/mol}`)}.`
+              : `Abaixo de 1,48 V a célula é endotérmica e absorve ${texInline(`${tnum(Qmol, 1)}\\ \\mathrm{kJ/mol}`)}.`);
+        icon = `<rect x="150" y="54" width="112" height="102" rx="12" fill="${COL.paper}" stroke="${COL.navy}" stroke-width="3"/><rect x="168" y="70" width="12" height="74" fill="${COL.coral}"/><rect x="232" y="70" width="12" height="74" fill="${COL.navy}"/>` +
+          [0, 0.4, 0.8, 1.2].map((b, i) => `<circle cx="${i % 2 ? 238 : 174}" cy="140" r="3" fill="#fff" stroke="${i % 2 ? COL.navy : COL.coral}" stroke-width="1.4"><animate attributeName="cy" values="140;74" dur="1.6s" begin="${b}s" repeatCount="indefinite"/><animate attributeName="opacity" values="1;0" dur="1.6s" begin="${b}s" repeatCount="indefinite"/></circle>`).join('');
       }
-      const streamPts: [number, number][] = [[40, 105], [385, 105]];
+      if (mode === 'turbina' || mode === 'compressor') {
+        const spin = clamp(12 / (Math.abs(W) / 300 + 1), 0.4, 6);
+        icon += `<g transform="translate(${cx} ${cy})"><g><circle r="20" fill="#fff" stroke="${COL.navy}" stroke-width="2.2"/><path d="M0 -18 V18 M-18 0 H18 M-12.7 -12.7 L12.7 12.7 M12.7 -12.7 L-12.7 12.7" stroke="${COL.navy}" stroke-width="2"/><animateTransform attributeName="transform" type="rotate" from="0" to="${mode === 'turbina' ? 360 : -360}" dur="${spin.toFixed(2)}s" repeatCount="indefinite"/></g></g>`;
+        shaft = mode === 'turbina'
+          ? `<line x1="${cx}" y1="${cy}" x2="${cx}" y2="196" stroke="${COL.navy}" stroke-width="4"/><path d="M${cx + 8},186 H${cx + 60}" stroke="${COL.navy}" stroke-width="2.6" marker-end="url(#s3n)"/><text x="${cx + 64}" y="190" font-size="11" font-weight="700" fill="${COL.navy}">Ẇ (sai)</text>`
+          : `<line x1="${cx}" y1="${cy}" x2="${cx}" y2="196" stroke="${COL.navy}" stroke-width="4"/><path d="M${cx + 60},186 H${cx + 8}" stroke="${COL.navy}" stroke-width="2.6" marker-end="url(#s3n)"/><text x="${cx + 64}" y="190" font-size="11" font-weight="700" fill="${COL.navy}">Ẇ (entra)</text>`;
+      }
+      const qArrow = showQ
+        ? `<path d="M${cx - 60},170 V198" stroke="${COL.coral}" stroke-width="2.6" marker-end="url(#s3c)"/><text x="${cx - 54}" y="196" font-size="11" font-weight="700" fill="${COL.coral}">Q̇</text>`
+        : '';
+      const streamPts: [number, number][] = [[30, cy], [400, cy]];
+      const motion = accel
+        ? `keyPoints="0;0.45;1" keyTimes="0;0.75;1" calcMode="linear"`
+        : '';
+      const particles = [0, 0.25, 0.5, 0.75]
+        .map((f) => `<circle r="4" fill="${COL.coral}" stroke="#fff" stroke-width="1.2"><animateMotion path="M30,${cy} H400" dur="${flowDur.toFixed(2)}s" begin="${(-f * flowDur).toFixed(2)}s" ${motion} repeatCount="indefinite"/></circle>`)
+        .join('');
       return {
-        svg: `<svg viewBox="0 0 440 210" role="img" aria-label="Esquema do volume de controle selecionado">
+        svg: `<svg viewBox="0 0 440 210" role="img" aria-label="Esquema animado do volume de controle selecionado">
           ${mkDefs('s3')}
-          <rect x="108" y="32" width="194" height="146" rx="14" fill="none" stroke="${COL.coral}" stroke-width="2" stroke-dasharray="7 5"/>
-          <line x1="32" y1="105" x2="128" y2="105" stroke="${COL.navy}" stroke-width="4" marker-end="url(#s3n)"/>
-          <line x1="282" y1="105" x2="395" y2="105" stroke="${COL.navy}" stroke-width="4" marker-end="url(#s3n)"/>
-          ${iconPath}
-          <text x="205" y="22" font-size="11.5" font-weight="700" text-anchor="middle" fill="${COL.navy}">Fronteira do Volume de Controle (${mode.toUpperCase()})</text>
-          <text x="36" y="88" font-size="11" fill="${COL.navy}">Entrada (h₁, V₁)</text>
-          <text x="315" y="88" font-size="11" fill="${COL.navy}">Saída (h₂, V₂)</text>
-          <text x="205" y="198" font-size="11" text-anchor="middle" fill="${COL.muted}">0 = Q̇_vc − Ẇ_vc + ṁ[(h₁ − h₂) + (V₁² − V₂²)/2]</text>
+          <rect x="128" y="32" width="156" height="146" rx="14" fill="none" stroke="${COL.coral}" stroke-width="2" stroke-dasharray="7 5"><animate attributeName="stroke-dashoffset" from="0" to="24" dur="2s" repeatCount="indefinite"/></rect>
+          <line x1="28" y1="${cy}" x2="146" y2="${cy}" stroke="${COL.navy}" stroke-width="5"/>
+          <line x1="264" y1="${cy}" x2="408" y2="${cy}" stroke="${COL.navy}" stroke-width="5" marker-end="url(#s3n)"/>
+          ${icon}
+          ${particles}
+          ${shaft}
+          ${qArrow}
+          <text x="${cx}" y="22" font-size="11.5" font-weight="700" text-anchor="middle" fill="${COL.navy}">Fronteira do volume de controle</text>
+          <text x="30" y="88" font-size="11" font-weight="700" fill="${COL.navy}">Entrada 1</text>
+          <text x="30" y="128" font-size="10.5" fill="${COL.muted}">h<tspan dy="3" font-size="8">1</tspan><tspan dy="-3">, V</tspan><tspan dy="3" font-size="8">1</tspan></text>
+          <text x="330" y="88" font-size="11" font-weight="700" fill="${COL.navy}">Saída 2</text>
+          <text x="330" y="128" font-size="10.5" fill="${COL.muted}">h<tspan dy="3" font-size="8">2</tspan><tspan dy="-3">, V</tspan><tspan dy="3" font-size="8">2</tspan></text>
         </svg>`,
         kpis: [
           { label: extraLabel, value: extraVal, accent: true },
           { label: 'Vazão ṁ', value: `${fmt(mdot, 1)} kg/s` },
-          { label: 'Perda Q̇_sai', value: `${fmt(qloss, 0)} kW` },
+          { label: 'Calor perdido', value: showQ && mode !== 'eletrolisador' ? `${fmt(qloss, 0)} kW` : '≈ 0' },
         ],
-        insight: msg,
+        insight: `${msg}<br>${texInline('0 = \\dot Q_{\\text{vc}} - \\dot W_{\\text{vc}} + \\dot m\\left[(h_1 - h_2) + \\tfrac{V_1^2 - V_2^2}{2} + g(z_1 - z_2)\\right]')}`,
         trace: (phase) => {
           const [x, y] = samplePolyline(streamPts, phase);
           return { x, y, tag: 'ṁ' };
@@ -470,9 +554,10 @@ const SIM_SPECS: SimSpec[] = [
   {
     id: 'pv-dome-quality',
     defaultTitle: 'Substância Pura: Cúpula de Saturação & Regra da Alavanca',
-    subtitle: 'Varie pressão e título mássico x e veja o estado se mover dentro da cúpula da água.',
+    subtitle: `Escolha a pressão e o título ${texInline('x')}; a animação percorre a vaporização de f (líquido saturado) até g (vapor saturado).`,
+    autoplay: true,
     params: [
-      { key: 'idx', label: 'Pressão (índice Tab. A-3)', unit: 'bar', min: 1, max: 9, step: 1, initial: 4 },
+      { key: 'idx', label: 'Nível de pressão (Tab. A-3, de 0,1 a 40 bar)', unit: '', min: 1, max: 9, step: 1, initial: 4 },
       { key: 'x', label: 'Título mássico x', unit: '', min: 0, max: 1, step: 0.05, initial: 0.45 },
     ],
     render: (s) => {
@@ -481,37 +566,46 @@ const SIM_SPECS: SimSpec[] = [
       const v = sat.vf + x * (sat.vg - sat.vf);
       const h = sat.hf + x * sat.hfg;
       const u = sat.uf + x * (sat.ug - sat.uf);
-      const sVal = sat.sf + x * (sat.sg - sat.sf);
       const vFrac = (x * sat.vg) / v;
 
-      // Schematic T-s dome coordinates
       const yT = 186 - ((sat.T - 40) / (374 - 40)) * 140;
-      const sF_px = 110 + (sat.sf / 4.43) * 105;
-      const sG_px = 385 - ((8.3 - sat.sg) / (8.3 - 4.43)) * 170;
-      const sX_px = lerp(sF_px, sG_px, x);
+      const sF = 110 + (sat.sf / 4.43) * 105;
+      const sG = 385 - ((8.3 - sat.sg) / (8.3 - 4.43)) * 170;
+      const sX = lerp(sF, sG, x);
+      const pp = (ph: number) => 0.5 - 0.5 * Math.cos(ph * Math.PI * 2);
 
       return {
-        svg: `<svg viewBox="0 0 440 220" role="img" aria-label="Diagrama T-s com ponto de estado dentro da cúpula de saturação">
+        svg: `<svg viewBox="0 0 440 220" role="img" aria-label="Diagrama T-s com a linha de saturação e o estado de título x">
           ${mkDefs('s4')}
           <path d="M88,190 C112,115 162,46 215,46 C268,46 340,115 398,190 Z" fill="${COL.ice}" stroke="${COL.navy}" stroke-width="2.5"/>
           <line x1="50" y1="194" x2="420" y2="194" stroke="${COL.navy}" stroke-width="2" marker-end="url(#s4n)"/>
           <line x1="50" y1="194" x2="50" y2="20" stroke="${COL.navy}" stroke-width="2" marker-end="url(#s4n)"/>
-          <line x1="${sF_px}" y1="${yT}" x2="${sG_px}" y2="${yT}" stroke="${COL.navy}" stroke-width="2.5"/>
-          <circle cx="${sF_px}" cy="${yT}" r="4.5" fill="${COL.navy}"/><text x="${sF_px - 14}" y="${yT + 4}" font-size="11" font-weight="700" fill="${COL.navy}">f</text>
-          <circle cx="${sG_px}" cy="${yT}" r="4.5" fill="${COL.navy}"/><text x="${sG_px + 8}" y="${yT + 4}" font-size="11" font-weight="700" fill="${COL.navy}">g</text>
-          <circle cx="${sX_px}" cy="${yT}" r="6.5" fill="${COL.coral}" stroke="#fff" stroke-width="2"/>
-          <text x="${sX_px}" y="${yT - 10}" font-size="11" font-weight="700" text-anchor="middle" fill="${COL.coral}">x = ${fmt(x, 2)}</text>
-          <text x="398" y="212" font-size="11" fill="${COL.navy}" font-style="italic">s</text>
-          <text x="26" y="30" font-size="11" fill="${COL.navy}" font-style="italic">T</text>
-          <text x="215" y="34" font-size="10.5" text-anchor="middle" fill="${COL.muted}">P = ${fmt(sat.pBar, 2)} bar · T_sat = ${fmt(sat.T, 1)} °C</text>
+          <path d="M${(sF - 26).toFixed(1)},${Math.min(yT + 30, 190).toFixed(1)} Q${(sF - 10).toFixed(1)},${(yT + 4).toFixed(1)} ${sF.toFixed(1)},${yT.toFixed(1)} L${sG.toFixed(1)},${yT.toFixed(1)} Q${(sG + 24).toFixed(1)},${(yT - 22).toFixed(1)} ${Math.min(sG + 50, 412).toFixed(1)},${Math.max(yT - 50, 24).toFixed(1)}" fill="none" stroke="${COL.blue}" stroke-width="1.6" stroke-dasharray="5 4"/>
+          <line x1="${sF.toFixed(1)}" y1="${yT.toFixed(1)}" x2="${sG.toFixed(1)}" y2="${yT.toFixed(1)}" stroke="${COL.navy}" stroke-width="2.8"/>
+          <circle cx="${sF.toFixed(1)}" cy="${yT.toFixed(1)}" r="4.5" fill="${COL.navy}"/><text x="${(sF - 16).toFixed(1)}" y="${(yT + 4).toFixed(1)}" font-size="11" font-weight="700" fill="${COL.navy}">f</text>
+          <circle cx="${sG.toFixed(1)}" cy="${yT.toFixed(1)}" r="4.5" fill="${COL.navy}"/><text x="${(sG + 8).toFixed(1)}" y="${(yT + 4).toFixed(1)}" font-size="11" font-weight="700" fill="${COL.navy}">g</text>
+          <circle cx="${sX.toFixed(1)}" cy="${yT.toFixed(1)}" r="6.5" fill="${COL.navy}" stroke="#fff" stroke-width="2"/>
+          <text class="pd-x" x="${sX.toFixed(1)}" y="${(yT - 12).toFixed(1)}" font-size="11" font-weight="700" text-anchor="middle" fill="${COL.coral}">x = ${fmt(x, 2)}</text>
+          <text x="406" y="212" font-size="11" fill="${COL.navy}" font-style="italic">s</text>
+          <text x="30" y="30" font-size="11" fill="${COL.navy}" font-style="italic">T</text>
+          <text x="215" y="34" font-size="10.5" text-anchor="middle" fill="${COL.muted}">P = ${fmt(sat.pBar, 2)} bar · T<tspan dy="3" font-size="8">sat</tspan><tspan dy="-3"> = ${fmt(sat.T, 1)} °C</tspan></text>
         </svg>`,
         kpis: [
           { label: 'Entalpia h', value: `${fmt(h, 1)} kJ/kg`, accent: true },
           { label: 'Energia interna u', value: `${fmt(u, 1)} kJ/kg` },
-          { label: 'Vol. específico v', value: `${fmt(v, 4)} m³/kg` },
-          { label: 'Fração em volume (vapor)', value: `${fmt(vFrac * 100, 1)} %` },
+          { label: 'Volume específico v', value: `${fmt(v, 4)} m³/kg` },
+          { label: 'Fração do volume ocupada pelo vapor', value: `${fmt(vFrac * 100, 1)} %` },
         ],
-        insight: `Embora apenas ${fmt(x * 100, 0)}% da massa seja vapor, ela ocupa ${fmt(vFrac * 100, 1)}% do volume porque v_g ≫ v_f.`,
+        insight: `Com ${texInline(`x = ${tnum(x, 2)}`)}, ${texInline(`h = h_f + x\\,h_{fg} = ${tnum(sat.hf, 1)} + ${tnum(x, 2)}(${tnum(sat.hfg, 1)}) = ${tnum(h, 1)}\\ \\mathrm{kJ/kg}`)}. O vapor ocupa ${texInline(`${tnum(vFrac * 100, 1)}\\%`)} do volume porque ${texInline('v_g \\gg v_f')}. Durante a vaporização, ${texInline('T')} e ${texInline('P')} ficam constantes: só o título muda.`,
+        trace: (phase) => ({ x: lerp(sF, sG, pp(phase)), y: yT }),
+        onPhase: (phase, svg) => {
+          const t = svg.querySelector('.pd-x');
+          const xx = pp(phase);
+          if (t) {
+            t.setAttribute('x', lerp(sF, sG, xx).toFixed(1));
+            t.textContent = `x = ${fmt(xx, 2)}`;
+          }
+        },
       };
     },
   },
@@ -1357,10 +1451,12 @@ export function hydrateCycleSims(scope: HTMLElement): void {
     const insightBox = host.querySelector<HTMLElement>('.sim-insight')!;
     const playBtn = host.querySelector<HTMLButtonElement>('.sim-play')!;
     let currentTrace: ((p: number) => { x: number; y: number; tag?: string } | null) | undefined;
+    let currentOnPhase: ((p: number, svg: SVGSVGElement) => void) | undefined;
 
     function updateTracer() {
       const svg = svgBox.querySelector('svg');
       if (!svg || !currentTrace) return;
+      if (currentOnPhase) currentOnPhase(phase, svg as SVGSVGElement);
       const pt = currentTrace(phase);
       let g = svg.querySelector<SVGGElement>('.sim-tracer');
       if (!pt) { if (g) g.remove(); return; }
@@ -1382,7 +1478,9 @@ export function hydrateCycleSims(scope: HTMLElement): void {
       const res = spec!.render(state, mode);
       svgBox.innerHTML = res.svg;
       currentTrace = res.trace;
+      currentOnPhase = res.onPhase;
       playBtn.hidden = !currentTrace;
+      if (!playing && currentOnPhase && phase > 0) updateTracer();
       if (playing && currentTrace) updateTracer();
       else if (playing && !currentTrace) {
         playing = false;
@@ -1439,6 +1537,13 @@ export function hydrateCycleSims(scope: HTMLElement): void {
     });
 
     renderNow();
+    if (spec.autoplay && currentTrace && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      playing = true;
+      playBtn.setAttribute('aria-pressed', 'true');
+      playBtn.textContent = '⏸ Pausar';
+      lastTs = 0;
+      rafId = requestAnimationFrame(tick);
+    }
   });
 }
 
@@ -1503,30 +1608,39 @@ const DYN_SPECS: DynExSpec[] = [
   /* 2. thermo-b-polytropic */
   {
     id: 'thermo-b-polytropic',
-    title: 'Trabalho de Fronteira em Processo Politrópico (P Vⁿ = C)',
-    tag: 'Exemplo Dinâmico · Aula 2',
+    title: 'Trabalho de Fronteira Móvel em Processo Politrópico (P Vⁿ = C)',
+    tag: 'Exemplo Dinâmico · Aula 02',
     params: [
       { key: 'P1', label: 'Pressão inicial P₁', unit: 'kPa', min: 200, max: 1000, step: 100, base: 800, choices: [400, 600, 800, 1000] },
       { key: 'V1', label: 'Volume inicial V₁', unit: 'm³', min: 0.04, max: 0.12, step: 0.02, base: 0.06, choices: [0.04, 0.05, 0.06, 0.08, 0.10] },
-      { key: 'n', label: 'Expoente n', unit: '', min: 0, max: 1.5, step: 0.1, base: 1.3, choices: [0, 0.8, 1.0, 1.2, 1.3, 1.4] },
+      { key: 'n', label: 'Expoente politrópico n', unit: '', min: 0, max: 1.5, step: 0.1, base: 1.3, choices: [0, 0.8, 1.0, 1.2, 1.3, 1.4] },
     ],
     solve: ({ P1, V1, n }) => {
       const V2 = V1 * 3;
       const P2 = P1 * Math.pow(V1 / V2, n);
-      const W = Math.abs(n - 1) < 1e-4 ? P1 * V1 * Math.log(V2 / V1) : (P2 * V2 - P1 * V1) / (1 - n);
+      const isIso = Math.abs(n - 1) < 1e-4;
+      const W = isIso ? P1 * V1 * Math.log(V2 / V1) : (P2 * V2 - P1 * V1) / (1 - n);
+      const Wiso = P1 * V1 * Math.log(3);
       return {
-        statement: `Um gás dentro de um conjunto cilindro–pistão expande-se de <b>V₁ = ${fmt(V1, 2)} m³</b> e <b>P₁ = ${P1} kPa</b> até triplicar o volume (<b>V₂ = ${fmt(V2, 2)} m³</b>) segundo um processo politrópico com <b>n = ${fmt(n, 1)}</b>. Determine P₂ e o trabalho de fronteira.`,
+        statement: `Um gás dentro de um conjunto cilindro e pistão expande-se de ${texInline(`V_1 = ${tnum(V1, 2)}\\ \\mathrm{m^3}`)} e ${texInline(`P_1 = ${P1}\\ \\mathrm{kPa}`)} até triplicar o volume (${texInline(`V_2 = ${tnum(V2, 2)}\\ \\mathrm{m^3}`)}) segundo um processo politrópico quase-estático com ${texInline(`n = ${tnum(n, 1)}`)}. Determine ${texInline('P_2')} e o trabalho de fronteira ${texInline('{}_1W_2')}.`,
         steps: [
-          { label: 'Pressão final pela relação politrópica', tex: String.raw`P_2 = P_1\left(\frac{V_1}{V_2}\right)^n = ${P1}\left(\frac{1}{3}\right)^{${tnum(n, 1)}} = ${tnum(P2, 1)}\ \mathrm{kPa}` },
           {
-            label: Math.abs(n - 1) < 1e-4 ? 'Integração no caso isotérmico (n = 1)' : 'Integração da fronteira móvel (n ≠ 1)',
-            tex: Math.abs(n - 1) < 1e-4
-              ? String.raw`W_{12} = P_1 V_1 \ln\!\left(\frac{V_2}{V_1}\right) = ${P1}(${tnum(V1, 2)})\ln(3) = ${tnum(W, 2)}\ \mathrm{kJ}`
-              : String.raw`W_{12} = \frac{P_2 V_2 - P_1 V_1}{1 - n} = \frac{${tnum(P2, 1)}(${tnum(V2, 2)}) - ${P1}(${tnum(V1, 2)})}{1 - ${tnum(n, 1)}} = ${tnum(W, 2)}\ \mathrm{kJ}`,
+            label: 'Pressão final pela relação politrópica PVⁿ = const.',
+            tex: String.raw`P_2 = P_1\left(\frac{V_1}{V_2}\right)^n = ${P1}\left(\frac{1}{3}\right)^{${tnum(n, 1)}} = ${tnum(P2, 1)}\ \mathrm{kPa}`,
+          },
+          {
+            label: isIso ? 'Integração no caso isotérmico de gás ideal (n = 1)' : 'Integração da fronteira móvel (n ≠ 1)',
+            tex: isIso
+              ? String.raw`{}_1W_2 = P_1 V_1 \ln\!\left(\frac{V_2}{V_1}\right) = ${P1}(${tnum(V1, 2)})\ln(3) = ${tnum(W, 2)}\ \mathrm{kJ}`
+              : String.raw`{}_1W_2 = \frac{P_2 V_2 - P_1 V_1}{1 - n} = \frac{${tnum(P2, 1)}(${tnum(V2, 2)}) - ${P1}(${tnum(V1, 2)})}{1 - ${tnum(n, 1)}} = ${tnum(W, 2)}\ \mathrm{kJ}`,
+          },
+          {
+            label: 'Comparação com caminho isotérmico (n = 1) e unidades',
+            tex: String.raw`W_{\text{iso}} = P_1 V_1 \ln 3 = ${tnum(Wiso, 2)}\ \mathrm{kJ}, \qquad 1\ \mathrm{kPa\cdot m^3} = 1\ \mathrm{kJ}`,
           },
         ],
-        answer: `P₂ = ${fmt(P2, 1)} kPa · W₁₂ = +${fmt(W, 2)} kJ (trabalho realizado pelo gás)`,
-        check: `Em expansão (V₂ > V₁), W > 0 e decresce monotonicamente à medida que n cresce (P₁V₁·ln3 = ${fmt(P1 * V1 * Math.log(3), 2)} kJ para n = 1).`,
+        answer: `${texInline(`P_2 = ${tnum(P2, 1)}\\ \\mathrm{kPa}`)} · ${texInline(`{}_1W_2 = +${tnum(W, 2)}\\ \\mathrm{kJ}`)} (trabalho realizado pelo gás sobre o pistão)`,
+        check: `Na expansão (${texInline('V_2 > V_1')}), ${texInline('{}_1W_2 > 0')} e diminui monotonicamente conforme ${texInline('n')} aumenta (para ${texInline('n = 0')} daria ${texInline(`${tnum(P1 * (V2 - V1), 1)}\\ \\mathrm{kJ}`)}; para ${texInline('n = 1')}, ${texInline(`${tnum(Wiso, 2)}\\ \\mathrm{kJ}`)}).`,
       };
     },
   },
@@ -1534,30 +1648,31 @@ const DYN_SPECS: DynExSpec[] = [
   /* 3. thermo-c-turbine */
   {
     id: 'thermo-c-turbine',
-    title: 'Balanço de Energia em Turbina a Vapor Real (Tabelas A-3/A-4)',
-    tag: 'Exemplo Dinâmico · Aula 3',
+    title: 'Balanço de Energia em Turbina a Vapor (Tabelas A-3 e A-4)',
+    tag: 'Exemplo Dinâmico · Aula 03',
     params: [
       { key: 'p1', label: 'Pressão de entrada P₁', unit: 'bar', min: 20, max: 40, step: 10, base: 30, choices: [20, 30, 40] },
-      { key: 'T1', label: 'Temperatura entrada T₁', unit: '°C', min: 400, max: 440, step: 40, base: 400, choices: [400, 440] },
+      { key: 'T1', label: 'Temperatura de entrada T₁', unit: '°C', min: 400, max: 440, step: 40, base: 400, choices: [400, 440] },
       { key: 'mdot', label: 'Vazão mássica ṁ', unit: 'kg/s', min: 5, max: 20, step: 5, base: 10, choices: [5, 10, 15, 20] },
     ],
     solve: ({ p1, T1, mdot }) => {
       const sup = STEAM_SUP.find((r) => r.pBar === p1 && r.T === T1) || STEAM_SUP[4];
-      const sat2 = STEAM_SAT[1]; // 0.10 bar
-      const x2 = 0.90;
+      const sat2 = STEAM_SAT[1];
+      const x2 = 0.9;
       const h2 = sat2.hf + x2 * sat2.hfg;
-      const V1 = 50, V2 = 120;
+      const V1 = 50;
+      const V2 = 120;
       const dEc = (V1 * V1 - V2 * V2) / 2000;
-      const Wdot = mdot * ((sup.h - h2) + dEc);
+      const Wdot = mdot * (sup.h - h2 + dEc);
       return {
-        statement: `Vapor d’água entra numa turbina adiabática a <b>${p1} bar (${p1 / 10} MPa)</b>, <b>${T1} °C</b> e <b>50 m/s</b> com vazão de <b>${mdot} kg/s</b>, saindo a <b>0,10 bar (10 kPa)</b>, título <b>x₂ = 0,90</b> e <b>120 m/s</b>. Calcule a potência entregue.`,
+        statement: `Vapor d’água entra numa turbina adiabática a ${texInline(`P_1 = ${p1}\\ \\mathrm{bar}`)}, ${texInline(`T_1 = ${T1}\\ ^\\circ\\mathrm{C}`)} e ${texInline('V_1 = 50\\ \\mathrm{m/s}')}, com ${texInline(`\\dot m = ${mdot}\\ \\mathrm{kg/s}`)}. Sai a ${texInline('P_2 = 0{,}10\\ \\mathrm{bar}')} com título ${texInline('x_2 = 0{,}90')} e ${texInline('V_2 = 120\\ \\mathrm{m/s}')}. Desprezando ${texInline('\\Delta ep')}, calcule a potência.`,
         steps: [
-          { label: 'Entalpia de entrada (Tabela A-4) e de saída (Tabela A-3)', tex: String.raw`h_1 = ${tnum(sup.h, 1)}\ \mathrm{kJ/kg},\qquad h_2 = 191{,}83 + 0{,}90(2392{,}8) = ${tnum(h2, 1)}\ \mathrm{kJ/kg}` },
-          { label: 'Contribuição da energia cinética', tex: String.raw`\Delta ec = \frac{V_1^2 - V_2^2}{2\,000} = \frac{50^2 - 120^2}{2\,000} = ${tnum(dEc, 2)}\ \mathrm{kJ/kg}` },
-          { label: 'Balanço em regime permanente (Q̇ ≈ 0)', tex: String.raw`\dot W = \dot m\left[(h_1 - h_2) + \Delta ec\right] = ${mdot}\left[(${tnum(sup.h, 1)} - ${tnum(h2, 1)}) ${dEc < 0 ? '-' : '+'} ${tnum(Math.abs(dEc), 2)}\right] = ${tnum(Wdot, 0)}\ \mathrm{kW}` },
+          { label: 'Entalpias: entrada superaquecida (A-4) e saída bifásica (A-3)', tex: String.raw`h_1 = ${tnum(sup.h, 1)}\ \mathrm{kJ/kg},\qquad h_2 = h_f + x_2 h_{fg} = 191{,}83 + 0{,}90(2\,392{,}8) = ${tnum(h2, 1)}\ \mathrm{kJ/kg}` },
+          { label: 'Variação de energia cinética por unidade de massa', tex: String.raw`\frac{V_1^2 - V_2^2}{2} = \frac{50^2 - 120^2}{2\,000} = ${tnum(dEc, 2)}\ \mathrm{kJ/kg}` },
+          { label: 'Balanço em regime permanente (Q̇ = 0)', tex: String.raw`\dot W_{\text{vc}} = \dot m\left[(h_1 - h_2) + \frac{V_1^2 - V_2^2}{2}\right] = ${mdot}\left[${tnum(sup.h - h2, 1)} ${dEc < 0 ? '-' : '+'} ${tnum(Math.abs(dEc), 2)}\right] = ${tnum(Wdot, 0)}\ \mathrm{kW}` },
         ],
-        answer: `Ẇ = ${fmt(Wdot, 0)} kW (${fmt(Wdot / 1000, 2)} MW)`,
-        check: `A energia cinética representa apenas ${fmt((Math.abs(dEc) / (sup.h - h2)) * 100, 2)}% da variação de entalpia.`,
+        answer: `${texInline(`\\dot W_{\\text{vc}} = ${tnum(Wdot, 0)}\\ \\mathrm{kW} = ${tnum(Wdot / 1000, 2)}\\ \\mathrm{MW}`)}`,
+        check: `A parcela cinética é só ${texInline(`${tnum((Math.abs(dEc) / (sup.h - h2)) * 100, 2)}\\%`)} da queda de entalpia: por isso costuma ser desprezada em turbinas.`,
       };
     },
   },
@@ -1565,8 +1680,8 @@ const DYN_SPECS: DynExSpec[] = [
   /* 4. thermo-d-steam */
   {
     id: 'thermo-d-steam',
-    title: 'Localização de Estado e Título em Mistura Saturada (Tabela A-3)',
-    tag: 'Exemplo Dinâmico · Aula 4',
+    title: 'Localização do Estado e Título em Mistura Saturada (Tabela A-3)',
+    tag: 'Exemplo Dinâmico · Aula 04',
     params: [
       { key: 'p', label: 'Pressão da água P', unit: 'bar', min: 1, max: 20, step: 1, base: 5, choices: [1, 2, 5, 10, 20] },
       { key: 'x', label: 'Título real x', unit: '', min: 0.2, max: 0.85, step: 0.15, base: 0.5, choices: [0.2, 0.35, 0.5, 0.65, 0.8] },
@@ -1578,14 +1693,14 @@ const DYN_SPECS: DynExSpec[] = [
       const u = sat.uf + x * (sat.ug - sat.uf);
       const s = sat.sf + x * (sat.sg - sat.sf);
       return {
-        statement: `Um recipiente contém água a <b>P = ${p} bar</b> com volume específico médio <b>v = ${fmt(v, 4)} m³/kg</b>. Identifique a fase, calcule o título <b>x</b>, a entalpia <b>h</b> e a entropia <b>s</b> (Moran, Tab. A-3).`,
+        statement: `Um recipiente contém água a ${texInline(`P = ${p}\\ \\mathrm{bar}`)} com volume específico médio ${texInline(`v = ${tnum(v, 4)}\\ \\mathrm{m^3/kg}`)}. Identifique a região, calcule o título ${texInline('x')}, a entalpia ${texInline('h')}, a energia interna ${texInline('u')} e a entropia ${texInline('s')} (Moran, Tab. A-3).`,
         steps: [
-          { label: `Teste de região na Tabela A-3 a ${p} bar (T_sat = ${fmt(sat.T, 1)} °C)`, tex: String.raw`v_f = ${tnum(sat.vf, 5)},\quad v_g = ${tnum(sat.vg, 4)}\ \mathrm{m^3/kg} \;\Rightarrow\; v_f < v < v_g\ (\text{mistura saturada})` },
-          { label: 'Cálculo do título mássico x', tex: String.raw`x = \frac{v - v_f}{v_g - v_f} = \frac{${tnum(v, 4)} - ${tnum(sat.vf, 5)}}{${tnum(sat.vg, 4)} - ${tnum(sat.vf, 5)}} = ${tnum(x, 3)}` },
-          { label: 'Entalpia, energia interna e entropia', tex: String.raw`h = h_f + x\,h_{fg} = ${tnum(sat.hf, 1)} + ${tnum(x, 2)}(${tnum(sat.hfg, 1)}) = ${tnum(h, 1)}\ \mathrm{kJ/kg},\quad s = ${tnum(s, 4)}\ \mathrm{kJ/(kg{\cdot}K)}` },
+          { label: `Teste de região a ${fmt(p, 0)} bar (temperatura de saturação ${fmt(sat.T, 1)} °C)`, tex: String.raw`v_f = ${tnum(sat.vf, 5)} < v = ${tnum(v, 4)} < v_g = ${tnum(sat.vg, 4)}\ \mathrm{m^3/kg} \;\Rightarrow\; \text{mistura saturada},\ T = T_{\text{sat}} = ${tnum(sat.T, 1)}\ ^\circ\mathrm{C}` },
+          { label: 'Título pela regra da alavanca', tex: String.raw`x = \frac{v - v_f}{v_g - v_f} = \frac{${tnum(v, 4)} - ${tnum(sat.vf, 5)}}{${tnum(sat.vg, 4)} - ${tnum(sat.vf, 5)}} = ${tnum(x, 3)}` },
+          { label: 'Propriedades da mistura', tex: String.raw`\begin{gathered} h = h_f + x\,h_{fg} = ${tnum(sat.hf, 1)} + ${tnum(x, 2)}(${tnum(sat.hfg, 1)}) = ${tnum(h, 1)}\ \mathrm{kJ/kg} \\ u = u_f + x(u_g - u_f) = ${tnum(u, 1)}\ \mathrm{kJ/kg}, \qquad s = s_f + x(s_g - s_f) = ${tnum(s, 4)}\ \mathrm{kJ/(kg\cdot K)} \end{gathered}` },
         ],
-        answer: `Mistura saturada a ${fmt(sat.T, 1)} °C · x = ${fmt(x, 2)} · h = ${fmt(h, 1)} kJ/kg · u = ${fmt(u, 1)} kJ/kg · s = ${fmt(s, 4)} kJ/(kg·K)`,
-        check: `Verificação física: h_f (${fmt(sat.hf, 1)}) < h (${fmt(h, 1)}) < h_g (${fmt(sat.hg, 1)}).`,
+        answer: `Mistura saturada a ${texInline(`${tnum(sat.T, 1)}\\ ^\\circ\\mathrm{C}`)} · ${texInline(`x = ${tnum(x, 2)}`)} · ${texInline(`h = ${tnum(h, 1)}\\ \\mathrm{kJ/kg}`)} · ${texInline(`u = ${tnum(u, 1)}\\ \\mathrm{kJ/kg}`)} · ${texInline(`s = ${tnum(s, 4)}\\ \\mathrm{kJ/(kg\\cdot K)}`)}`,
+        check: `Verificação física: ${texInline(`h_f = ${tnum(sat.hf, 1)} < h = ${tnum(h, 1)} < h_g = ${tnum(sat.hg, 1)}\\ \\mathrm{kJ/kg}`)}.`,
       };
     },
   },

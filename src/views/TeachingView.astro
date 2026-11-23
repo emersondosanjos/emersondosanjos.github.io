@@ -478,15 +478,24 @@ const T = lang === 'pt'
   }
   .deck-stage :global(.k-def b) { font: 650 1.62cqw/1.2 var(--sans); color: #0b2d6b; }
   .deck-stage :global(.k-def p) { margin: 0; }
+  /* Key idea in the site language: spectrometer tick ruler + solid highlighter stroke (no box, no side bar) */
   .deck-stage :global(.k-idea) {
+    position: relative;
     align-self: stretch;
     width: 100%;
-    font: 600 1.56cqw/1.32 var(--sans);
-    padding: 0.7cqw 1.35cqw;
-    background: #ffd2c6;
-    border-left: 0.42cqw solid #ff7a59;
-    border-radius: 0.55cqw;
+    margin: 0;
+    font: 600 1.56cqw/1.5 var(--sans);
+    padding: 1.15cqw 0 0;
+    background: none;
+    border: 0;
     color: #0b2d6b;
+  }
+  .deck-stage :global(.k-idea::before) { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 0.8cqw; pointer-events: none; opacity: 0.85; background: linear-gradient(currentColor, currentColor) left top / 100% 1.5px no-repeat, repeating-linear-gradient(90deg, currentColor 0 1.5px, transparent 1.5px 80px) left top / 100% 10px no-repeat, repeating-linear-gradient(90deg, currentColor 0 1px, transparent 1px 16px) left top / 100% 5px no-repeat; }
+  :global(.k-mark) {
+    background: linear-gradient(transparent 52%, #ffd2c6 52%, #ffd2c6 94%, transparent 94%);
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    padding-inline: 0.12em;
   }
   .deck-stage :global(.k-warn) { background: #fff4f1; border-color: #ff7a59; box-shadow: 0.3cqw 0.3cqw 0 #ff7a59; gap: 0.38cqw; padding: 0.9cqw 1.35cqw; }
   .deck-stage :global(.k-warn b) { font: 700 1.14cqw/1 var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: #b42323; }
@@ -636,6 +645,16 @@ const T = lang === 'pt'
     85% { opacity: 1; }
     100% { transform: translate(82px, 0); opacity: 0; }
   }
+  :global(.anim-cond-arrow) { animation: cond-slide 2.1s ease-in-out infinite; }
+  :global(.anim-conv-plume) { stroke-dasharray: 10 5; animation: plume-rise 1.9s linear infinite; }
+  :global(.anim-rad-wave) { transform-box: fill-box; transform-origin: center; animation: rad-pulse 2.2s ease-out infinite; }
+  :global(.rad-w2) { animation-delay: -1.1s; }
+  :global(.sys-sticker:hover .anim-cond-arrow) { animation-duration: 0.9s; }
+  :global(.sys-sticker:hover .anim-conv-plume) { animation-duration: 0.75s; }
+  :global(.sys-sticker:hover .anim-rad-wave) { animation-duration: 1.0s; }
+  @keyframes cond-slide { 0%, 100% { transform: translateX(-3px); opacity: 0.82; } 50% { transform: translateX(4px); opacity: 1; } }
+  @keyframes plume-rise { from { stroke-dashoffset: 0; } to { stroke-dashoffset: 30; } }
+  @keyframes rad-pulse { 0% { transform: scale(0.92); opacity: 0.95; } 100% { transform: scale(1.16); opacity: 0.28; } }
   @keyframes iso-bounce {
     0%, 100% { transform: translate(0, 0); }
     50% { transform: translate(-6px, 5px); }
@@ -654,7 +673,10 @@ const T = lang === 'pt'
     :global(.anim-vc-dot),
     :global(.anim-rotor),
     :global(.anim-iso-mol),
-    :global(.anim-wall) { animation: none !important; }
+    :global(.anim-wall),
+    :global(.anim-cond-arrow),
+    :global(.anim-conv-plume),
+    :global(.anim-rad-wave) { animation: none !important; }
   }
 
   /* ---------- Handwritten sheet ("Folha Manuscrita") ---------- */
@@ -763,7 +785,8 @@ const T = lang === 'pt'
   :global(.sim-kpis div.accent) { background: #0b2d6b; color: #fff; border-color: #0b2d6b; }
   :global(.sim-kpis dt) { font-size: 0.78rem; opacity: 0.9; }
   :global(.sim-kpis dd) { margin: 2px 0 0; font: 700 0.96rem/1.1 var(--sans); font-variant-numeric: tabular-nums; }
-  :global(.sim-insight) { margin: 0; padding: 7px 10px; border-left: 3px solid #ff7a59; background: #fff4f1; font-size: 0.88rem; color: #0b2d6b; }
+  :global(.sim-insight) { position: relative; margin: 0; padding: 14px 0 0; border: 0; background: none; font-size: 0.88rem; color: #0b2d6b; }
+  :global(.sim-insight::before) { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 10px; opacity: 0.8; pointer-events: none; background: linear-gradient(currentColor, currentColor) left top / 100% 1.5px no-repeat, repeating-linear-gradient(90deg, currentColor 0 1.5px, transparent 1.5px 80px) left top / 100% 10px no-repeat, repeating-linear-gradient(90deg, currentColor 0 1px, transparent 1px 16px) left top / 100% 5px no-repeat; }
 
   .deck-stage :global(.cycle-sim) { padding: 1.05cqw 1.35cqw; gap: 0.7cqw; }
   .deck-stage :global(.sim-badge) { font-size: 0.95cqw; padding: 0.2cqw 0.65cqw; }
@@ -965,7 +988,8 @@ const T = lang === 'pt'
   }
   .handout :global(.l-fig svg) { width: 100%; height: auto; display: block; max-height: 360px; }
   .handout :global(.l-fig figcaption) { font-size: 0.88rem; color: var(--ink-soft); margin-top: 6px; text-align: center; }
-  .handout :global(.l-note) { margin: 16px 0; padding: 10px 16px; border-left: 4px solid #ff7a59; background: transparent; }
+  .handout :global(.l-note) { position: relative; margin: 16px 0; padding: 16px 0 0; border: 0; background: transparent; }
+  .handout :global(.l-note::before) { content: ''; position: absolute; left: 0; right: 0; top: 0; height: 10px; opacity: 0.85; pointer-events: none; background: linear-gradient(currentColor, currentColor) left top / 100% 1.5px no-repeat, repeating-linear-gradient(90deg, currentColor 0 1.5px, transparent 1.5px 80px) left top / 100% 10px no-repeat, repeating-linear-gradient(90deg, currentColor 0 1px, transparent 1px 16px) left top / 100% 5px no-repeat; }
 
   .handout :global(.l-callout) {
     margin: 18px 0;
@@ -1038,7 +1062,7 @@ const T = lang === 'pt'
   .handout :global(.d-outline h3), .handout :global(.d-steps h3), .handout :global(.d-model-answer h3), .handout :global(.d-checklist h3), .handout :global(.d-rubric h3), .handout :global(.d-pitfalls h3) { margin: 0 0 10px; color: #0b2d6b; }
   .handout :global(.d-outline ol) { margin: 0; padding-left: 22px; display: grid; gap: 6px; }
   .handout :global(.d-steps-list) { display: grid; gap: 18px; }
-  .handout :global(.d-step) { padding: 14px 0 14px 16px; border-bottom: 1px solid var(--rule); border-left: 4px solid #0b2d6b; }
+  .handout :global(.d-step) { padding: 14px 0; border-bottom: 1px solid var(--rule); }
   .handout :global(.d-step-head) { display: flex; align-items: baseline; gap: 10px; margin-bottom: 8px; }
   .handout :global(.d-step-num) { font-size: 0.78rem; padding: 3px 9px; border-radius: 99px; background: #0b2d6b; color: #fff; font-weight: 700; }
   .handout :global(.d-step-head h4) { margin: 0; font: 600 1.12rem/1.3 var(--sans); color: #0b2d6b; }

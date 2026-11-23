@@ -966,6 +966,16 @@ const T = lang === 'pt'
   .handout :global(h2 .n) { font-size: 0.75rem; color: #fff; background: var(--ink); border-radius: 99px; padding: 4px 9px; }
   .handout :global(h3) { font: 600 1.15rem/1.3 var(--sans); }
   .handout :global(p), .handout :global(li) { line-height: 1.7; }
+  /* Apostila: texto corrido alinhado e justificado, com hifenização em português para evitar rios de espaço */
+  .handout :global(p), .handout :global(li), .handout :global(.d-exp), .handout :global(.d-why), .handout :global(.d-hyp) {
+    text-align: justify;
+    text-justify: inter-word;
+    hyphens: auto;
+    -webkit-hyphens: auto;
+    hyphenate-limit-chars: 6 3 3;
+  }
+  .handout :global(figcaption), .handout :global(.l-toc li), .handout :global(.formula-sheet td), .handout :global(.eq), .handout :global(.ai-prompt-text) { text-align: left; hyphens: manual; }
+  .handout :global(figcaption) { text-align: center; }
   .handout :global(.eq) {
     display: flex;
     align-items: center;

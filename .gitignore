@@ -12,4 +12,6 @@ archive/
 
 # private teaching sources and credentials (only the encrypted bundle in public/teaching/ is published)
 src/teaching/thermo/
+src/teaching/calor/
+src/teaching/maquinas/
 .teaching-users
